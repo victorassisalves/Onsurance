@@ -28,6 +28,7 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
     const carModel = request.query["car-model"];
     const carPlate = request.query["carPlate"];
     const carValue = request.query["carValue"];
+    const valorMinuto = request.query["valorMinuto"];
 
     // Dados de tempo
     const timeStart = request.query["timeStart"];
@@ -55,6 +56,7 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         statusProtecao: estadoProtecao,
         saldoCreditos: userCredit,
         saldoDinheiro: userMoney,
+        valorMinuto: valorMinuto,
         logUse: []
     }
 
@@ -86,9 +88,9 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         // Calcula o valor conumido baseado no tempo de uso. 
         // Atualmente so calcula com um valor (5.5)
         if (timeDiffSeconds >= 30){
-            valorConsumido = Math.ceil((timeDiff/60)*5.5);
+            valorConsumido = (Math.ceil(timeDiff/60))*valorMinuto;
         } else if (timeDiffSeconds < 30) {
-            valorConsumido = Math.floor((timeDiff/60)*5.5);
+            valorConsumido = (Math.floor(timeDiff/60))*valorMinuto;
         }
 
         perfilUser.userCredit = userCredit - valorConsumido;
@@ -233,7 +235,7 @@ exports.getMinutePrice = functions.https.onRequest((request, response) => {
         },
         "messages": [
             {
-                "text": `Sendo seu ${carModel} na faixa de R$${valorVeiculo}, sua proteção vai ficar a partir de ${valorMinuto/1000} centavos, ou ${valorMinuto} Switchs por minuto.`,
+                "text": `Sendo seu ${carModel} na faixa de R$${valorVeiculo}, sua proteção vai ficar a partir de R$${valorMinuto/1000} centavos, ou ${valorMinuto} Switchs por minuto.`,
             },
             {
                 "text": "Muito barato né? Quer começar a econimizar?",
