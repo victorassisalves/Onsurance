@@ -3,9 +3,9 @@ const functions = require('firebase-functions');
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
-exports.helloFirebase = functions.https.onRequest((request, response) => {
- response.json({"messages": [{"text": "Hello from Firebase! You are the baby becoming the child"}]});
-});
+// exports.helloFirebase = functions.https.onRequest((request, response) => {
+//  response.json({"messages": [{"text": "Hello from Firebase! You are the baby becoming the child"}]});
+// });
 
 
 
@@ -15,29 +15,43 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
 
     // Recebe os parâmetros do chatfuel
     const ESTADOPROTEÇÃOCARRO = request.query["ESTADOPROTEÇÃOCARRO"];
+
+    // Dados do usuário
     const userId = request.query["chatfuel user id"];
+    const firstName = request.query["first name"];
+    const lastName = request.query["last name"];
+    const userEmail = request.query["email_address"];
+    const userCredit = request.query["user-credit"];
+    const userMoney = request.query["user-money"];
+
+    // Dados do veículo
+    const carModel = request.query["car-model"];
+    const carPlate = request.query["carPlate"];
+    const carValue = request.query["carValue"];
+
+    // Dados de tempo
     const timeStart = request.query["timeStart"];
     const timeEnd = request.query["timeEnd"];
     const timeDiff = request.query["timeDiff"];
-    // const firstName = resquest.query["first name"];
-    // const lastName = resquest.query["last name"];
-    // const userEmail = resquest.query["email_address"];
     const timeDiffSeconds = request.query["timeDiffSeconds"];
-
-    const userCredit = request.query["user-credit"];
-    const userMoney = request.query["user-money"];
+    const timeDiffMinutes = request.query["timeDiffMinutes"];
+    const timeDiffHours = request.query["timeDiffHours"];
+    const timeDiffDays = request.query["timeDiffDays"];
+    const timeDiffMonths = request.query["timeDiffMonths"];
+    
     const numAtivacao = request.query["numAtivacao"];
 
 /* -----------------------//----------------------//-------------------// -------------------- */
 
+    var numeroAtivacoes = parseInt(numAtivacao);
     var valorConsumido = 0;
     // Objeto de perfil do user
     var perfilUser = {
         userId: userId,
-        // firstName: firstName,
-        // lastName: lastName,
-        // userEmail: userEmail,
-        numAtivacao: numAtivacao,
+        userName: firstName,
+        lastName: lastName,
+        userEmail: userEmail,
+        qtdAtivacao: numAtivacao,
         statusProtecao: estadoProtecao,
         saldoCreditos: userCredit,
         saldoDinheiro: userMoney,
@@ -49,7 +63,7 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
 
     const ligarProtecao = () => {
         estadoProtecao = "ON";
-        numeroAtivacoes = numAtivacao + 1;
+        numeroAtivacoes += 1;
         perfilUser.numAtivacao = numeroAtivacoes;
         response.json({
             "messages": [
