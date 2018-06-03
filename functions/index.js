@@ -105,13 +105,12 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         }
 
         // Retorna ao chatfuel o resultado da operação
+            console.log(`Dados do usuário: ${JSON.stringify(perfilUser)}`);
+            
         response.json({
             "messages": [
                 {
                     "text": "Vamos desligar sua proteção."
-                },
-                {
-                    "text": `Dados do usuário: ${JSON.stringify(perfilUser)}`
                 }
             ],
             "set_attributes":
