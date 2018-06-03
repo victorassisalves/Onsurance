@@ -93,8 +93,8 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
             valorConsumido = (Math.floor(timeDiff/60))*valorMinuto;
         }
 
-        perfilUser.userCredit = userCredit - valorConsumido;
-        perfilUser.userMoney = userMoney - (valorConsumido/1000);
+        perfilUser.saldoCreditos = userCredit - valorConsumido;
+        perfilUser.saldoDinheiro = userMoney - (valorConsumido/1000);
         
         // Passa o valor consumido para o Objeto perfil do Usuário
         perfilUser.logUse = {
@@ -116,8 +116,8 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
             "set_attributes":
                 {
                     "ESTADOPROTEÇÃOCARRO": estadoProtecao,
-                    "user-credit": perfilUser.userCredit,
-                    "user-money": perfilUser.userMoney,
+                    "user-credit": perfilUser.saldoCreditos,
+                    "user-money": perfilUser.saldoDinheiro,
                     "valorconsumido": valorConsumido
                 },
         });
