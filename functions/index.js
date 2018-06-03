@@ -30,7 +30,6 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
 
 /* -----------------------//----------------------//-------------------// -------------------- */
 
-    var numeroAtivacoes = numAtivacao;
     var valorConsumido = 0;
     // Objeto de perfil do user
     var perfilUser = {
@@ -38,6 +37,7 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         // firstName: firstName,
         // lastName: lastName,
         // userEmail: userEmail,
+        numAtivacao: numAtivacao,
         statusProtecao: estadoProtecao,
         saldoCreditos: userCredit,
         saldoDinheiro: userMoney,
@@ -46,9 +46,11 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
 
     var estadoProtecao = ESTADOPROTEÇÃOCARRO.toString();
 
-    const ligarProtecao = (numeroAtivacoes) => {
+
+    const ligarProtecao = () => {
         estadoProtecao = "ON";
-        numeroAtivacoes += 1;
+        numeroAtivacoes = numAtivacao + 1;
+        perfilUser.numAtivacao = numeroAtivacoes;
         response.json({
             "messages": [
                 {
@@ -107,22 +109,34 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
     }
  
     // primeira ativacão
-    if (numAtivacao === 0){
-        ligarProtecao();
+    // if (numAtivacao === 0) {
+    //     // ligarProtecao();
+    //     numeroAtivacoes += 1;
+    //     response.json({
+    //         "message": [
+    //             {
+    //                 "text": "Primeira ativacão"
+    //             }
+    //         ],
+    //         "set_attributes":
+    //             {
+    //                 "ESTADOPROTEÇÃOCARRO": estadoProtecao,
+    //                 "numAtivacao": numeroAtivacoes,
+    //             }
+    //     })
         
-        xhr.open("POST", 
-                `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${userId}/send?chatfuel_token=qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74&chatfuel_block_id=5af0ada8e4b08cfa6b744d6f`, true);
-        xhr.setRequestHeader("Content-type", "application/json");
-    }
+    //     // xhr.open("POST", `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${userId}/send?chatfuel_token=qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74&chatfuel_block_id=5af0ada8e4b08cfa6b744d6f`, true);
+    //     // xhr.setRequestHeader("Content-type", "application/json");
+    // }
 
     // Checa estado da proteção - Liga / Desliga
 
     // Liga a Proteão
-    if (estadoProtecao === "OFF" && numAtivacao > 0){
+    if (estadoProtecao === "OFF"){
         ligarProtecao();
 
     //Desliga a proteão
-    } else if (estadoProtecao === "ON" && numAtivacao > 0) {
+    } else if (estadoProtecao === "ON" ) {
         desligarProtecao();
     }
 
