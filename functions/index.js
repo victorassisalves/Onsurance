@@ -41,7 +41,7 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
     
     const numAtivacao = request.query["numAtivacao"];
 
-/* -----------------------//----------------------//-------------------// -------------------- */
+// -----------------------//----------------------//-------------------// -------------------- */
 
     var numeroAtivacoes = parseInt(numAtivacao);
     var valorConsumido = 0;
@@ -154,4 +154,91 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         desligarProtecao();
     }
 
+});
+
+exports.getMinutePrice = functions.https.onRequest((request, response) => {
+    console.log("getUserInput : " + JSON.stringify(request.query));
+
+    // Dados do veículo
+    const carModel = request.query["car-model"];
+    // const carPlate = request.query["carPlate"];
+    const carValue = request.query["car-value"];
+    
+    var valorVeiculo = carValue;
+
+    console.log(`Valor do Carro :  ${carValue}`);
+    var valorMinuto = 0;
+    
+        if (valorVeiculo <= 30000) {
+            valorMinuto = 4;
+        }
+        if (valorVeiculo > 30000 && valorVeiculo <= 40000) {
+            valorMinuto = 5.5;
+        }
+        if (valorVeiculo > 40000 && valorVeiculo <= 50000) {
+            valorMinuto = 7;
+        }
+        if (valorVeiculo > 50000 && valorVeiculo <= 60000) {
+            valorMinuto = 8.5;
+        }
+        if (valorVeiculo > 60000 && valorVeiculo <= 70000) {
+            valorMinuto = 10;
+        }
+        if (valorVeiculo > 70000 && valorVeiculo <= 80000) {
+            valorMinuto = 13;
+        }
+        if (valorVeiculo > 80000 && valorVeiculo <= 90000) {
+            valorMinuto = 14;
+        }
+        if (valorVeiculo > 90000 && valorVeiculo <= 100000) {
+            valorMinuto = 15;
+        }
+        if (valorVeiculo > 100000 && valorVeiculo <= 110000) {
+            valorMinuto = 16;
+        }
+        if (valorVeiculo > 110000 && valorVeiculo <= 120000) {
+            valorMinuto = 17;
+        }
+        if (valorVeiculo > 120000 && valorVeiculo <= 130000) {
+            valorMinuto = 18;
+        }
+        if (valorVeiculo > 130000 && valorVeiculo <= 140000) {
+            valorMinuto = 19;
+        }
+        if (valorVeiculo > 140000 && valorVeiculo <= 150000) {
+            valorMinuto = 20;
+        }
+        if (valorVeiculo > 150000 && valorVeiculo <= 160000) {
+            valorMinuto = 21;
+        }
+        if (valorVeiculo > 160000 && valorVeiculo <= 170000) {
+            valorMinuto = 22;
+        }
+        if (valorVeiculo > 170000 && valorVeiculo <= 180000) {
+            valorMinuto = 23;
+        }
+        if (valorVeiculo > 180000 && valorVeiculo <= 190000) {
+            valorMinuto = 24;
+        }
+        if (valorVeiculo > 190000 && valorVeiculo <= 200000) {
+            valorMinuto = 25;
+        }
+
+    
+
+    response.json({
+        "set_attributes":
+        {
+            "valorMinuto": valorMinuto,
+        },
+        "messages": [
+            {
+                "text": `Sendo seu ${carModel} na faixa de R$${valorVeiculo}, sua proteção vai ficar a partir de ${valorMinuto/1000} centavos, ou ${valorMinuto} Switchs por minuto.`,
+            },
+            {
+                "text": "Muito barato né? Quer começar a econimizar?",
+            }
+        ],
+        
+    });
 });
