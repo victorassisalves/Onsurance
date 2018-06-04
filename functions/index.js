@@ -1,5 +1,12 @@
 const functions = require('firebase-functions');
 
+const firebase = require("firebase");
+
+ // Initialize Firebase
+ const admin = require('firebase-admin');
+
+ admin.initializeApp(functions.config().firebase);
+  
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
@@ -12,6 +19,8 @@ const functions = require('firebase-functions');
 // Função que pega os atributos no chatfuel e identifica se Proteção está On / Off
 exports.getUserInput = functions.https.onRequest((request, response) => {
     console.log("getUserInput : " + JSON.stringify(request.query));
+
+
 
     // Recebe os parâmetros do chatfuel
     const ESTADOPROTEÇÃOCARRO = request.query["ESTADOPROTEÇÃOCARRO"];
@@ -42,6 +51,8 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
     
     const numAtivacao = request.query["numAtivacao"];
 
+    const dbRef = admin.database().ref('/users').child(userId);
+
 // -----------------------//----------------------//-------------------// -------------------- */
 
     var numeroAtivacoes = parseInt(numAtivacao);
@@ -53,13 +64,14 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         lastName: lastName,
         userEmail: userEmail,
         qtdAtivacao: numAtivacao,
-        statusProtecao: estadoProtecao,
+        estadoProtecao: ESTADOPROTEÇÃOCARRO,
         saldoCreditos: userCredit,
         saldoDinheiro: userMoney,
         valorMinuto: valorMinuto,
-        logUse: []
     }
 
+    dbRef.set(perfilUser);
+    
     var estadoProtecao = ESTADOPROTEÇÃOCARRO.toString();
 
 
@@ -97,12 +109,12 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         perfilUser.saldoDinheiro = userMoney - (valorConsumido/1000);
         
         // Passa o valor consumido para o Objeto perfil do Usuário
-        perfilUser.logUse = {
+        perfilUser.logUse = [{
             inicioProtecao: timeStart,
             finalProtecao: timeEnd,
             tempoDeUso: `${timeDiff}:${timeDiffSeconds}`,
             consumo: valorConsumido
-        }
+        }];
 
         // Retorna ao chatfuel o resultado da operação
             console.log(`Dados do usuário: ${JSON.stringify(perfilUser)}`);
@@ -120,6 +132,10 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
                     "user-money": perfilUser.saldoDinheiro,
                     "valorconsumido": valorConsumido
                 },
+        });
+
+        dbRef.update({
+            logUse: perfilUser.logUse[numAtivacao -1 ],
         });
     }
  
