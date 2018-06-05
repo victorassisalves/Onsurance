@@ -32,11 +32,13 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
     const userEmail = request.query["email_address"];
     const userCredit = request.query["user-credit"];
     const userMoney = request.query["user-money"];
+    const timezone = request.query["timezone"];
+
 
     // Dados do veículo
     const carModel = request.query["car-model"];
-    const carPlate = request.query["carPlate"];
-    const carValue = request.query["carValue"];
+    const carPlate = request.query["car-plate"];
+    const carValue = request.query["car-value"];
     const valorMinuto = request.query["valorMinuto"];
 
     // Dados de tempo
@@ -63,6 +65,10 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         userName: firstName,
         lastName: lastName,
         userEmail: userEmail,
+        timezone: timezone,
+        carModel: carModel,
+        carPlate: carPlate,
+        carValue: carValue,
         qtdAtivacao: numAtivacao,
         estadoProtecao: ESTADOPROTEÇÃOCARRO,
         saldoCreditos: userCredit,
@@ -70,15 +76,21 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         valorMinuto: valorMinuto,
     }
 
-    dbRef.set(perfilUser);
+    
     
     var estadoProtecao = ESTADOPROTEÇÃOCARRO.toString();
 
 
     const ligarProtecao = () => {
+        console.log('Ligando protecão');
         estadoProtecao = "ON";
         numeroAtivacoes += 1;
-        perfilUser.numAtivacao = numeroAtivacoes;
+
+        dbRef.update({
+            qtdAtivacao: numeroAtivacoes,
+            estadoProtecao: estadoProtecao,
+        });
+
         response.json({
             "messages": [
                 {
@@ -91,14 +103,15 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
                 "numAtivacao": numeroAtivacoes,
             },
         });
+        
     }
 
     const desligarProtecao = () => {
+        console.log("desligar protecão");
         // Desliga a proteção, alterando o atributo ESTADOPROTEÇÃOCARRO do chatfuel
         estadoProtecao = "OFF";
 
         // Calcula o valor conumido baseado no tempo de uso. 
-        // Atualmente so calcula com um valor (5.5)
         if (timeDiffSeconds >= 30){
             valorConsumido = (Math.ceil(timeDiff/60))*valorMinuto;
         } else if (timeDiffSeconds < 30) {
@@ -109,16 +122,26 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         perfilUser.saldoDinheiro = userMoney - (valorConsumido/1000);
         
         // Passa o valor consumido para o Objeto perfil do Usuário
-        perfilUser.logUse = [{
+        var logUse = {
+            data: Date(),
             inicioProtecao: timeStart,
             finalProtecao: timeEnd,
-            tempoDeUso: `${timeDiff}:${timeDiffSeconds}`,
-            consumo: valorConsumido
-        }];
+            valorconsumido: valorConsumido,
+            tempoUso: `${timeDiffMonths}meses:${timeDiffDays}dias:${timeDiffHours}horas:${timeDiffMinutes}minutos:${timeDiffSeconds}segundos`
+        };
 
         // Retorna ao chatfuel o resultado da operação
             console.log(`Dados do usuário: ${JSON.stringify(perfilUser)}`);
-            
+        dbRef.update({
+            saldoCreditos: perfilUser.saldoCreditos,
+            saldoDinheiro: perfilUser.saldoDinheiro,
+            estadoProtecao: estadoProtecao,
+        });
+        var logUpdate = {};
+        logUpdate['/logUse/' + numeroAtivacoes] = logUse;
+      
+        dbRef.update(logUpdate);
+
         response.json({
             "messages": [
                 {
@@ -133,42 +156,46 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
                     "valorconsumido": valorConsumido
                 },
         });
-
-        dbRef.update({
-            logUse: perfilUser.logUse[numAtivacao -1 ],
-        });
     }
- 
-    // primeira ativacão
-    // if (numAtivacao === 0) {
-    //     // ligarProtecao();
-    //     numeroAtivacoes += 1;
-    //     response.json({
-    //         "message": [
-    //             {
-    //                 "text": "Primeira ativacão"
-    //             }
-    //         ],
-    //         "set_attributes":
-    //             {
-    //                 "ESTADOPROTEÇÃOCARRO": estadoProtecao,
-    //                 "numAtivacao": numeroAtivacoes,
-    //             }
-    //     })
-        
-    //     // xhr.open("POST", `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${userId}/send?chatfuel_token=qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74&chatfuel_block_id=5af0ada8e4b08cfa6b744d6f`, true);
-    //     // xhr.setRequestHeader("Content-type", "application/json");
-    // }
 
     // Checa estado da proteção - Liga / Desliga
 
     // Liga a Proteão
-    if (estadoProtecao === "OFF"){
+    if (estadoProtecao === "OFF" && numeroAtivacoes >= 1){
         ligarProtecao();
 
     //Desliga a proteão
-    } else if (estadoProtecao === "ON" ) {
+    } else if (estadoProtecao === "ON" && numeroAtivacoes >= 1) {
         desligarProtecao();
+    }
+
+    //primeira ativacão
+    if (numeroAtivacoes === 0) {
+        estadoProtecao = "ON";
+        console.log("primeira ativacão");
+        // ligarProtecao();
+        numeroAtivacoes += 1;
+
+        dbRef.set(perfilUser);
+        dbRef.update({
+            estadoProtecao: estadoProtecao,
+            qtdAtivacao: numeroAtivacoes
+        });
+        response.json({
+            "messages": [
+                {
+                    "text": "Primeira ativacão"
+                }
+            ],
+            "set_attributes":
+                {
+                    "ESTADOPROTEÇÃOCARRO": estadoProtecao,
+                    "numAtivacao": numeroAtivacoes,
+                }
+        });
+        
+        // xhr.open("POST", `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${userId}/send?chatfuel_token=qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74&chatfuel_block_id=5af0ada8e4b08cfa6b744d6f`, true);
+        // xhr.setRequestHeader("Content-type", "application/json");
     }
 
 });
