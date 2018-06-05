@@ -20,10 +20,7 @@ const firebase = require("firebase");
 exports.getUserInput = functions.https.onRequest((request, response) => {
     console.log("getUserInput : " + JSON.stringify(request.query));
 
-
-
     // Recebe os parâmetros do chatfuel
-    const ESTADOPROTEÇÃOCARRO = request.query["ESTADOPROTEÇÃOCARRO"];
 
     // Dados do usuário
     const userId = request.query["chatfuel user id"];
@@ -50,7 +47,9 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
     const timeDiffHours = request.query["timeDiffHours"];
     const timeDiffDays = request.query["timeDiffDays"];
     const timeDiffMonths = request.query["timeDiffMonths"];
-    
+
+    // Dados da protecão
+    const ESTADOPROTEÇÃOCARRO = request.query["ESTADOPROTEÇÃOCARRO"];
     const numAtivacao = request.query["numAtivacao"];
 
     const dbRef = admin.database().ref('/users').child(userId);
@@ -59,6 +58,12 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
 
     var numeroAtivacoes = parseInt(numAtivacao);
     var valorConsumido = 0;
+
+    var posOffBlock = `5b12db0be4b0be54cf573d22`;
+    var posOnBlock = `5b12b125e4b0be54cef8b979`;
+
+    var broadcastUrl = `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${userId}/send?chatfuel_token=qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74&chatfuel_block_id=`;
+
     // Objeto de perfil do user
     var perfilUser = {
         userId: userId,
@@ -86,52 +91,87 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         estadoProtecao = "ON";
         numeroAtivacoes += 1;
 
+        var logUse = {
+            data: new Date().getTime(-3),
+            inicioProtecaoChat: timeStart,
+            inicioProtecao: Date.now()/1000|0,
+            data2: Date(),
+            finalProtecao: ``,
+            valorconsumido: ``,
+            tempoUso: ``,
+        }
+        
         dbRef.update({
             qtdAtivacao: numeroAtivacoes,
             estadoProtecao: estadoProtecao,
         });
+        var logUpdate = {};
+        logUpdate['/logUse/' + numeroAtivacoes] = logUse;
+      
+        dbRef.update(logUpdate);
 
         response.json({
             "messages": [
                 {
-                    "text": "Sua proteção está desligada e vai ser ligada agora."
+                    "text": `Olá ${firstName}, vamos ativar sua protecão.`
                 }
             ],
             "set_attributes":
             {
                 "ESTADOPROTEÇÃOCARRO": estadoProtecao,
                 "numAtivacao": numeroAtivacoes,
+                "timeStart": logUse.inicioProtecao
             },
-        });
+        }); 
         
-    }
+    };
 
     const desligarProtecao = () => {
         console.log("desligar protecão");
         // Desliga a proteção, alterando o atributo ESTADOPROTEÇÃOCARRO do chatfuel
         estadoProtecao = "OFF";
 
+        // Pega o tempo do desligamento
+        // Criando minha própria funcão de tempo
+        var timeOff = Date.now()/1000|0;
+        console.log('timeOff: ', timeOff);
+        var tempoProtecao = timeOff - timeStart; // TimeDiff
+        console.log('tempoProtecao: ', tempoProtecao);
+        var dias = (tempoProtecao/60/60/24|0); // TimeDiffDays
+        console.log('dias: ', dias);
+        var horasTotais = (tempoProtecao/60/60|0); // TimeDiffHours Totais
+        console.log('horasTotais: ', horasTotais);
+        var minTotais = (tempoProtecao/60|0); // TimeDiffMinutes Totais
+        console.log('minTotais: ', minTotais);
+        var horas = (horasTotais - (dias*24)); // TimeDiffHours
+        console.log('horas: ', horas);
+        var minutos = (minTotais - (horas * 60)); // TimeDiffMinnutes
+        console.log('minutos: ', minutos);
+        var segundos = tempoProtecao - minTotais*60; // TimeDiffSeconds
+
+        console.log(``);
+
         // Calcula o valor conumido baseado no tempo de uso. 
-        if (timeDiffSeconds >= 30){
-            valorConsumido = (Math.ceil(timeDiff/60))*valorMinuto;
-        } else if (timeDiffSeconds < 30) {
-            valorConsumido = (Math.floor(timeDiff/60))*valorMinuto;
+        if (segundos >= 30){
+            valorConsumido = (Math.ceil(tempoProtecao/60))*valorMinuto;
+        } else if (segundos < 30) {
+            valorConsumido = (Math.floor(tempoProtecao/60))*valorMinuto;
         }
 
         perfilUser.saldoCreditos = userCredit - valorConsumido;
-        perfilUser.saldoDinheiro = userMoney - (valorConsumido/1000);
-        
-        // Passa o valor consumido para o Objeto perfil do Usuário
+        perfilUser.saldoDinheiro = userMoney - (valorConsumido/1000); 
+
+        // Objeto com dados do desligamento da protecão
         var logUse = {
             data: Date(),
             inicioProtecao: timeStart,
-            finalProtecao: timeEnd,
+            finalProtecao: timeOff,
+            finalProtecaoChat: timeEnd,
             valorconsumido: valorConsumido,
-            tempoUso: `${timeDiffMonths}meses:${timeDiffDays}dias:${timeDiffHours}horas:${timeDiffMinutes}minutos:${timeDiffSeconds}segundos`
+            tempoUso: `${timeDiffDays}dias/${dias}:${timeDiffHours}horas/${horas}:${timeDiffMinutes}minutos/${minutos}:${timeDiffSeconds}segundos/${segundos}`,
         };
 
-        // Retorna ao chatfuel o resultado da operação
-            console.log(`Dados do usuário: ${JSON.stringify(perfilUser)}`);
+        // Salva no banco de dados o resultado do desligamento
         dbRef.update({
             saldoCreditos: perfilUser.saldoCreditos,
             saldoDinheiro: perfilUser.saldoDinheiro,
