@@ -280,6 +280,22 @@ exports.getMinutePrice = functions.https.onRequest((request, response) => {
     const carModel = request.query["car-model"];
     // const carPlate = request.query["carPlate"];
     const carValue = request.query["car-value"];
+
+    var checaValor = carValue.toString();
+    if (checaValor.includes(".") || checaValor.includes(",")) {
+        console.log(`usuário informou valor no modelo errado! ${carValue}`);
+        response.json({
+            "set_attributes":
+            {
+                "valorCorreto": false,
+            },
+            "messages": [
+                {
+                    "text": `O formato digitado está incorreto, por favor digite sem utilizar pontos ou vírgulas. Ex: 55000.`,
+                }
+            ]    
+        });
+    }
     
     var valorVeiculo = carValue;
 
