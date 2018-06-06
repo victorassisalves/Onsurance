@@ -123,7 +123,7 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         numeroAtivacoes += 1;
 
         // Chama a função de pegar a data atual para salval no BD        
-        getDate(inicioProtecao);
+        getDate(Date.now());
 
         // **  Fata ajustar ao timezone do usuário ** //
         var logUso = {
@@ -291,7 +291,7 @@ exports.getMinutePrice = functions.https.onRequest((request, response) => {
             },
             "messages": [
                 {
-                    "text": `O formato digitado está incorreto, por favor digite sem utilizar pontos ou vírgulas. Ex: 55000.`,
+                    "text": `O formato digitado está incorreto, por favor digite sem utilizar pontos ou vírgulas. Ex: "55000".`,
                 }
             ]    
         });
