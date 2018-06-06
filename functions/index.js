@@ -6,7 +6,7 @@ const firebase = require("firebase");
  const admin = require('firebase-admin');
 
  admin.initializeApp(functions.config().firebase);
-  
+
 // Função que pega os atributos no chatfuel e identifica se Proteção está On / Off
 exports.getUserInput = functions.https.onRequest((request, response) => {
     console.log("getUserInput : " + JSON.stringify(request.query));
@@ -165,6 +165,16 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         
         console.log(`Tempo definido com sucesso.`);
 
+        // Checa se a protecão está ligada a menos de 2 minutos
+        // if (tempoProtecao <= 149 ){
+        //     console.log('tempoProtecao menor que 2 minutos: ', tempoProtecao/60|0);
+        //     response.json({
+
+        //     })
+
+        // }
+
+
         // Calcula o valor conumido baseado no tempo de uso. 
         if (segundos >= 30){
             valorConsumido = (Math.ceil(tempoProtecao/60))*valorMinuto;
@@ -274,14 +284,17 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
 });
 
 exports.getMinutePrice = functions.https.onRequest((request, response) => {
-    console.log("getUserInput : " + JSON.stringify(request.query));
+    console.log("Pegue o preco do minuto : " + JSON.stringify(request.query));
 
     // Dados do veículo
     const carModel = request.query["car-model"];
     // const carPlate = request.query["carPlate"];
     const carValue = request.query["car-value"];
 
+    var valorVeiculo = carValue;
     var checaValor = carValue.toString();
+
+    // Checa se valor informado é válido
     if (checaValor.includes(".") || checaValor.includes(",")) {
         console.log(`usuário informou valor no modelo errado! ${carValue}`);
         response.json({
@@ -297,10 +310,98 @@ exports.getMinutePrice = functions.https.onRequest((request, response) => {
         });
     }
     
+    var valorMinuto = calculaGasto(carValue);
+    console.log("valor do minto pos funcão", valorMinuto);
+    console.log(`Valor do Carro :  ${carValue}`);
+    
+
+    response.json({
+        "set_attributes":
+        {
+            "valorMinuto": valorMinuto,
+        },
+        "messages": [
+            {
+                "text": `Sendo seu ${carModel} na faixa de R$${carValue}, sua proteção vai ficar a partir de R$${valorMinuto/1000} centavos, ou ${valorMinuto} Switchs por minuto.`,
+            },
+            {
+                "text": "Muito barato né? Quer começar a econimizar?",
+            }
+        ],
+        
+    });
+});
+
+
+// Funcão para calculo de gastos anuais
+exports.calcConsumo = functions.https.onRequest((request, response) => {
+    console.log("Calcule o gasto anual : " + JSON.stringify(request.query));
+
+    // Dados do veículo
+    const carValue = request.query["car-value"];
+    const horasUsoDia = request.query["horasUso"];
+
+
+    var valorVeiculo = carValue;
+    var checaValor = carValue.toString();
+
+    // Checa se valor informado é válido
+    if (checaValor.includes(".") || checaValor.includes(",")) {
+        console.log(`usuário informou valor no modelo errado! ${carValue}`);
+        response.json({
+            "set_attributes":
+            {
+                "valorCorreto": false,
+            },
+            "messages": [
+                {
+                    "text": `O formato digitado está incorreto, por favor digite sem utilizar pontos ou vírgulas. Ex: "55000".`,
+                }
+            ]    
+        });
+    }
+    
+    var valorMinuto = calculaGasto(carValue);
+    console.log("valor do minuto pos funcão", valorMinuto);
+    console.log(`Valor do Carro :  ${carValue}`);
+    
+    var consumoMensal = ((horasUsoDia*60*31)*(valorMinuto/1000)).toFixed(2);
+    var consumoAnual = ((horasUsoDia*60*365)*(valorMinuto/1000)).toFixed(2);
+    console.log(`consumo mensal e anual: ${consumoMensal}, ${consumoAnual}`);
+    consumoMensal.toString();
+    consumoAnual.toString();
+    consumoMensal = consumoMensal.replace(".", ",");
+    consumoAnual = consumoAnual.replace(".", ",");
+    console.log(`consumo mensal e anual: ${consumoMensal}, ${consumoAnual}`);
+    
+    // Crédito mínimo até para carros até R$40.000
+    var creditoMin = 999;
+
+    if (carValue > 40000) {
+        console.log(`car value maior que 40000`);
+        creditoMin = (carValue*0.025);
+    }
+
+    response.json({
+        "messages": [
+            {
+                "text": `De acordo com os dados que você informou, o valor do minuto é R$${valorMinuto/1000}, a previsão do valor da sua proteção em um mês vai custar R$${consumoMensal}, o valor em 365 dias vai custar R$${consumoAnual}.`,
+            },
+            {
+                "text": `O valor mínimo que você tem que pagar para iniciar na plataforma é R$${creditoMin}.`
+            }
+        ]
+    });
+
+});
+
+const calculaGasto = (carValue) =>{
+
+    console.log('iniciando funcão de calcular valor do min');
+    
     var valorVeiculo = carValue;
 
     console.log(`Valor do Carro :  ${carValue}`);
-    var valorMinuto = 0;
     
         if (valorVeiculo <= 30000) {
             valorMinuto = 4;
@@ -357,21 +458,8 @@ exports.getMinutePrice = functions.https.onRequest((request, response) => {
             valorMinuto = 25;
         }
 
-    
 
-    response.json({
-        "set_attributes":
-        {
-            "valorMinuto": valorMinuto,
-        },
-        "messages": [
-            {
-                "text": `Sendo seu ${carModel} na faixa de R$${valorVeiculo}, sua proteção vai ficar a partir de R$${valorMinuto/1000} centavos, ou ${valorMinuto} Switchs por minuto.`,
-            },
-            {
-                "text": "Muito barato né? Quer começar a econimizar?",
-            }
-        ],
-        
-    });
-});
+        console.log("valor do minuto", valorMinuto);
+        return valorMinuto;
+
+}
