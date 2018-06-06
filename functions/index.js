@@ -7,15 +7,6 @@ const firebase = require("firebase");
 
  admin.initializeApp(functions.config().firebase);
   
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloFirebase = functions.https.onRequest((request, response) => {
-//  response.json({"messages": [{"text": "Hello from Firebase! You are the baby becoming the child"}]});
-// });
-
-
-
 // Função que pega os atributos no chatfuel e identifica se Proteção está On / Off
 exports.getUserInput = functions.https.onRequest((request, response) => {
     console.log("getUserInput : " + JSON.stringify(request.query));
@@ -48,8 +39,10 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
     const timeDiffDays = request.query["timeDiffDays"];
     const timeDiffMonths = request.query["timeDiffMonths"];
 
-    // Dados da protecão
+    // Dados da proteção
     const ESTADOPROTEÇÃOCARRO = request.query["ESTADOPROTEÇÃOCARRO"];
+    var estadoProtecao = ESTADOPROTEÇÃOCARRO.toString();
+
     const numAtivacao = request.query["numAtivacao"];
 
     const dbRef = admin.database().ref('/users').child(userId);
@@ -70,7 +63,6 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         userName: firstName,
         lastName: lastName,
         userEmail: userEmail,
-        timezone: timezone,
         carModel: carModel,
         carPlate: carPlate,
         carValue: carValue,
@@ -79,77 +71,97 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         saldoCreditos: userCredit,
         saldoDinheiro: userMoney,
         valorMinuto: valorMinuto,
+        usuariosIndicados: 0,
+        indicador: ""
     }
 
-    
-    
-    var estadoProtecao = ESTADOPROTEÇÃOCARRO.toString();
+    // Recebe dia da semana e data completa
+    var data;
+    var diaSemana;
+    const getDate = (date) =>{
+        data = new Date(date);
+        
+        // Transforma o dia da semana em palavra
+        switch (data.getDay()) {
+            case 0:
+                diaSemana = "Domingo";
+                break;
+            case 1:
+                diaSemana = "Segunda";
+                break;
+            case 2:
+                diaSemana = "Terça";
+                console.log("Hoje é terca");
+                break;
+            case 3:
+                diaSemana = "Quarta";
+                break;
+            case 4:
+                diaSemana = "Quinta";
+                break;
+            case 5:
+                diaSemana = "Sexta";
+                break;
+            case 6:
+                diaSemana = "Sábado";
+                break;
+        }
+        console.log(`data, diaSemana: , ${data}, ${diaSemana}`);
+        return data, diaSemana;        
+    }
 
 
+    // Funcão para acionar a protecão
     const ligarProtecao = () => {
-        console.log('Ligando protecão');
+        console.log('Ligando proteção');
+
         estadoProtecao = "ON";
         numeroAtivacoes += 1;
 
-        var logUse = {
-            data: new Date().getTime(-3),
+        
+        // Chama a função de pegar a data atual para salval no BD
+        
+        getDate(Date.now());
+        // **  Fata ajustar ao timezone do usuário ** //
+        var logUso = {
+            dataInicio: `${diaSemana} - ${data.getDate()}/${data.getMonth()+1}/${data.getFullYear()} - ${data.getHours()}:${data.getMinutes()}:${data.getSeconds()}`,
             inicioProtecaoChat: timeStart,
             inicioProtecao: Date.now()/1000|0,
-            data2: Date(),
             finalProtecao: ``,
             valorconsumido: ``,
             tempoUso: ``,
         }
-        
+        var inicioProtecao = Date.now()/1000|0;
         dbRef.update({
             qtdAtivacao: numeroAtivacoes,
             estadoProtecao: estadoProtecao,
         });
-        var logUpdate = {};
-        logUpdate['/logUse/' + numeroAtivacoes] = logUse;
-      
-        dbRef.update(logUpdate);
+        dbRef.child(`/logUse/${numeroAtivacoes}`).update(logUso);
+        // var logUpdate = {};
+        // logUpdate[`/logUse/${numeroAtivacoes}`] = logUse;
+        // dbRef.update(logUpdate);
 
-        response.json({
-            "messages": [
-                {
-                    "text": `Olá ${firstName}, vamos ativar sua protecão.`
-                }
-            ],
-            "set_attributes":
-            {
-                "ESTADOPROTEÇÃOCARRO": estadoProtecao,
-                "numAtivacao": numeroAtivacoes,
-                "timeStart": logUse.inicioProtecao
-            },
-        }); 
+        console.log("Banco de dados atualizado com sucesso.");
         
     };
 
     const desligarProtecao = () => {
-        console.log("desligar protecão");
+        console.log("desligar proteção");
         // Desliga a proteção, alterando o atributo ESTADOPROTEÇÃOCARRO do chatfuel
         estadoProtecao = "OFF";
 
         // Pega o tempo do desligamento
         // Criando minha própria funcão de tempo
         var timeOff = Date.now()/1000|0;
-        console.log('timeOff: ', timeOff);
         var tempoProtecao = timeOff - timeStart; // TimeDiff
-        console.log('tempoProtecao: ', tempoProtecao);
         var dias = (tempoProtecao/60/60/24|0); // TimeDiffDays
-        console.log('dias: ', dias);
         var horasTotais = (tempoProtecao/60/60|0); // TimeDiffHours Totais
-        console.log('horasTotais: ', horasTotais);
         var minTotais = (tempoProtecao/60|0); // TimeDiffMinutes Totais
-        console.log('minTotais: ', minTotais);
         var horas = (horasTotais - (dias*24)); // TimeDiffHours
-        console.log('horas: ', horas);
         var minutos = (minTotais - (horas * 60)); // TimeDiffMinnutes
-        console.log('minutos: ', minutos);
         var segundos = tempoProtecao - minTotais*60; // TimeDiffSeconds
-
-        console.log(``);
+        
+        console.log(`Tempo definido com sucesso.`);
 
         // Calcula o valor conumido baseado no tempo de uso. 
         if (segundos >= 30){
@@ -157,14 +169,13 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         } else if (segundos < 30) {
             valorConsumido = (Math.floor(tempoProtecao/60))*valorMinuto;
         }
-
         perfilUser.saldoCreditos = userCredit - valorConsumido;
         perfilUser.saldoDinheiro = userMoney - (valorConsumido/1000); 
 
-        // Objeto com dados do desligamento da protecão
-        var logUse = {
-            data: Date(),
-            inicioProtecao: timeStart,
+        console.log("Valor consumido calculado com sucesso.");
+
+        // Objeto com dados do desligamento da proteção
+        var logUso = {
             finalProtecao: timeOff,
             finalProtecaoChat: timeEnd,
             valorconsumido: valorConsumido,
@@ -177,10 +188,12 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
             saldoDinheiro: perfilUser.saldoDinheiro,
             estadoProtecao: estadoProtecao,
         });
-        var logUpdate = {};
-        logUpdate['/logUse/' + numeroAtivacoes] = logUse;
+        dbRef.child(`/logUse/${numeroAtivacoes}`).update(logUso);
+        // var logUpdate = {};
+        // logUpdate[`/logUse/${numeroAtivacoes}`] = logUse;
       
-        dbRef.update(logUpdate);
+        // dbRef.update(logUpdate);
+        console.log("Banco de dados atualizado com sucesso.");
 
         response.json({
             "messages": [
@@ -203,6 +216,20 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
     // Liga a Proteão
     if (estadoProtecao === "OFF" && numeroAtivacoes >= 1){
         ligarProtecao();
+        response.json({
+            "messages": [
+                {
+                    "text": `Olá ${firstName}, vamos ativar sua proteção.`
+                }
+            ],
+            "set_attributes":
+            {
+                "ESTADOPROTEÇÃOCARRO": estadoProtecao,
+                "numAtivacao": numeroAtivacoes,
+                "timeStart": inicioProtecao,
+                // "dataAtivacao": logUse.data,
+            },
+        }); 
 
     //Desliga a proteão
     } else if (estadoProtecao === "ON" && numeroAtivacoes >= 1) {
@@ -211,16 +238,15 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
 
     //primeira ativacão
     if (numeroAtivacoes === 0) {
-        estadoProtecao = "ON";
         console.log("primeira ativacão");
-        // ligarProtecao();
-        numeroAtivacoes += 1;
-
+        // Cria perfil do usuário no banco de dados
         dbRef.set(perfilUser);
-        dbRef.update({
-            estadoProtecao: estadoProtecao,
-            qtdAtivacao: numeroAtivacoes
-        });
+        console.log('perfilUser criado no banco.');
+        
+        //Liga a protecão pela primeira vez
+        ligarProtecao();
+
+
         response.json({
             "messages": [
                 {
