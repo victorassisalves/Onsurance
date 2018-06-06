@@ -77,6 +77,7 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
 
     // Recebe dia da semana e data completa
     var data;
+    var inicioProtecao;
     var diaSemana;
     const getDate = (date) =>{
         data = new Date(date);
@@ -106,7 +107,7 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
                 diaSemana = "Sábado";
                 break;
         }
-        console.log(`data, diaSemana: , ${data}, ${diaSemana}`);
+        console.log(`Data e dia da semana recebidos com sucesso`);
         return data, diaSemana;        
     }
 
@@ -115,23 +116,22 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
     const ligarProtecao = () => {
         console.log('Ligando proteção');
 
+        // Gera timeStamp do inicio da protecão
+        inicioProtecao = Date.now()/1000|0;
+
         estadoProtecao = "ON";
         numeroAtivacoes += 1;
 
-        
-        // Chama a função de pegar a data atual para salval no BD
-        
-        getDate(Date.now());
+        // Chama a função de pegar a data atual para salval no BD        
+        getDate(inicioProtecao);
+
         // **  Fata ajustar ao timezone do usuário ** //
         var logUso = {
-            dataInicio: `${diaSemana} - ${data.getDate()}/${data.getMonth()+1}/${data.getFullYear()} - ${data.getHours()}:${data.getMinutes()}:${data.getSeconds()}`,
-            inicioProtecaoChat: timeStart,
-            inicioProtecao: Date.now()/1000|0,
+            inicioProtecao: `${inicioProtecao} - ${diaSemana} - ${data.getDate()}/${data.getMonth()+1}/${data.getFullYear()} - ${data.getHours()}:${data.getMinutes()}:${data.getSeconds()}`,
             finalProtecao: ``,
             valorconsumido: ``,
             tempoUso: ``,
         }
-        var inicioProtecao = Date.now()/1000|0;
         dbRef.update({
             qtdAtivacao: numeroAtivacoes,
             estadoProtecao: estadoProtecao,
@@ -149,25 +149,29 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         console.log("desligar proteção");
         // Desliga a proteção, alterando o atributo ESTADOPROTEÇÃOCARRO do chatfuel
         estadoProtecao = "OFF";
-
+        getDate(Date.now());
         // Pega o tempo do desligamento
         // Criando minha própria funcão de tempo
-        var timeOff = Date.now()/1000|0;
-        var tempoProtecao = timeOff - timeStart; // TimeDiff
+        console.log("Gerando variáveis de controle de tempo.");
+        var finalProtecao = Date.now()/1000|0;
+        var tempoProtecao = finalProtecao - timeStart; // TimeDiff
         var dias = (tempoProtecao/60/60/24|0); // TimeDiffDays
         var horasTotais = (tempoProtecao/60/60|0); // TimeDiffHours Totais
         var minTotais = (tempoProtecao/60|0); // TimeDiffMinutes Totais
         var horas = (horasTotais - (dias*24)); // TimeDiffHours
         var minutos = (minTotais - (horas * 60)); // TimeDiffMinnutes
-        var segundos = tempoProtecao - minTotais*60; // TimeDiffSeconds
+        var segundos = (tempoProtecao - (minTotais*60)); // TimeDiffSeconds
+        console.log(`Variáveis geradas: ${dias}dias/:${horas}horas/:${minutos}minutos/:${segundos}segundos`);
         
         console.log(`Tempo definido com sucesso.`);
 
         // Calcula o valor conumido baseado no tempo de uso. 
         if (segundos >= 30){
             valorConsumido = (Math.ceil(tempoProtecao/60))*valorMinuto;
+            console.log(`Segundos - ${segundos} >= 30`);
         } else if (segundos < 30) {
             valorConsumido = (Math.floor(tempoProtecao/60))*valorMinuto;
+            console.log(`Segundos - ${segundos} < 30`);
         }
         perfilUser.saldoCreditos = userCredit - valorConsumido;
         perfilUser.saldoDinheiro = userMoney - (valorConsumido/1000); 
@@ -176,10 +180,9 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
 
         // Objeto com dados do desligamento da proteção
         var logUso = {
-            finalProtecao: timeOff,
-            finalProtecaoChat: timeEnd,
+            finalProtecao: `${finalProtecao} - ${diaSemana} - ${data.getDate()}/${data.getMonth()+1}/${data.getFullYear()} - ${data.getHours()}:${data.getMinutes()}:${data.getSeconds()}`,
             valorconsumido: valorConsumido,
-            tempoUso: `${timeDiffDays}dias/${dias}:${timeDiffHours}horas/${horas}:${timeDiffMinutes}minutos/${minutos}:${timeDiffSeconds}segundos/${segundos}`,
+            tempoUso: `${dias} dias : ${horas} horas : ${minutos} minutos : ${segundos} segundos`,
         };
 
         // Salva no banco de dados o resultado do desligamento
@@ -206,16 +209,21 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
                     "ESTADOPROTEÇÃOCARRO": estadoProtecao,
                     "user-credit": perfilUser.saldoCreditos,
                     "user-money": perfilUser.saldoDinheiro,
-                    "valorconsumido": valorConsumido
+                    "valorconsumido": valorConsumido,
+                    "timeDiffDays": dias,
+                    "timeDiffHours": horas,
+                    "timeDiffMinutes": minutos,
+                    "timeDiffSeconds": segundos
                 },
         });
     }
 
     // Checa estado da proteção - Liga / Desliga
 
-    // Liga a Proteão
+    // Liga a Protecão
     if (estadoProtecao === "OFF" && numeroAtivacoes >= 1){
         ligarProtecao();
+        console.log("Protecão acionada com sucesso - indo para retorno json");
         response.json({
             "messages": [
                 {
@@ -245,8 +253,6 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
         
         //Liga a protecão pela primeira vez
         ligarProtecao();
-
-
         response.json({
             "messages": [
                 {
@@ -257,6 +263,7 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
                 {
                     "ESTADOPROTEÇÃOCARRO": estadoProtecao,
                     "numAtivacao": numeroAtivacoes,
+                    "timeStart": inicioProtecao
                 }
         });
         
