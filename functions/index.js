@@ -8,7 +8,7 @@ const firebase = require("firebase");
  admin.initializeApp(functions.config().firebase);
 
 // Função que pega os atributos no chatfuel e identifica se Proteção está On / Off
-exports.getUserInput = functions.https.onRequest((request, response) => {
+exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
     console.log("getUserInput : " + JSON.stringify(request.query));
 
     // Recebe os parâmetros do chatfuel
@@ -283,7 +283,7 @@ exports.getUserInput = functions.https.onRequest((request, response) => {
 
 });
 
-exports.getMinutePrice = functions.https.onRequest((request, response) => {
+exports.calcPrecoMinuto = functions.https.onRequest((request, response) => {
     console.log("Pegue o preco do minuto : " + JSON.stringify(request.query));
 
     // Dados do veículo
@@ -334,8 +334,8 @@ exports.getMinutePrice = functions.https.onRequest((request, response) => {
 
 
 // Funcão para calculo de gastos anuais
-exports.calcConsumo = functions.https.onRequest((request, response) => {
-    console.log("Calcule o gasto anual : " + JSON.stringify(request.query));
+exports.botSimulacao = functions.https.onRequest((request, response) => {
+    console.log("Bot de simuacão : " + JSON.stringify(request.query));
 
     // Dados do veículo
     const carValue = request.query["car-value"];
