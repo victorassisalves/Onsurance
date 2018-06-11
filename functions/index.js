@@ -340,6 +340,10 @@ exports.calcConsumo = functions.https.onRequest((request, response) => {
     // Dados do veículo
     const carValue = request.query["car-value"];
     const horasUsoDia = request.query["horasUso"];
+    const valorSeguro = request.query["valorSeguro"];
+    const valorSemSeguro = request.query["valorSemSeguro"];
+    console.log('valorSemSeguro: ', valorSemSeguro);
+    console.log('valorSeguro: ', valorSeguro);
 
 
     var valorVeiculo = carValue;
@@ -365,37 +369,45 @@ exports.calcConsumo = functions.https.onRequest((request, response) => {
     console.log("valor do minuto pos funcão", valorMinuto);
     console.log(`Valor do Carro :  ${carValue}`);
     
-    var consumoMensal = ((horasUsoDia*60*31)*(valorMinuto/1000)).toFixed(2);
     var consumoAnual = ((horasUsoDia*60*365)*(valorMinuto/1000)).toFixed(2);
-    console.log(`consumo mensal e anual: ${consumoMensal}, ${consumoAnual}`);
-    consumoMensal.toString();
+    console.log(`consumo mensal e anual: ${consumoAnual}`);
     consumoAnual.toString();
-    consumoMensal = consumoMensal.replace(".", ",");
     consumoAnual = consumoAnual.replace(".", ",");
-    console.log(`consumo mensal e anual: ${consumoMensal}, ${consumoAnual}`);
     
     // Crédito mínimo até para carros até R$40.000
     var creditoMin = 999;
 
     if (carValue > 40000) {
         console.log(`car value maior que 40000`);
-        creditoMin = (carValue*0.025);
+        creditoMin = (carValue*0.025).toFixed(2);
     }
+
+    // Calcula valor do seguro tradicional caso o usuário não tenha seguro
+    if (valorSemSeguro === "0.05"){
+        var valorDoSeguro = (valorSemSeguro*carValue).toFixed(2);
+        console.log('valorDoSeguro: ', valorDoSeguro);
+
+    }
+    console.log("valor do seguro: ", valorDoSeguro);
+    var valorMinRS = valorMinuto/1000;
 
     response.json({
         "messages": [
             {
-                "text": `De acordo com os dados que você informou, o valor do minuto é R$${valorMinuto/1000}, a previsão do valor da sua proteção em um mês vai custar R$${consumoMensal}, o valor em 365 dias vai custar R$${consumoAnual}.`,
-            },
-            {
-                "text": `O valor mínimo que você tem que pagar para iniciar na plataforma é R$${creditoMin}.`
+                "text": `Conforme suas respostas, o valor do minuto da proteção é de R$${valorMinuto/1000}. Você liga para proteger, desliga para economizar. No seu caso de uso o custo médio da proteção será de R$${consumoAnual} ao ano.`,
             }
-        ]
+        ],
+        "set_attributes": {
+            "valorSeguro": valorDoSeguro,
+            "valorProtecaoAnual": consumoAnual,
+            "creditoMin": creditoMin,
+            "valorMinRS": valorMinRS
+        }
     });
 
 });
 
-const calculaGasto = (carValue) =>{
+const calculaGasto = (carValue, response) =>{
 
     console.log('iniciando funcão de calcular valor do min');
     
@@ -456,6 +468,15 @@ const calculaGasto = (carValue) =>{
         }
         if (valorVeiculo > 190000 && valorVeiculo <= 200000) {
             valorMinuto = 25;
+        }
+        if (valorVeiculo > 200000){
+            response.json({
+                "messages": [
+                    {
+                        "text": "Ainda não estamos trabalhando com veículos nessa faixa de preço, por favor entre em contato com o CEO."
+                    }
+                ]
+            })
         }
 
 
