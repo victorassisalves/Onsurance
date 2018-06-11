@@ -165,24 +165,27 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         
         console.log(`Tempo definido com sucesso.`);
 
-        // Checa se a protecão está ligada a menos de 2 minutos
-        // if (tempoProtecao <= 149 ){
-        //     console.log('tempoProtecao menor que 2 minutos: ', tempoProtecao/60|0);
-        //     response.json({
+        // Checa se a protecão está ligada a mais de 2 minutos
+        if (tempoProtecao <= 120 ){
+            console.log('tempoProtecao menor que 2 minutos: ', tempoProtecao/60|0);
 
-        //     })
+            valorConsumido = valorMinuto*2;
+            console.log('valorConsumido < 2 minutos: ', valorConsumido);
 
-        // }
-
-
-        // Calcula o valor conumido baseado no tempo de uso. 
-        if (segundos >= 30){
-            valorConsumido = (Math.ceil(tempoProtecao/60))*valorMinuto;
-            console.log(`Segundos - ${segundos} >= 30`);
-        } else if (segundos < 30) {
-            valorConsumido = (Math.floor(tempoProtecao/60))*valorMinuto;
-            console.log(`Segundos - ${segundos} < 30`);
+        } else if( tempoProtecao > 120) {
+            console.log(`proteão maior que 2 minutos: ${tempoProtecao/60|0}`);
+            // Calcula o valor conumido baseado no tempo de uso. 
+            if (segundos >= 30){
+                valorConsumido = (Math.ceil(tempoProtecao/60))*valorMinuto;
+                console.log(`Segundos - ${segundos} >= 30`);
+            } else if (segundos < 30) {
+                valorConsumido = (Math.floor(tempoProtecao/60))*valorMinuto;
+                console.log(`Segundos - ${segundos} < 30`);
+            }
         }
+
+
+        
         perfilUser.saldoCreditos = userCredit - valorConsumido;
         perfilUser.saldoDinheiro = userMoney - (valorConsumido/1000); 
 
@@ -406,6 +409,8 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
     });
 
 });
+
+
 
 const calculaGasto = (carValue, response) =>{
 
