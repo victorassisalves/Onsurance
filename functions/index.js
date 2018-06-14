@@ -5,7 +5,14 @@ const firebase = require("firebase");
  // Initialize Firebase
  const admin = require('firebase-admin');
 
-admin.initializeApp(functions.config().firebase);
+admin.initializeApp({
+    apiKey: "AIzaSyDXehFd5rJfnIH3dgLBHoOc_O5R7D3IuHw",
+    authDomain: "onsurance-co.firebaseapp.com",
+    databaseURL: "https://onsurance-co.firebaseio.com",
+    projectId: "onsurance-co",
+    storageBucket: "onsurance-co.appspot.com",
+    messagingSenderId: "1087999485424"
+  });
 
 // Função que pega os atributos no chatfuel e identifica se Proteção está On / Off
 exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
@@ -41,10 +48,10 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
 // Referencia do Banco de dados
     const dbRef = admin.database().ref('/users').child(userId);
-    // const promise = admin.firestore().doc(`users/${userId}`);
-    const indicadorDbRef = admin.database().ref('/indicadores').child(indicador);
+    const promise = admin.firestore().doc(`users/${userId}`);
+    const indicadorPromise = admin.firestore().doc(`indicadores/${indicador}`);
 
-// -----------------------//----------------------//-------------------// -------------------- */
+/* -----------------------//----------------------//-------------------// -------------------- */
 
     var numeroAtivacoes = parseInt(numAtivacao);
     var valorConsumido = 0;
@@ -129,6 +136,9 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             valorconsumido: ``,
             tempoUso: ``,
         }
+
+
+
         dbRef.update({
             qtdAtivacao: numeroAtivacoes,
             estadoProtecao: estadoProtecao,
@@ -226,8 +236,8 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
     }
 
     // Checa estado da proteção - Liga / Desliga
-console.log(`Estado protecão: ${estadoProtecao}`);
-console.log(`Número de ativacões: ${numeroAtivacoes}`);
+    console.log(`Estado protecão: ${estadoProtecao}`);
+    console.log(`Número de ativacões: ${numeroAtivacoes}`);
 
     // Liga a Protecão
     if (estadoProtecao === "OFF" && numeroAtivacoes >= 1){
@@ -257,23 +267,9 @@ console.log(`Número de ativacões: ${numeroAtivacoes}`);
     if (numeroAtivacoes === 0) {
         console.log("primeira ativacão");
         // Cria perfil do usuário no banco de dados
-        dbRef.set(perfilUser);
-        console.log('perfilUser criado no banco.');
-
-        var numeroIndicacoes = 0;
-        indicadorDbRef.once('value').then(function(snapshot) {
-        numeroIndicacoes = (snapshot.val() && snapshot.val().numeroIndicacoes) || 'Anonymous';
-        console.log('numeroIndicacoes: ', numeroIndicacoes);
-
-        //checa se houve indicacão
-        indicadorDbRef.update({
-            userId: indicador,
-            numeroIndicacoes: numeroIndicacoes,
-            usuariosIndicados: [userId]
-        })
-
+        criaNovoUsuario(perfilUser, userId, promise, indicadorPromise);
         ligarProtecao();
-        return response.json({
+        response.json({
             "messages": [
                 {
                     "text": "Primeira ativacão"
@@ -286,73 +282,19 @@ console.log(`Número de ativacões: ${numeroAtivacoes}`);
                     "timeStart": inicioProtecao
                 }
         });
-        
-        
-        
-        // xhr.open("POST", `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${userId}/send?chatfuel_token=qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74&chatfuel_block_id=5af0ada8e4b08cfa6b744d6f`, true);
-        // xhr.setRequestHeader("Content-type", "application/json");
     }
-
 });
 
-exports.calcPrecoMinuto = functions.https.onRequest((request, response) => {
-    console.log("Pegue o preco do minuto : " + JSON.stringify(request.query));
-
-    // Dados do veículo
-    const carModel = request.query["car-model"];
-    // const carPlate = request.query["carPlate"];
-    const carValue = request.query["car-value"];
-
-    var valorVeiculo = carValue;
-    var checaValor = carValue.toString();
-
-    // Checa se valor informado é válido
-    if (checaValor.includes(".") || checaValor.includes(",")) {
-        console.log(`usuário informou valor no modelo errado! ${carValue}`);
-        response.json({
-            "set_attributes":
-            {
-                "valorCorreto": false,
-            },
-            "messages": [
-                {
-                    "text": `O formato digitado está incorreto, por favor digite sem utilizar pontos ou vírgulas. Ex: "55000".`,
-                }
-            ]    
-        });
-    }
-    
-    var valorMinuto = calculaGasto(carValue);
-    console.log("valor do minto pos funcão", valorMinuto);
-    console.log(`Valor do Carro :  ${carValue}`);
-    
-
-    response.json({
-        "set_attributes":
-        {
-            "valorMinuto": valorMinuto,
-        },
-        "messages": [
-            {
-                "text": `Sendo seu ${carModel} na faixa de R$${carValue}, sua proteção vai ficar a partir de R$${valorMinuto/1000} centavos, ou ${valorMinuto} Switchs por minuto.`,
-            },
-            {
-                "text": "Muito barato né? Quer começar a econimizar?",
-            }
-        ],
-        
-    });
-});
 
 // Funcão para calculo de gastos anuais
 exports.botSimulacao = functions.https.onRequest((request, response) => {
     console.log("Bot de simuacão : " + JSON.stringify(request.query));
 
     // Dados do veículo
-    const carValue = request.query["car-value"];
-    const horasUsoDia = request.query["horasUso"];
-    const valorSeguro = request.query["valorSeguro"];
-    const valorSemSeguro = request.query["valorSemSeguro"];
+    const carValue = request.query["car-value-sim"];
+    const horasUsoDia = request.query["horasUso-sim"];
+    const valorSeguro = request.query["valorSeguro-sim"];
+    const valorSemSeguro = request.query["valorSemSeguro-sim"];
     console.log('valorSemSeguro: ', valorSemSeguro);
     console.log('valorSeguro: ', valorSeguro);
 
@@ -366,7 +308,7 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
         response.json({
             "set_attributes":
             {
-                "valorCorreto": false,
+                "valorCorreto-sim": false,
             },
             "messages": [
                 {
@@ -409,14 +351,126 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
             }
         ],
         "set_attributes": {
-            "valorSeguro": valorDoSeguro,
-            "valorProtecaoAnual": consumoAnual,
-            "creditoMin": creditoMin,
-            "valorMinRS": valorMinRS
+            "valorSeguro-sim": valorDoSeguro,
+            "valorProtecaoAnual-sim": consumoAnual,
+            "creditoMin-sim": creditoMin,
+            "valorMinRS-sim": valorMinRS
         }
     });
 
 });
+
+exports.functionFirestore = functions.https.onRequest((request, response) => {
+    console.log('Iniciando functionFirestore: ' + JSON.stringify(request.query));
+
+    const userId = request.query["chatfuel user id"];
+    const firstName = request.query["first name"];
+    const lastName = request.query["last name"];
+
+    const promise = admin.firestore().doc(`users/${userId}`);
+
+
+    var userData = {
+        firstName: firstName,
+        lastName: lastName,
+        age: 23,
+        birth: "21/06/1994"
+    }
+    console.log(`Dados do Usuário: ${JSON.stringify(userData)}`);
+    
+    
+    console.log('promise é isso ai: ', promise);
+    
+    
+    promise.get().then(snapshot => {
+        console.log(`promise criada e comecando a pegar os dados no DB`);
+        const data = snapshot.data();
+        // checa dados no banco 
+        if (!data){
+            console.log(`nada na base. ${JSON.stringify(data)}`);
+            promise.set(userData)
+        } else if (data){
+            console.log(`base com usuário. ${JSON.stringify(data)}`);
+            var idade = data.age + 1;
+            console.log('idade: ', idade);
+            promise.update({
+                age: idade
+            })
+
+            
+        }
+        return response.json({
+            "messages":[
+                {
+                    "text": `Mandando de volta ${JSON.stringify(data)}, nome: ${data.firstName}`
+                }
+            ]
+        });
+    }).catch(error => {
+        console.error(error);
+        response.status(500).json({
+            "messages": [
+                {
+                    "text": `Deu erro: ${JSON.stringify(error)}`
+                }
+            ]
+        });
+    })
+
+})
+
+// Cria novo user no banco
+const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise) => {
+    console.log(`Entra na funcão de criar novo usuário`);
+    var indicadosArray = [userId];
+    var perfilIndicador = {
+        numeroIndicados: 1,
+        indicados: [
+            userId
+        ]
+    }
+    // cria perfil do usuário que está ligando a protecão
+    promise.set(perfilUser).then( () => {
+        console.log(`usuário criado com sucesso`);
+        return null;
+    }).catch(error => {
+        console.log(`Erro na cricão do usuário ${error}`);
+    })
+    console.log('perfilUser: ', perfilUser);
+
+    // pega usuário indicador
+    indicadorPromise.get().then(snapshot => {
+        console.log(`Comecando a pegar os dados do indicador no DB`);
+        const data = snapshot.data();
+
+        // checa se existe indicador no banco 
+        if (!data){
+            //caso não exista cria na tabela indicadores
+            console.log(`nada na base. ${JSON.stringify(data)}`);
+            indicadorPromise.set(perfilIndicador)
+        } else if (data){
+            // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
+            console.log(`base com usuário. ${JSON.stringify(data)}`);
+            var numIndicados = data.numeroIndicados + 1;
+            indicadorPromise.update({
+                numeroIndicados: numIndicados
+            })
+        
+        }
+        return;
+        
+    }).catch(error => {
+        console.error(error);
+        response.status(500).json({
+            "messages": [
+                {
+                    "text": `Deu erro: ${JSON.stringify(error)}`
+                }
+            ]
+        });
+    }) 
+    
+}
 
 const calculaGasto = (carValue, response) =>{
 
