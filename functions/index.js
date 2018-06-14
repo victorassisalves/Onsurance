@@ -5,11 +5,11 @@ const firebase = require("firebase");
  // Initialize Firebase
  const admin = require('firebase-admin');
 
- admin.initializeApp(functions.config().firebase);
+admin.initializeApp(functions.config().firebase);
 
 // Função que pega os atributos no chatfuel e identifica se Proteção está On / Off
 exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
-    console.log("getUserInput : " + JSON.stringify(request.query));
+    console.log("Liga e Desliga a protecão: " + JSON.stringify(request.query));
 
     // Recebe os parâmetros do chatfuel
 
@@ -21,6 +21,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
     const userCredit = request.query["user-credit"];
     const userMoney = request.query["user-money"];
     const timezone = request.query["timezone"];
+    const indicador = request.query["indicador"];
 
 
     // Dados do veículo
@@ -31,31 +32,27 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
     // Dados de tempo
     const timeStart = request.query["timeStart"];
-    const timeEnd = request.query["timeEnd"];
-    const timeDiff = request.query["timeDiff"];
-    const timeDiffSeconds = request.query["timeDiffSeconds"];
-    const timeDiffMinutes = request.query["timeDiffMinutes"];
-    const timeDiffHours = request.query["timeDiffHours"];
-    const timeDiffDays = request.query["timeDiffDays"];
-    const timeDiffMonths = request.query["timeDiffMonths"];
 
     // Dados da proteção
     const ESTADOPROTEÇÃOCARRO = request.query["ESTADOPROTEÇÃOCARRO"];
     var estadoProtecao = ESTADOPROTEÇÃOCARRO.toString();
-
     const numAtivacao = request.query["numAtivacao"];
 
+
+// Referencia do Banco de dados
     const dbRef = admin.database().ref('/users').child(userId);
+    // const promise = admin.firestore().doc(`users/${userId}`);
+    const indicadorDbRef = admin.database().ref('/indicadores').child(indicador);
 
 // -----------------------//----------------------//-------------------// -------------------- */
 
     var numeroAtivacoes = parseInt(numAtivacao);
     var valorConsumido = 0;
 
-    var posOffBlock = `5b12db0be4b0be54cf573d22`;
-    var posOnBlock = `5b12b125e4b0be54cef8b979`;
+    // var posOffBlock = `5b12db0be4b0be54cf573d22`;
+    // var posOnBlock = `5b12b125e4b0be54cef8b979`;
 
-    var broadcastUrl = `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${userId}/send?chatfuel_token=qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74&chatfuel_block_id=`;
+    // var broadcastUrl = `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${userId}/send?chatfuel_token=qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74&chatfuel_block_id=`;
 
     // Objeto de perfil do user
     var perfilUser = {
@@ -72,7 +69,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         saldoDinheiro: userMoney,
         valorMinuto: valorMinuto,
         usuariosIndicados: 0,
-        indicador: ""
+        indicador: indicador,
     }
 
     // Recebe dia da semana e data completa
@@ -205,10 +202,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             estadoProtecao: estadoProtecao,
         });
         dbRef.child(`/logUse/${numeroAtivacoes}`).update(logUso);
-        // var logUpdate = {};
-        // logUpdate[`/logUse/${numeroAtivacoes}`] = logUse;
-      
-        // dbRef.update(logUpdate);
+
         console.log("Banco de dados atualizado com sucesso.");
 
         response.json({
@@ -232,6 +226,8 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
     }
 
     // Checa estado da proteção - Liga / Desliga
+console.log(`Estado protecão: ${estadoProtecao}`);
+console.log(`Número de ativacões: ${numeroAtivacoes}`);
 
     // Liga a Protecão
     if (estadoProtecao === "OFF" && numeroAtivacoes >= 1){
@@ -263,10 +259,21 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         // Cria perfil do usuário no banco de dados
         dbRef.set(perfilUser);
         console.log('perfilUser criado no banco.');
-        
-        //Liga a protecão pela primeira vez
+
+        var numeroIndicacoes = 0;
+        indicadorDbRef.once('value').then(function(snapshot) {
+        numeroIndicacoes = (snapshot.val() && snapshot.val().numeroIndicacoes) || 'Anonymous';
+        console.log('numeroIndicacoes: ', numeroIndicacoes);
+
+        //checa se houve indicacão
+        indicadorDbRef.update({
+            userId: indicador,
+            numeroIndicacoes: numeroIndicacoes,
+            usuariosIndicados: [userId]
+        })
+
         ligarProtecao();
-        response.json({
+        return response.json({
             "messages": [
                 {
                     "text": "Primeira ativacão"
@@ -279,6 +286,8 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                     "timeStart": inicioProtecao
                 }
         });
+        
+        
         
         // xhr.open("POST", `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${userId}/send?chatfuel_token=qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74&chatfuel_block_id=5af0ada8e4b08cfa6b744d6f`, true);
         // xhr.setRequestHeader("Content-type", "application/json");
@@ -334,7 +343,6 @@ exports.calcPrecoMinuto = functions.https.onRequest((request, response) => {
         
     });
 });
-
 
 // Funcão para calculo de gastos anuais
 exports.botSimulacao = functions.https.onRequest((request, response) => {
@@ -409,8 +417,6 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
     });
 
 });
-
-
 
 const calculaGasto = (carValue, response) =>{
 
