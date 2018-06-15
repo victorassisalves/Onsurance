@@ -50,6 +50,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
     const dbRef = admin.database().ref('/users').child(userId);
     const promise = admin.firestore().doc(`users/${userId}`);
     const indicadorPromise = admin.firestore().doc(`indicadores/${indicador}`);
+    var promiseUpdate = admin.firestore().doc(`users/${userId}/logUse/${numeroAtivacoes}`);
 
 /* -----------------------//----------------------//-------------------// -------------------- */
 
@@ -137,16 +138,26 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             tempoUso: ``,
         }
 
-
-
-        dbRef.update({
+        promiseUpdate = admin.firestore().doc(`users/${userId}/logUse/${numeroAtivacoes}`);
+        // atualizacão do uso
+        promise.update({
             qtdAtivacao: numeroAtivacoes,
             estadoProtecao: estadoProtecao,
+        }).then(() => {
+            console.log(`Usuário atualizado com sucesso.`);
+            return;
+        }).catch(error =>{
+            console.log(`Erro na atualizacão do usuário. ${error}`);
         });
-        dbRef.child(`/logUse/${numeroAtivacoes}`).update(logUso);
-        // var logUpdate = {};
-        // logUpdate[`/logUse/${numeroAtivacoes}`] = logUse;
-        // dbRef.update(logUpdate);
+        console.log(promiseUpdate.toString());
+        // atualizacão do lod de uso
+        promiseUpdate.set(logUso).then(() => {
+            console.log(`log de uso atualizado com sucesso.`);
+            return;
+        }).catch(error =>{
+            console.log(`Erro na atualizacão do do log de uso. ${error}`);
+        });
+        
 
         console.log("Banco de dados atualizado com sucesso.");
         
@@ -205,13 +216,35 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             tempoUso: `${dias} dias : ${horas} horas : ${minutos} minutos : ${segundos} segundos`,
         };
 
-        // Salva no banco de dados o resultado do desligamento
-        dbRef.update({
+        // // Salva no banco de dados o resultado do desligamento
+        // dbRef.update({
+        //     saldoCreditos: perfilUser.saldoCreditos,
+        //     saldoDinheiro: perfilUser.saldoDinheiro,
+        //     estadoProtecao: estadoProtecao,
+        // });
+        // dbRef.child(`/logUse/${numeroAtivacoes}`).update(logUso);
+
+
+        // atualizacão do uso
+        promise.update({
             saldoCreditos: perfilUser.saldoCreditos,
             saldoDinheiro: perfilUser.saldoDinheiro,
             estadoProtecao: estadoProtecao,
+        }).then(() => {
+            console.log(`Usuário atualizado com sucesso.`);
+            return;
+        }).catch(error =>{
+            console.log(`Erro na atualizacão do usuário. ${error}`);
         });
-        dbRef.child(`/logUse/${numeroAtivacoes}`).update(logUso);
+
+        promiseUpdate = admin.firestore().doc(`users/${userId}/logUse/${numeroAtivacoes}`);
+        // atualizacão do lod de uso
+        promiseUpdate.update(logUso).then(() => {
+            console.log(`log de uso atualizado com sucesso.`);
+            return;
+        }).catch(error =>{
+            console.log(`Erro na atualizacão do do log de uso. ${error}`);
+        });
 
         console.log("Banco de dados atualizado com sucesso.");
 
@@ -431,33 +464,19 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise) => {
     }
     // cria perfil do usuário que está ligando a protecão
     promise.set(perfilUser).then( () => {
-        console.log(`usuário criado com sucesso`);
+        console.log(`Novo usuário liga/desliga criado com sucesso`);
         return null;
     }).catch(error => {
         console.log(`Erro na cricão do usuário ${error}`);
     })
     console.log('perfilUser: ', perfilUser);
-
+    var dataIndicador;
     // pega usuário indicador
     indicadorPromise.get().then(snapshot => {
         console.log(`Comecando a pegar os dados do indicador no DB`);
         const data = snapshot.data();
-
-        // checa se existe indicador no banco 
-        if (!data){
-            //caso não exista cria na tabela indicadores
-            console.log(`nada na base. ${JSON.stringify(data)}`);
-            indicadorPromise.set(perfilIndicador)
-        } else if (data){
-            // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
-            console.log(`base com usuário. ${JSON.stringify(data)}`);
-            var numIndicados = data.numeroIndicados + 1;
-            indicadorPromise.update({
-                numeroIndicados: numIndicados
-            })
-        
-        }
-        return;
+        dataIndicador = data;
+        return dataIndicador;
         
     }).catch(error => {
         console.error(error);
@@ -469,6 +488,30 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise) => {
             ]
         });
     }) 
+    // checa se existe indicador no banco 
+    if (!dataIndicador){
+        //caso não exista cria na tabela indicadores
+        console.log(`nada na base. ${JSON.stringify(dataIndicador)}`);
+        indicadorPromise.set(perfilIndicador).then(() => {
+            console.log(`Indicador criado com sucesso`);
+            return;
+        }).catch(error =>{
+            console.log(`Erro na atualizacão do log de uso. ${error}`);
+        });
+    } else if (dataIndicador){
+        // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
+        console.log(`base com usuário. ${JSON.stringify(dataIndicador)}`);
+        var numIndicados = dataIndicador.numeroIndicados + 1;
+        indicadorPromise.update({
+            numeroIndicados: numIndicados
+        }).then(() => {
+            console.log(`Indicador atualizado com sucesso.`);
+            return;
+        }).catch(error =>{
+            console.log(`Erro na atualizacão do log de uso. ${error}`);
+        });
+    
+    }
     
 }
 
