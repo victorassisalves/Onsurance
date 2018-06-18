@@ -16,7 +16,7 @@ admin.initializeApp({
 
 // Função que pega os atributos no chatfuel e identifica se Proteção está On / Off
 exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
-    console.log("Liga e Desliga a protecão: " + JSON.stringify(request.query));
+    console.log("1 - Liga e Desliga a protecão: " + JSON.stringify(request.query));
 
     // Recebe os parâmetros do chatfuel
 
@@ -47,10 +47,8 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
 
 // Referencia do Banco de dados
-    const dbRef = admin.database().ref('/users').child(userId);
-    const promise = admin.firestore().doc(`users/${userId}`);
-    const indicadorPromise = admin.firestore().doc(`indicadores/${indicador}`);
-    var promiseUpdate = admin.firestore().doc(`users/${userId}/logUse/${numeroAtivacoes}`);
+    const promise = admin.database().ref('/users').child(userId);
+    const indicadorPromise = admin.database().ref('/indicadores').child(indicador);
 
 /* -----------------------//----------------------//-------------------// -------------------- */
 
@@ -85,6 +83,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
     var inicioProtecao;
     var diaSemana;
     const getDate = (date) =>{
+        console.log(`5 - Iniciando funcão para pegar o dia da semana`);
         data = new Date(date);
         
         // Transforma o dia da semana em palavra
@@ -97,7 +96,6 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 break;
             case 2:
                 diaSemana = "Terça";
-                console.log("Hoje é terca");
                 break;
             case 3:
                 diaSemana = "Quarta";
@@ -112,14 +110,14 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 diaSemana = "Sábado";
                 break;
         }
-        console.log(`Data e dia da semana recebidos com sucesso`);
-        return data, diaSemana;        
+        console.log(`6 - Data e dia da semana recebidos com sucesso: ${data}, ${diaSemana}`);
+        return data;        
     }
 
 
     // Funcão para acionar a protecão
     const ligarProtecao = () => {
-        console.log('Ligando proteção');
+        console.log('4 - Ligando proteção');
 
         // Gera timeStamp do inicio da protecão
         inicioProtecao = Date.now()/1000|0;
@@ -138,39 +136,34 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             tempoUso: ``,
         }
 
-        promiseUpdate = admin.firestore().doc(`users/${userId}/logUse/${numeroAtivacoes}`);
-        // atualizacão do uso
+
+        // Atualiza o banco de dados do usuário
         promise.update({
             qtdAtivacao: numeroAtivacoes,
             estadoProtecao: estadoProtecao,
-        }).then(() => {
-            console.log(`Usuário atualizado com sucesso.`);
-            return;
-        }).catch(error =>{
-            console.log(`Erro na atualizacão do usuário. ${error}`);
+        }).then( () => {
+            console.log(`7 - usuário criado com sucesso`);
+            return null;
+        }).catch(error => {
+            console.log(`7 - Erro na cricão do usuário ${error}`);
         });
-        console.log(promiseUpdate.toString());
-        // atualizacão do lod de uso
-        promiseUpdate.set(logUso).then(() => {
-            console.log(`log de uso atualizado com sucesso.`);
-            return;
-        }).catch(error =>{
-            console.log(`Erro na atualizacão do do log de uso. ${error}`);
+        promise.child(`/logUse/${numeroAtivacoes}`).update(logUso).then( () => {
+            console.log(`8 - usuário criado com sucesso`);
+            return null;
+        }).catch(error => {
+            console.log(`8 - Erro na cricão do usuário ${error}`);
         });
-        
-
-        console.log("Banco de dados atualizado com sucesso.");
         
     };
 
     const desligarProtecao = () => {
-        console.log("desligar proteção");
+        console.log("4 - desligar proteção");
         // Desliga a proteção, alterando o atributo ESTADOPROTEÇÃOCARRO do chatfuel
         estadoProtecao = "OFF";
         getDate(Date.now());
         // Pega o tempo do desligamento
         // Criando minha própria funcão de tempo
-        console.log("Gerando variáveis de controle de tempo.");
+        console.log("7 - Gerando variáveis de controle de tempo.");
         var finalProtecao = Date.now()/1000|0;
         var tempoProtecao = finalProtecao - timeStart; // TimeDiff
         var dias = (tempoProtecao/60/60/24|0); // TimeDiffDays
@@ -179,35 +172,33 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         var horas = (horasTotais - (dias*24)); // TimeDiffHours
         var minutos = (minTotais - (horas * 60)); // TimeDiffMinnutes
         var segundos = (tempoProtecao - (minTotais*60)); // TimeDiffSeconds
-        console.log(`Variáveis geradas: ${dias}dias/:${horas}horas/:${minutos}minutos/:${segundos}segundos`);
-        
-        console.log(`Tempo definido com sucesso.`);
+        console.log(`8 - Variáveis geradas: ${dias}dias/:${horas}horas/:${minutos}minutos/:${segundos}segundos`);
 
         // Checa se a protecão está ligada a mais de 2 minutos
         if (tempoProtecao <= 120 ){
-            console.log('tempoProtecao menor que 2 minutos: ', tempoProtecao/60|0);
+            console.log('9 - tempoProtecao menor que 2 minutos: ', tempoProtecao/60|0);
 
             valorConsumido = valorMinuto*2;
-            console.log('valorConsumido < 2 minutos: ', valorConsumido);
+            console.log('10 - valorConsumido < 2 minutos: ', valorConsumido);
 
         } else if( tempoProtecao > 120) {
-            console.log(`proteão maior que 2 minutos: ${tempoProtecao/60|0}`);
+            console.log(`9 - proteão maior que 2 minutos: ${tempoProtecao/60|0}`);
             // Calcula o valor conumido baseado no tempo de uso. 
             if (segundos >= 30){
                 valorConsumido = (Math.ceil(tempoProtecao/60))*valorMinuto;
-                console.log(`Segundos - ${segundos} >= 30`);
+                console.log(`10 - Segundos: ${segundos} >= 30`);
             } else if (segundos < 30) {
                 valorConsumido = (Math.floor(tempoProtecao/60))*valorMinuto;
-                console.log(`Segundos - ${segundos} < 30`);
+                console.log(`10 - Segundos: ${segundos} < 30`);
             }
         }
 
 
         
         perfilUser.saldoCreditos = userCredit - valorConsumido;
-        perfilUser.saldoDinheiro = userMoney - (valorConsumido/1000); 
+        perfilUser.saldoDinheiro = (userMoney - (valorConsumido/1000)).toFixed(3); 
 
-        console.log("Valor consumido calculado com sucesso.");
+        console.log(`11 - Valor consumido calculado com sucesso. => ${valorConsumido}`);
 
         // Objeto com dados do desligamento da proteção
         var logUso = {
@@ -216,38 +207,26 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             tempoUso: `${dias} dias : ${horas} horas : ${minutos} minutos : ${segundos} segundos`,
         };
 
-        // // Salva no banco de dados o resultado do desligamento
-        // dbRef.update({
-        //     saldoCreditos: perfilUser.saldoCreditos,
-        //     saldoDinheiro: perfilUser.saldoDinheiro,
-        //     estadoProtecao: estadoProtecao,
-        // });
-        // dbRef.child(`/logUse/${numeroAtivacoes}`).update(logUso);
-
-
-        // atualizacão do uso
+        // Salva no banco de dados o resultado do desligamento e atualiza o banco de dados
         promise.update({
             saldoCreditos: perfilUser.saldoCreditos,
             saldoDinheiro: perfilUser.saldoDinheiro,
             estadoProtecao: estadoProtecao,
-        }).then(() => {
-            console.log(`Usuário atualizado com sucesso.`);
+        }).then(() =>{
+            console.log(`12 - Usuário atualizado com sucesso`);
             return;
         }).catch(error =>{
-            console.log(`Erro na atualizacão do usuário. ${error}`);
+            console.error(`12 - Falha em atualizar usuário. ${error}`);
         });
 
-        promiseUpdate = admin.firestore().doc(`users/${userId}/logUse/${numeroAtivacoes}`);
-        // atualizacão do lod de uso
-        promiseUpdate.update(logUso).then(() => {
-            console.log(`log de uso atualizado com sucesso.`);
+        // atualizar log de uso
+        promise.child(`/logUse/${numeroAtivacoes}`).update(logUso).then(() =>{
+            console.log(`13 - Log de uso atualizado com sucesso`);
+            console.log("14 - Banco de dados atualizado com sucesso.");
             return;
         }).catch(error =>{
-            console.log(`Erro na atualizacão do do log de uso. ${error}`);
+            console.error(`13 - Falha em atualizar log de uso. ${error}`);
         });
-
-        console.log("Banco de dados atualizado com sucesso.");
-
         response.json({
             "messages": [
                 {
@@ -269,13 +248,13 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
     }
 
     // Checa estado da proteção - Liga / Desliga
-    console.log(`Estado protecão: ${estadoProtecao}`);
-    console.log(`Número de ativacões: ${numeroAtivacoes}`);
+    console.log(`2 - Estado protecão: ${estadoProtecao}`);
+    console.log(`3 - Número de ativacões: ${numeroAtivacoes}`);
 
     // Liga a Protecão
     if (estadoProtecao === "OFF" && numeroAtivacoes >= 1){
         ligarProtecao();
-        console.log("Protecão acionada com sucesso - indo para retorno json");
+        console.log("9 - Protecão acionada com sucesso - indo para retorno json");
         response.json({
             "messages": [
                 {
@@ -298,7 +277,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
     //primeira ativacão
     if (numeroAtivacoes === 0) {
-        console.log("primeira ativacão");
+        console.log("4 - primeira ativacão");
         // Cria perfil do usuário no banco de dados
         criaNovoUsuario(perfilUser, userId, promise, indicadorPromise);
         ligarProtecao();
@@ -454,7 +433,7 @@ exports.functionFirestore = functions.https.onRequest((request, response) => {
 
 // Cria novo user no banco
 const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise) => {
-    console.log(`Entra na funcão de criar novo usuário`);
+    console.log(`5 - Entra na funcão de criar novo usuário`);
     var indicadosArray = [userId];
     var perfilIndicador = {
         numeroIndicados: 1,
@@ -464,54 +443,43 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise) => {
     }
     // cria perfil do usuário que está ligando a protecão
     promise.set(perfilUser).then( () => {
-        console.log(`Novo usuário liga/desliga criado com sucesso`);
+        console.log(`6 - usuário criado com sucesso`);
         return null;
     }).catch(error => {
-        console.log(`Erro na cricão do usuário ${error}`);
+        console.log(`6 - Erro na cricão do usuário ${error}`);
     })
-    console.log('perfilUser: ', perfilUser);
-    var dataIndicador;
+
     // pega usuário indicador
-    indicadorPromise.get().then(snapshot => {
-        console.log(`Comecando a pegar os dados do indicador no DB`);
-        const data = snapshot.data();
-        dataIndicador = data;
-        return dataIndicador;
+    // indicadorPromise.get().then(snapshot => {
+    //     console.log(`6 - Comecando a pegar os dados do indicador no DB`);
+    //     const data = snapshot.data();
+
+    //     // checa se existe indicador no banco 
+    //     if (!data){
+    //         //caso não exista cria na tabela indicadores
+    //         console.log(`nada na base. ${JSON.stringify(data)}`);
+    //         indicadorPromise.set(perfilIndicador)
+    //     } else if (data){
+    //         // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
+    //         console.log(`base com usuário. ${JSON.stringify(data)}`);
+    //         var numIndicados = data.numeroIndicados + 1;
+    //         indicadorPromise.update({
+    //             numeroIndicados: numIndicados
+    //         })
         
-    }).catch(error => {
-        console.error(error);
-        response.status(500).json({
-            "messages": [
-                {
-                    "text": `Deu erro: ${JSON.stringify(error)}`
-                }
-            ]
-        });
-    }) 
-    // checa se existe indicador no banco 
-    if (!dataIndicador){
-        //caso não exista cria na tabela indicadores
-        console.log(`nada na base. ${JSON.stringify(dataIndicador)}`);
-        indicadorPromise.set(perfilIndicador).then(() => {
-            console.log(`Indicador criado com sucesso`);
-            return;
-        }).catch(error =>{
-            console.log(`Erro na atualizacão do log de uso. ${error}`);
-        });
-    } else if (dataIndicador){
-        // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
-        console.log(`base com usuário. ${JSON.stringify(dataIndicador)}`);
-        var numIndicados = dataIndicador.numeroIndicados + 1;
-        indicadorPromise.update({
-            numeroIndicados: numIndicados
-        }).then(() => {
-            console.log(`Indicador atualizado com sucesso.`);
-            return;
-        }).catch(error =>{
-            console.log(`Erro na atualizacão do log de uso. ${error}`);
-        });
-    
-    }
+    //     }
+    //     return;
+        
+    // }).catch(error => {
+    //     console.error(error);
+    //     response.status(500).json({
+    //         "messages": [
+    //             {
+    //                 "text": `Deu erro: ${JSON.stringify(error)}`
+    //             }
+    //         ]
+    //     });
+    // }) 
     
 }
 
