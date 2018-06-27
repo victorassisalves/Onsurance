@@ -132,6 +132,8 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             finalProtecao: ``,
             valorconsumido: ``,
             tempoUso: ``,
+            saldoInicial: userCredit,
+            saldoFinal: ``    
         }
 
         // Atualiza o banco de dados do usuário
@@ -139,24 +141,24 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             qtdAtivacao: numeroAtivacoes,
             estadoProtecao: estadoProtecao,
         }).then( () => {
-            console.log(`ligarProtecao - 2 - ${userId} - usuário atualizado com sucesso`);
+            console.log(`ligarProtecao - 2 - ${userId} - usuário atualizado com sucesso no banco de dados`);
             return;
         }).catch(error => {
-            console.error(`ligarProtecao - 2 - Erro na cricão do usuário ${error}`);
+            console.error(`ligarProtecao - 2 - Erro na atualizacão do usuário no banco ${error}`);
         });
         // Atualiza o log de uso no banco de dados
         promise.child(`/logUse/${numeroAtivacoes}`).update(logUso).then( () => {
-            console.log(`ligarProtecao - 3 - ${userId} - Log de uso atualizado com sucesso`);
+            console.log(`ligarProtecao - 3 - ${userId} - Log de uso atualizado com sucesso no banco de dados`);
             return;
         }).catch(error => {
-            console.error(`ligarProtecao - 3 - ${userId} - Erro na criacão do usuário ${error}`);
+            console.error(`ligarProtecao - 3 - ${userId} - Erro na atualizacão do log de uso no banco de dados. ${error}`);
         });
       
         console.log(`ligarProtecao - 4 - ${userId} - Final da funcão de ligar protecão`);
     };
 
     const desligarProtecao = () => {
-        console.log(`desligarProtecao - 1 - ${userId} - desligar proteção`);
+        console.log(`desligarProtecao - 1 - ${userId} - Inicio da funcão desligar proteção`);
         // Desliga a proteção, alterando o atributo ESTADOPROTEÇÃOCARRO do chatfuel
         estadoProtecao = "OFF-H";
         getDate(Date.now());
@@ -199,6 +201,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             finalProtecao: `${finalProtecao} - ${diaSemana} - ${data.getDate()}/${data.getMonth()+1}/${data.getFullYear()} - ${data.getHours()}:${data.getMinutes()}:${data.getSeconds()}`,
             valorconsumido: valorConsumido,
             tempoUso: `${dias} dias : ${horas} horas : ${minutos} minutos : ${segundos} segundos`,
+            saldoFinal: perfilUser.saldoCreditos
         };
 
         // Salva no banco de dados o resultado do desligamento e atualiza o banco de dados
@@ -212,6 +215,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         }).catch(error =>{
             console.error(`desligarProtecao - 5 - ${userId} - Erro ao slavar dados de encerramento da protecão no banco de dados. ${error}`);
         });
+
         // atualizar log de uso
         promise.child(`/logUse/${numeroAtivacoes}`).update(logUso).then(() =>{
             console.log(`desligarProtecao - 6 - ${userId} - Log de uso atualizado com sucesso no banco`);
@@ -237,13 +241,13 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         
         req.end(res => {
             if (res.error){
-                console.log(`DesligarProteção - 8 - ${userId} - Desconto não realizado: ${JSON.stringify(res.error)}`);
+                console.error(`DesligarProteção - 8 - ${userId} - Desconto não realizado: ${JSON.stringify(res.error)}`);
             } else {
                 console.log(`DesligarProteção - 8 - ${userId} - Desconto feito com sucesso na carteira: ${JSON.stringify(res.body)}`);
             }
         });
             
-        console.log(`desligarProtecao - 9 - ${userId} - Indo para resposta Json`);
+        console.log(`desligarProtecao - 9 - ${userId} - Indo para resposta Json. Final da funcão`);
         response.json({
             "messages": [
                 {
@@ -401,6 +405,63 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
 
 });
 
+exports.calcPrecoMinuto = functions.https.onRequest((request, response) => {
+    console.log(`1 - ${request.query["first name"]} - ${request.query["chatfuel user id"]} - Fluxo de calculo do minuto:   ${JSON.stringify(request.query)}`);
+
+    // dados do usuário
+    const userId = request.query["chatfuel user id"];
+    const firstName = request.query["first name"];
+    const userEmail = request.query["email_address"];
+
+    // Dados do veículo
+    const carValue = request.query["car-value"];
+    const carModel = request.query["car-model"];
+    var urlWp = `https://onsurance.me/wp-json/wc/v2/customers?email=${userEmail}&consumer_key=ck_f56f3caf157dd3384abb0adc66fea28368ff22f4&consumer_secret=cs_b5df2c161badb57325d09487a5bf703aad0b81a4`
+    const promise = admin.database().ref('/users').child(userId);
+
+    var checaValor = carValue.toString();
+
+    // Checa se valor informado é válido
+    if (checaValor.includes(".") || checaValor.includes(",")) {
+        console.log(`2 - CalculaPrecoMinuto - ${firstName} - ${userId} - usuário informou valor no modelo errado! ${carValue}`);
+        response.json({
+            "set_attributes":
+            {
+                "valorCorreto-sim": false,
+            },
+            "messages": [
+                {
+                    "text": `O formato digitado está incorreto, por favor digite sem utilizar pontos ou vírgulas. Ex: "55000".`,
+                }
+            ],
+            "redirect_to_blocks": [
+                "Informar Dados Faltantes"
+            ]
+        });
+    }
+
+
+    var perfilUser = {};
+
+    console.log(`2 - ${request.query["first name"]} - ${request.query["chatfuel user id"]} - Entrando na funcão de calculo do minuto.`);
+    var valorMinuto = calculaGasto(carValue);
+
+    pegaIdCliente(userId, perfilUser, promise, urlWp)
+
+    response.json({
+        "messages": [
+            {
+                "text": `Olá ${firstName}! O valor do seu minuto vai custar ${(valorMinuto/1000)}`
+            }
+        ],
+        "set_attributes": {
+            "valorMinuto": valorMinuto,
+        }
+    })
+
+
+})
+
 // Funcão que trabalha toda criacão do usuário e fluxos de primeiro uso.
 const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseIndicadorUser, urlWp, response) => {
     console.log(`criaNovoUsuario - 1 - ${userId} - Entra na funcão de criar novo usuário`);
@@ -418,7 +479,6 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
         console.error(`criaNovoUsuario - 2 - ${userId} - Erro na cricão do usuário ${error}`);
     })
     pegaIdCliente(userId, perfilUser, promise, urlWp)
-    console.log('Criar user com perfil atualizado perfilUser.saldoCreditos: ', perfilUser.saldoCreditos);
 
     var data;
     // Pega no banco de dados o usuário que fez a indicação para realizar as acões necessáriis
@@ -454,8 +514,8 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             } else if (data){
 
                 // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
-                console.log(`criaNovoUsuario - 7 - ${userId} - Indicador já existe na base. ${JSON.stringify(data)}`);
-                console.log(`criaNovoUsuario - 8 - ${userId} - Numero de indicados: ${data.numeroIndicados}`);
+                console.log(`criaNovoUsuario - 4 - ${userId} - Indicador já existe na base. ${JSON.stringify(data)}`);
+                console.log(`criaNovoUsuario - 5 - ${userId} - Numero de indicados: ${data.numeroIndicados}`);
 
                 var numIndicados = parseInt(data.numeroIndicados) + 1;
 
@@ -463,28 +523,28 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                 indicadorPromise.update({
                     numeroIndicados: numIndicados
                 }).then(() =>{
-                    console.log(`criaNovoUsuario - 9 - ${userId} - Número de usuários indicados atualizado com sucesso.`);
+                    console.log(`criaNovoUsuario - 6 - ${userId} - Número de usuários indicados atualizado com sucesso.`);
                     return;
                 }).catch(error => {
-                    console.error(`criaNovoUsuario - 9 - ${userId} - Erro ao atualizar o número pessoas indicadas. ${error}`);
+                    console.error(`criaNovoUsuario - 6 - ${userId} - Erro ao atualizar o número pessoas indicadas. ${error}`);
                 })
 
                 // Atualiza o array com os clientes indicados (indicadores)
                 indicadorPromise.child(`/indicados/${numIndicados}`).set(userId).then(() =>{
-                    console.log(`criaNovoUsuario - 10 - ${userId} - Usuário adicionado ao array com sucesso.`);
+                    console.log(`criaNovoUsuario - 7 - ${userId} - Usuário adicionado ao array com sucesso.`);
                     return;
                 }).catch(error => {
-                    console.error(`criaNovoUsuario - 10 - ${userId} - Erro ao adicionar usuário ao array de pessoas indicadas. ${error}`);
+                    console.error(`criaNovoUsuario - 7 - ${userId} - Erro ao adicionar usuário ao array de pessoas indicadas. ${error}`);
                 });
     
                 // atualiza o numero de indicados no bando de usuários (users)
                 promiseIndicadorUser.update({
                     usuariosIndicados: numIndicados
                 }).then(() =>{
-                    console.log(`criaNovoUsuario - 12 - ${userId} - Número de indicados atualizado com sucesso`);
+                    console.log(`criaNovoUsuario - 8 - ${userId} - Número de indicados atualizado com sucesso`);
                     return;
                 }).catch(error => {
-                    console.error(`criaNovoUsuario - 12 - ${userId} - Erro ao atualizar o número de indicados na tabela Users. ${error}`);
+                    console.error(`criaNovoUsuario - 8 - ${userId} - Erro ao atualizar o número de indicados na tabela Users. ${error}`);
                 })
             }
 
@@ -492,11 +552,11 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
     }).catch(error => {
         console.error(`criaNovoUsuario - 3 - ${userId} - Erro ao receber dados do indicador. ${error}`);
     })
-    console.log(`criaNovoUsuario - 4/13 - ${userId} - Final da funcão de criar novo usuário`);
+    console.log(`criaNovoUsuario - 4/9 - ${userId} - Final da funcão de criar novo usuário`);
 }
 
 // Checa numero de indicações e premia se usuário atingir requisitos
-const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response) => {
+const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response, carModel) => {
     console.log(`premioIndicacao - 1 - ${userId} - Entrando na funcão de premiacão por numero de indicacão`);
     
     var data;
@@ -513,38 +573,60 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
             var creditoPlus = data.saldoCreditos + 1000000;
             var saldoPlus = parseFloat(data.saldoDinheiro) + 1000;
 
+            console.log(`premioIndicacao - 5 - ${userId} - Iniciando o crédito na woowaleet. IdCliente: ${data.idCliente}`);
+            
+            // Faz a conexão com o woowallet e credita 1000 reais
+            var req = unirest("post", `https://onsurance.me/wp-json/wp/v2/wallet/${data.idCliente}`);
+
+            req.query({
+            "type": "credit",
+            "amount": 1000000,
+            "details": `Parabéns ${firstName}, você acaba de ganhar Um milhão de créditos por indicar a Onsurance para pelo menos 10 pessoas. Agora vc pode proteger seu ${carModel} por muito mais tempo.`
+            });
+            
+            req.headers({
+            "Authorization": `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvb25zdXJhbmNlLm1lIiwiaWF0IjoxNTI5OTQ5ODAxLCJuYmYiOjE1Mjk5NDk4MDEsImV4cCI6MTUzMDU1NDYwMSwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMzMifX19._En-wPDp0XXYfqiVAq7A9sQcbdT5htvde-CvQjgY_4o`
+            });
+            
+            req.end(res => {
+                if (res.error){
+                    console.error(`premioIndicacao - 6 - ${userId} - Prêmio de indicacão não creditado com sucesso: ${JSON.stringify(res.error)}`);
+                } else {
+                    console.log(`premioIndicacao - 7 - ${userId} - Prêmio de indicacão creditado com sucesso!!!: ${JSON.stringify(res.body)}`);
+                    receberPremio = true;
+                }
+            });
+
             // Atualiza dados do usuário no banco de dados
             promise.update({
                 saldoCreditos: creditoPlus,
                 saldoDinheiro: saldoPlus,
                 recebeuPromocao: true
             }).then( () => {
-                console.log(`premioIndicacao - 5 - ${userId} - Crédito, saldo e status da promocão atualizados com sucesso`);
+                console.log(`premioIndicacao - 8 - ${userId} - Crédito, saldo e status da promocão atualizados com sucesso`);
                 return;
             }).catch(error => {
-                console.error(`premioIndicacao - 5 - ${userId} - Erro ao atualizar dados do prêmio de indicacão. ${error}`);
+                console.error(`premioIndicacao - 8 - ${userId} - Erro ao atualizar dados do prêmio de indicacão. ${error}`);
             })
-            receberPremio = true;
+
+            // receberPremio = true;
+            console.log('receberPremio: ', receberPremio);
            
             // Adicionar os valores atualizados para as variáveis de usuário
-            console.log(`premioIndicacao - 6 - ${userId} - Usuário qualificado para receber prêmio por indicacão.`);
-            console.log(`premioIndicacao - 7 - ${userId} - Finaliza premiacão e a ativacão da protecão e manda a resposta.`);
+            console.log(`premioIndicacao - 9 - ${userId} - Usuário qualificado para receber prêmio por indicacão.`);
+            console.log(`premioIndicacao - 10 - ${userId} - Finaliza premiacão e a ativacão da protecão e manda a resposta.`);
             response.json({
-                "messages": [
-                    {
-                        "text": `Olá ${firstName}, vamos ativar sua proteção. Você acabou de receber o prêmio por indicar 10 pessoas. Saldo atual: ${creditoPlus}, ${saldoPlus}`
-                    }
-                ],
                 "set_attributes":
                 {
                     "ESTADOPROTEÇÃOCARRO": estadoProtecao,
                     "numAtivacao": numeroAtivacoes,
                     "timeStart": inicioProtecao,
                     "user-credit": creditoPlus,
-                    "user-money": saldoPlus
+                    "user-money": saldoPlus,
+                    "afiliados": data.usuariosIndicados
                 },
                 "redirect_to_blocks": [
-                    "Pós On"
+                    "receber-promo"
                 ]
             }); 
 
@@ -565,9 +647,10 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
                         "ESTADOPROTEÇÃOCARRO": estadoProtecao,
                         "numAtivacao": numeroAtivacoes,
                         "timeStart": inicioProtecao,
+                        "afiliados": data.usuariosIndicados
                     },
                     "redirect_to_blocks": [
-                        "firebase-pos-on"
+                        "Pós On"
                     ]
                 });
         }
@@ -648,9 +731,10 @@ const calculaGasto = (carValue, response) =>{
             response.json({
                 "messages": [
                     {
-                        "text": "Ainda não estamos trabalhando com veículos nessa faixa de preço, por favor entre em contato com nossa equipe de suporte. Vou continuar a simulacão com o valor do minuto de um carro de R$200.000"
+                        "text": "Ainda não estamos trabalhando com veículos nessa faixa de preço, por favor entre em contato com nossa equipe de suporte."
                     }
-                ]
+                ], 
+
             })
         }
 
@@ -679,17 +763,6 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp) => {
             return ;
         }).catch(error => {
             console.error(`5 - pegaIdCliente - ${userId} - Falha na atualizacão do bando de dados. IdCliente não inserido no banco ${error}`);
-            response.json({
-                "messages": [
-                    {
-                        "text": `Erro ao estabelecer conexão com nosso site. Verifique seu email e tente novamente por favor.`
-                    }
-                ],
-                // * Redirecionar para bloco de reinformar email
-                "redirect_to_blocks": [
-                    "Firebase api test"
-                ]
-            });
         })
         pegaSaldoCarteira(userId, perfilUser, dataApi, promise)
         return;
@@ -721,13 +794,12 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise) => {
             promise.update({
                 saldoCreditos: perfilUser.saldoCreditos,
                 saldoDinheiro: perfilUser.saldoDinheiro
-                }).then(() => {
-                    console.log(`3 - pegaSaldoCarteira - ${userId} - Adicão de saldo feito com sucesso no banco.`);
-                    return ;
-                }).catch(error => {
-                    console.error(`3 - pegaIdCliente - ${userId} - Falha na atualizacão do bando de dados. Saldo desatualizado ${error}`);
-                })
-            
+            }).then(() => {
+                console.log(`3 - pegaSaldoCarteira - ${userId} - Adicão de saldo feito com sucesso no banco.`);
+                return;
+            }).catch(error => {
+                console.error(`3 - pegaIdCliente - ${userId} - Falha na atualizacão do bando de dados. Saldo desatualizado ${error}`);
+            })
         }
     }); 
     
