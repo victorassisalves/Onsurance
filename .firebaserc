@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "onsurance-co"
+    "default": "onsurance-co",
+    "Onsurance": "onsuranceme-co"
   }
 }

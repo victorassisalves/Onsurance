@@ -799,9 +799,8 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
 
 const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, firstName, response) => {
     console.log(`1 - pegaSaldoCarteira - ${userId} - ${firstName} -  Entrando na funcão de receber o saldo da carteira. Id de cliente:${dataApi}`);
-     
-    var userDetails;
-
+    
+    // Contém a chamada de api que pega o saldo no woowallet
     var promiseWalletApiRequest = () =>{
     console.log(`1 - promiseWalletApiRequest - pegaSaldoCarteira - ${userId} - ${firstName} -  Entrando na funcão de receber o saldo da carteira via Api.`);
 
@@ -826,8 +825,8 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
     
         })
     }
-    
 
+    // Contém a chamada de promise que salva o saldo no banco de dados
     const promiseGravaSaldoDb = () => {
     console.log(`1 - promiseGravaSaldoDb - pegaSaldoCarteira - ${userId} - ${firstName} -  Entrando na funcão salvar o saldo wallet no banco de dados.`);
 
@@ -846,6 +845,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
         })
     }
 
+    //Chama a promise que salva os dados no banco de dados. Faz a tratativa pro usuário em caso de erro
     const gravaSaldoDb = (response) =>{
         console.log(`1 - gravaSaldoDb - pegaSaldoCarteira - ${userId} - ${firstName} -  Entrando na promise para gravar saldo no Bando de Dados.`);
 
@@ -856,7 +856,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             return response.json({
                 "messages": [
                     {
-                      "text": `Olá ${firstName}! Terminei de verificar seus dados com sucesso. Já posso começar a te proteger. Antes que eu me esqueça, valor do minuto da sua protecão vai ser de: ${valorMinuto/1000} por minuto ou ${valorMinuto} créditos por minuto. Está pronto pra começar?`
+                      "text": `Olá ${firstName}! Terminei de verificar seus dados com sucesso e já posso começar a te proteger. Antes que eu me esqueça, valor do minuto da sua protecão vai ser de R$${valorMinuto/1000} (menos de um centavo) por minuto ou ${valorMinuto} créditos por minuto. Está pronto pra começar?`
                     }
                 ]
             });
@@ -874,6 +874,8 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             })
         })
     }
+
+    //Chama a promise que recupera o saldo do usuário no woowallet. Faz a tratativa pro usuário em caso de erro
     const walletApiRequest = (response) =>{
         console.log(`1 - walletApiRequest - pegaSaldoCarteira - ${userId} - ${firstName} -  Entrando na promise de retornar o saldo da carteira. Id de cliente:${dataApi}`);
 
@@ -897,9 +899,6 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
         })
     }
 
-
+    // Execucão da funcão
     walletApiRequest(response);
-    
-
-    
 }
