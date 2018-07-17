@@ -772,31 +772,64 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
     console.log(`1 - pegaIdCliente - ${userId} - ${firstName} -  Entrando na função que pega id de cliente do woocommerce.`);
     var dataApi;
 
-    // Conexão com woocommerce para pegar id de cliente
-    axios.get(urlWp)
-    .then(resp => {
-        console.log(`2 - pegaIdCliente - ${userId} - ${firstName} -  Checa id de usuário no woocommerce: ${resp.data[0].id}`);
-        console.log(`3 - pegaIdCliente - ${userId} - ${firstName} -  Status da tentativa de conexão: ${resp.status}`);
-        dataApi = resp.data[0].id;
-        perfilUser.idCliente = dataApi
-        console.log(`4 - pegaIdCliente - ${userId} - ${firstName} -  Informacões do usuário no woocommerce. ${JSON.stringify(resp.data)}`);
-        // Atualiza perfil do usuário com id de cliente
-        promise.update({
-        idCliente: resp.data[0].id
-        }).then(() => {
-            console.log(`5 - pegaIdCliente -${userId} - ${firstName} -  Tentativa de atualizacão do perfil no banco: idCliente. Sucesso na atualizacão do banco de dados. ${dataApi}`)
-            return ;
-        }).catch(error => {
-            console.error(`5 - pegaIdCliente - ${userId} - ${firstName} -  Falha na atualizacão do bando de dados. IdCliente não inserido no banco ${error}`);
-        })
-        return pegaSaldoCarteira(userId, perfilUser, dataApi, promise, tokenWallet, firstName, response)
+    // Contém a chamada de api que pega o ID de cliente no WP
+    var promiseWpClientRequest = () =>{
+        console.log(`1 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} -  Entrando na funcão para pegar o id do cliente WP via Api.`);
+    
+            return new Promise((resolve, reject) => {
+                // Do async job
+                var apiRequest = unirest("get", `${urlWp}`);
         
-    })
-    .catch(error => {
-      console.error(`2.5 - pegaIdCliente - ${userId} - ${firstName} -  Erro na conexão com o woocommerce: ${error}`);
-    });
+                apiRequest.end(res => {
+                    if (res.error){
+                        console.error(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Falha em recuperar ID: ${JSON.stringify(res.error)}`);
+                        reject(res.error)
+                    } else {
+                        console.log(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Consulta de ID feita com sucesso: ${res.body[0].id}`);
+                        console.log(`3 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} -  Status da tentativa de conexão: ${res.status}`);
+                        dataApi = res.body[0].id;
+                        perfilUser.idCliente = dataApi
+                        console.log(`4 - pegaIdCliente - ${userId} - ${firstName} -  Informacões do usuário no woocommerce. ${JSON.stringify(res.body)}`);
+                        resolve(dataApi)
+                    }
+                                
+                })
+                        
+            })
+    }
+
+    //Chama a promise que recupera o ID do cliente no WP. Faz a tratativa pro usuário em caso de erro
+    const wpClientRequest = (response) =>{
+        console.log(`1 - wpClientRequest - pegaIdCliente - ${userId} - ${firstName} -  Entrando na promise para pegar o ID do cliente. Id de cliente:${dataApi}`);
+
+        var wpClient = promiseWpClientRequest();
+        wpClient.then(result => {
+            userDetails = result;
+            console.log(`2 - wpClientRequest - pegaIdCliente - ${userId} - ${firstName} -  Id de cliente recuperado com sucesso. ${result}. Chamando funcão de gravar ID no DB`);
+            return pegaSaldoCarteira(userId, perfilUser, dataApi, promise, tokenWallet, firstName, response);
+        }).catch(error => {
+            console.error(error);
+            response.json({
+                    "messages": [
+                        {
+                            "text": `Olá! Identifiquei um pequeno erro. Não consegui recuperar seus dados em nosso servidor. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                        }
+                    ],
+                    "redirect_to_blocks": [
+                        "Informar Email Homologação"
+                    ]
+            })
+        })
+    }
+    
+
+    // Execucão da funcão
+    wpClientRequest(response);
 }
 
+
+// Todo feito com promises e microservicos
+// Recupera o saldo da wallet e salva no banco de dados
 const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, firstName, response) => {
     console.log(`1 - pegaSaldoCarteira - ${userId} - ${firstName} -  Entrando na funcão de receber o saldo da carteira. Id de cliente:${dataApi}`);
     
@@ -828,13 +861,14 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
 
     // Contém a chamada de promise que salva o saldo no banco de dados
     const promiseGravaSaldoDb = () => {
-    console.log(`1 - promiseGravaSaldoDb - pegaSaldoCarteira - ${userId} - ${firstName} -  Entrando na funcão salvar o saldo wallet no banco de dados.`);
+    console.log(`1 - promiseGravaSaldoDb - pegaSaldoCarteira - ${userId} - ${firstName} -  Entrando na funcão salvar o saldo wallet no banco de dados. id clientre${dataApi}`);
 
         //adiciona saldo da carteira no banco de dados
         return new Promise((resolve, reject) =>{
             promise.update({
                 saldoCreditos: perfilUser.saldoCreditos,
-                saldoDinheiro: perfilUser.saldoDinheiro
+                saldoDinheiro: perfilUser.saldoDinheiro,
+                idCliente: dataApi
             }).then(() => {
                 console.log(`2 - promiseGravaSaldoDb - pegaSaldoCarteira - ${userId} - ${firstName} - Adicão de saldo feito com sucesso no banco.`);
                 return resolve(true);
