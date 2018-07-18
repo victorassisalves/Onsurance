@@ -158,6 +158,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         });
       
         console.log(`ligarProtecao - 4 - ${userId} - ${firstName} -  Final da funcão de ligar protecão`);
+        return inicioProtecao;
     };
 
     const desligarProtecao = () => {
@@ -290,33 +291,33 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
     if (numeroAtivacoes === 0) {
         console.log(`ligaDesligaProtecao - 4 - ${userId} - ${firstName} -  Primeira ativacão do usuário.`);
 
-        criaNovoUsuario(perfilUser, userId, promise, indicadorPromise, promiseIndicadorUser, urlWp, response, firstName);
-        ligarProtecao();
+        criaNovoUsuario(perfilUser, userId, promise, indicadorPromise, promiseIndicadorUser, response, firstName, ligarProtecao);
+        
         console.log(`ligaDesligaProtecao - 5 final - ${userId} - ${firstName} -  Proteção ativada. Indo para retorno JSON.`);
-        promise.once('value').then(snapshot => {
-            var data = snapshot.val() 
-            return response.json({
-                "messages": [
-                    {
-                        "text": `Olá ${firstName}, essa é sua primeira ativação. Seja bem vindo à Onsurance. Amamos você.`
-                    }
-                ],
-                "set_attributes":
-                    {
-                        "ESTADOPROTEÇÃOCARRO": estadoProtecao,
-                        "numAtivacao": numeroAtivacoes,
-                        "timeStart": inicioProtecao,
-                        "user-credit": data.saldoCreditos,
-                        "user-money": data.saldoDinheiro,
-                        "idCliente": data.idCliente
-                    },
-                    "redirect_to_blocks": [
-                        "Mensagem de boas vindas primeira proteção"
-                    ]
-            });
-        }).catch(error => {
-            console.error(`Falha ao recuperar user ${error}`);
-        })
+        setTimeout(() => {
+            promise.once('value').then(snapshot => {
+                var data = snapshot.val() 
+                console.log(`Dados recuperados e retorno imediato`);
+                return response.json({
+                    "messages": [
+                        {
+                            "text": `Olá ${firstName}, essa é sua primeira ativação. Seja bem vindo à Onsurance. Amamos você.`
+                        }
+                    ],
+                    "set_attributes":
+                        {
+                            "ESTADOPROTEÇÃOCARRO": data.estadoProtecao,
+                            "numAtivacao": 1,
+                            "timeStart": inicioProtecao,
+                        },
+                        "redirect_to_blocks": [
+                            "oi"
+                        ]
+                });
+            }).catch(error => {
+                console.error(`2 - atualizaNumIndicadosUserDb - criaNovoUsuario - ${userId} - ${firstName} - Falha ao recuperar user ${error}`);
+            })
+        }, 1000)
         
     }
 });
@@ -488,7 +489,7 @@ exports.getTimeEnd = functions.https.onRequest((request, response) =>{
 })
 
 // Funcão que trabalha toda criacão do usuário e fluxos de primeiro uso.
-const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseIndicadorUser, urlWp, response, tokenWallet, firstName) => {
+const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseIndicadorUser, response, firstName, ligarProtecao ) => {
     console.log(`criaNovoUsuario - 1 - ${userId} - ${firstName} -  Entra na funcão de criar novo usuário`);
     var perfilIndicador = {
         numeroIndicados: 1,
@@ -496,88 +497,263 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             1: userId
         }
     }
-    // cria perfil do usuário que está ligando a protecão    
-    promise.update(perfilUser).then( () => {
-        console.log(`criaNovoUsuario - 2 - ${userId} - ${firstName} -  Usuário criado com sucesso`);
-        return;
-    }).catch(error => {
-        console.error(`criaNovoUsuario - 2 - ${userId} - ${firstName} -  Erro na cricão do usuário ${error}`);
-    })
-    pegaIdCliente(userId, perfilUser, promise, urlWp, tokenWallet, firstName)
 
+    // Contém a chamada de promise que cria o perfil do novo usuário no banco de dados
+    const promiseCriaPerfilUserDb = () => {
+        console.log(`1 - promiseCriaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} -  Estrando na promise que cria o perfil do usuário`);
+    
+        //adiciona saldo da carteira no banco de dados
+        return new Promise((resolve, reject) =>{
+                // cria perfil do usuário que está ligando a protecão    
+            promise.update(perfilUser).then( () => {
+                console.log(`2 promiseCriaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} -  Usuário criado com sucesso no Banco de Dados`);
+                return resolve(true);
+            }).catch(error => {
+                console.error(`2 promiseCriaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro na cricão do usuário. ${error}`)
+                reject(error)
+            })
+        })
+    }
+    
+    //Chama a promise que cria um novo User no banco de dados. Faz a tratativa pro usuário em caso de erro
+    const criaPerfilUserDb = (response, ligarProtecao) =>{
+        console.log(`1 - criaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} -  executando promise que cria um novo USER no Bando de Dados.`);
+
+        var criaPerfil = promiseCriaPerfilUserDb();
+        criaPerfil.then(result => {
+            console.log(`2 - criaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} - Usuário criado com sucesso no banco de dados. ${result}. Indo para a segunda chamada, checagem de indicacões`);
+
+            return checaUserIndicadorDb(response, ligarProtecao);
+        }).catch(error => {
+            console.error(`2 - criaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`);
+            response.json({
+                    "messages": [
+                        {
+                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                        }
+                    ],
+                    "redirect_to_blocks": [
+                        "Informar Email Homologação"
+                    ]
+            })
+        })
+    }
+    criaPerfilUserDb(response, ligarProtecao)
     var data;
-    // Pega no banco de dados o usuário que fez a indicação para realizar as acões necessáriis
-    indicadorPromise.once('value').then(snapshot => {
-        data = snapshot.val();
+       
+    
+    // Contém a chamada de promise que checa se já existe o Indicador do novo User
+    const promiseChecaUserIndicadorDb = () => {
+        console.log(`1 - promiseChecaUserIndicador - criaNovoUsuario - ${userId} - ${firstName} -  Estrando na promise que checa se existe o usuário indicador`);
+    
+        return new Promise((resolve, reject) =>{
+            // Pega no banco de dados o usuário que fez a indicação para realizar as acões necessáriis
+            indicadorPromise.once('value').then(snapshot => {
+            data = snapshot.val();
+            return resolve(data); 
+            }).catch(error => {
+                console.error(`3 - promiseChecaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao receber dados do indicador. ${error}`);
+                reject(error)
+            })
+        })
+    }
 
-    // pega usuário indicador
-        console.log(`criaNovoUsuario - 3 - ${userId} - ${firstName} -  Dados do usuário indicador: ${JSON.stringify(data)}`);
-            // checa se existe indicador no banco 
-            if (!data){
-
+    // Executa a promise que checa se existe Indicador de novo User. 
+    const checaUserIndicadorDb = (response, ligarProtecao) => {
+        console.log(`1 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  executando promise que checa se já existe INDICADOR de novo USER no Bando de Dados.`);
+        var checaUserIndicador = promiseChecaUserIndicadorDb();
+        checaUserIndicador.then(result => {
+        console.log(`2 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} - Checagem efetuada com sucesso. ${JSON.stringify(result)}. Indo para as tratativas.`);
+        
+        // checa se existe indicador no banco 
+            // Indicador não existe !Result
+            if (!result){
                 //caso não exista cria na tabela indicadores
-                console.log(`criaNovoUsuario - 4 - ${userId} - ${firstName} -  Indicador não existe na base. ${JSON.stringify(data)}`);
-
-                indicadorPromise.set(perfilIndicador).then(() =>{
-                    console.log(`criaNovoUsuario - 5 - ${userId} - ${firstName} -  Indicador criado com sucesso.`);
-                    return;
-                }).catch(error => {
-                    console.error(`criaNovoUsuario - 5 - ${userId} - ${firstName} -  Erro ao criar usuário indicador. ${error}`);
-                })
-
-                // atualiza o numero de indicados na tabela de usuários
-                promiseIndicadorUser.update({
-                    usuariosIndicados: 1
-                }).then(() =>{
-                    console.log(`criaNovoUsuario - 6 - ${userId} - ${firstName} -  Número de indicados atualizado com sucesso`);
-                    return;
-                }).catch(error => {
-                    console.error(`criaNovoUsuario - 6 - ${userId} - ${firstName} -  Erro ao atualizar usuário indicador. ${error}`);
-                })
+                console.log(`3 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Indicador não existe na base. ${JSON.stringify(data)}/${JSON.stringify(result)}. Chamando a funcão de criar indicador no DB.`);  
+                // !result -> não existe usuário indicador
                 
+                    // Contém a chamada de promise que cria um novo indicador no DB
+                    const promiseCriaPerfilIndicadorDb = () => {
+                        console.log(`1 - promiseCriaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Estrando na promise que cria o perfil do usuário`);
+                    
+                        return new Promise((resolve, reject) =>{
+                            // cria perfil de usuário no banco de dados de indicador  
+                            indicadorPromise.set(perfilIndicador).then(() =>{
+                                console.log(`2 - promiseCriaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Indicador criado com sucesso.`);
+                                return resolve(true);
+                            }).catch(error => {
+                                console.error(`2 - promiseCriaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao criar usuário indicador. ${error}`);
+                                reject(error)
+                            })
+                        })
+                    }       
+
+                    //Chama a promise que salva os dados no banco de dados. Faz a tratativa pro usuário em caso de erro
+                    const criaPerfilIndicadorDb = (response, ligarProtecao) =>{
+                        console.log(`1 - criaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Executando na promise que cria perfil de Indicador no Bando de Dados.`);
+
+                        var criaPerfilIndicador = promiseCriaPerfilIndicadorDb();
+                        criaPerfilIndicador.then(result => {
+                            console.log(`2 - criaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} - Indicador criado com sucesso no banco de dados. Indo para a funcão que atualiza o número de indicado no perfil de Usuário do Indicador`);
+
+                            return atualizaNumIndicadosUserDb(response, ligarProtecao);
+                        }).catch(error => {
+                            console.error(`2 - criaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`);
+                            response.json({
+                                    "messages": [
+                                        {
+                                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                                        }
+                                    ],
+                                    "redirect_to_blocks": [
+                                        "Informar Email Homologação"
+                                    ]
+                            })
+                        })
+                    }
+
+                    // atualiza o numero de indicados na tabela de USERS
+                    const promiseAtualizaNumIndicadosUserDb = () => {
+                        console.log(`1 - promiseAtualizaNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Entrando na promise que atualiza o número de indicados no perfil do USUÁRIO indicador`);
+                    
+                        return new Promise((resolve, reject) =>{
+                            // atualiza o numero de indicados na tabela de USERS
+                            promiseIndicadorUser.update({
+                                usuariosIndicados: 1
+                            }).then(() =>{
+                                console.log(`1 - promiseAtualizaNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Número de indicados atualizado com sucesso`);
+                                return resolve(true);
+                            }).catch(error => {
+                                console.error(`1 - promiseAtualizaNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao atualizar usuário indicador. ${error}`);
+                                reject(error)
+                            })
+                        })
+                    }
+                    
+                    //Chama a promise que atualiza o número de Indicados do Indicador na tabela de USERS. Faz a tratativa pro usuário em caso de erro
+                    const atualizaNumIndicadosUserDb = (response, ligarProtecao) =>{
+                        console.log(`1 - atualizaNumIndicadosUserDb - criaNovoUsuario - ${userId} - ${firstName} -  Executando a promise que atualiza o número de Indicados do Indicador na tabela de USERS.`);
+
+                        var atualizaNumIndicadosUser = promiseAtualizaNumIndicadosUserDb();
+                        atualizaNumIndicadosUser.then(result => {
+                            console.log(`2 - atualizaNumIndicadosUserDb - criaNovoUsuario - ${userId} - ${firstName} - Usuário atualizado com sucesso no banco de dados. Encerrando fluxo de indicacões`);
+                            return ligarProtecao()
+                        }).catch(error => {
+                            console.error(`2 - atualizaNumIndicadosUserDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`);
+                            response.json({
+                                    "messages": [
+                                        {
+                                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                                        }
+                                    ],
+                                    "redirect_to_blocks": [
+                                        "Informar Email Homologação"
+                                    ]
+                            })
+                        })
+                    }
+
+                    criaPerfilIndicadorDb(response, ligarProtecao)
+
                 // Usuário indicador existe na base dados
-            } else if (data){
+            } else if (result){
 
                 // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
-                console.log(`criaNovoUsuario - 4 - ${userId} - ${firstName} -  Indicador já existe na base. ${JSON.stringify(data)}`);
-                console.log(`criaNovoUsuario - 5 - ${userId} - ${firstName} -  Numero de indicados: ${data.numeroIndicados}`);
+                console.log(`3 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Indicador já existe na base. ${JSON.stringify(data)}`);
+                console.log(`4 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Numero de indicados: ${result.numeroIndicados}`);
 
-                var numIndicados = parseInt(data.numeroIndicados) + 1;
-
-                //Atualiza o numero de indicados (indicadores)
-                indicadorPromise.update({
-                    numeroIndicados: numIndicados
-                }).then(() =>{
-                    console.log(`criaNovoUsuario - 6 - ${userId} - ${firstName} -  Número de usuários indicados atualizado com sucesso.`);
-                    return;
-                }).catch(error => {
-                    console.error(`criaNovoUsuario - 6 - ${userId} - ${firstName} -  Erro ao atualizar o número pessoas indicadas. ${error}`);
-                })
-
-                // Atualiza o array com os clientes indicados (indicadores)
-                indicadorPromise.child(`/indicados/${numIndicados}`).set(userId).then(() =>{
-                    console.log(`criaNovoUsuario - 7 - ${userId} - ${firstName} -  Usuário adicionado ao array com sucesso.`);
-                    return;
-                }).catch(error => {
-                    console.error(`criaNovoUsuario - 7 - ${userId} - ${firstName} -  Erro ao adicionar usuário ao array de pessoas indicadas. ${error}`);
-                });
+                var numIndicados = parseInt(result.numeroIndicados) + 1;
     
-                // atualiza o numero de indicados no bando de usuários (users)
-                promiseIndicadorUser.update({
-                    usuariosIndicados: numIndicados
-                }).then(() =>{
-                    console.log(`criaNovoUsuario - 8 - ${userId} - ${firstName} -  Número de indicados atualizado com sucesso`);
-                    return;
-                }).catch(error => {
-                    console.error(`criaNovoUsuario - 8 - ${userId} - ${firstName} -  Erro ao atualizar o número de indicados na tabela Users. ${error}`);
-                })
-            }
+                 // Result. Existe indicador no banco de dados
+                    // promise para atualizar o numero de indicados no DB INDICADOR.
+                    var promiseAtualizaNumIndicadosIndicadorDb =  new Promise((resolve, reject) =>{
+                    console.log(`1 - promiseAtualizaNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} - Entrando na promise para atualizar o numero de indicados no DB INDICADOR.`);
 
-        return data; 
-    }).catch(error => {
-        console.error(`criaNovoUsuario - 3 - ${userId} - ${firstName} -  Erro ao receber dados do indicador. ${error}`);
-    })
-    console.log(`criaNovoUsuario - 4/9 - ${userId} - ${firstName} -  Final da funcão de criar novo usuário`);
+                        //Atualiza o numero de indicados (indicadores)
+                        indicadorPromise.update({
+                            numeroIndicados: numIndicados
+                        }).then(() =>{
+                            console.log(`2 - promiseAtualizaNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Número de usuários indicados atualizado com sucesso.`);
+                            return resolve(true);
+                        }).catch(error => {
+                            console.error(`criaNovoUsuario - 6 - ${userId} - ${firstName} -  Erro ao atualizar o número pessoas indicadas. ${error}`);
+                            reject(error)
+                        })
+                    })
+
+                    // promise para atualizar o array de indicados com o id do novo user no DB INDICADOR.
+                    var promiseAtualizaArrayNumIndicadosIndicadorDb =  new Promise((resolve, reject) =>{
+                    console.log(`1 - promiseAtualizaArrayNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} - Entrando na promise para atualizar o array de indicados com o id do novo user no DB INDICADOR.`);
+
+                        // Atualiza o array com os clientes indicados (indicadores)
+                        indicadorPromise.child(`/indicados/${numIndicados}`).set(userId).then(() =>{
+                            console.log(`2 - promiseAtualizaArrayNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Usuário adicionado ao array com sucesso.`);
+                            return resolve(true);
+                        }).catch(error => {
+                            console.error(`2 - promiseAtualizaArrayNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao adicionar usuário ao array de pessoas indicadas. ${error}`);
+                            reject(error)
+                        });
+                    })
+
+                    // promise para atualizar o array de indicados com o id do novo user no DB USER.        
+                    var promiseAtualizaNumIndicadosUsersDb =  new Promise((resolve, reject) =>{
+                    console.log(`1 - promiseAtualizaNumIndicadosUsersDb - criaNovoUsuario - ${userId} - ${firstName} - Entrando na promise para atualizar o número de indicados no DB USER.`);
+
+                        // atualiza o numero de indicados no bando de usuários (users)
+                        promiseIndicadorUser.update({
+                            usuariosIndicados: numIndicados
+                        }).then(() =>{
+                            console.log(`2 - promiseAtualizaNumIndicadosUsersDb - criaNovoUsuario - ${userId} - ${firstName} -  Número de indicados do USER atualizado com sucesso`);
+                            return resolve(true)
+                        }).catch(error => {
+                            console.error(`2 - promiseAtualizaNumIndicadosUsersDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao atualizar o número de indicados na tabela Users. ${error}`);
+                            reject(error)
+                        })
+                    })
+
+                    const executaPromises = (response, ligarProtecao) => {
+                    console.log(`1 - executaPromises - criaNovoUsuario - ${userId} - ${firstName} - Entrando na funcão que executa as promises quando existe Indicador.`);
+                        
+                        Promise.all([promiseAtualizaNumIndicadosIndicadorDb, promiseAtualizaArrayNumIndicadosIndicadorDb, promiseAtualizaNumIndicadosUsersDb]).then(() => {
+                            console.log(`2 - executaPromises - criaNovoUsuario - ${userId} - ${firstName} - Promises executadas com sucesso.ligando protecão`);
+                            return ligarProtecao()
+                        }).catch(error => {
+                            console.error(`2 - executaPromises - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao executar todas as promises. ${error}`);
+                            response.json({
+                                "messages": [
+                                    {
+                                        "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                                    }
+                                ],
+                                "redirect_to_blocks": [
+                                    "Informar Email Homologação"
+                                ]
+                            })
+                        })
+
+                    }
+
+                    executaPromises(response, ligarProtecao)
+
+
+                }
+            
+            return ;
+        }).catch(error => {
+            console.error(`2 - criaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`);
+            response.json({
+                    "messages": [
+                        {
+                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                        }
+                    ],
+                    "redirect_to_blocks": [
+                        "Informar Email Homologação"
+                    ]
+            })
+        })
+    }
+    
 }
 
 // Checa numero de indicações e premia se usuário atingir requisitos
@@ -768,6 +944,8 @@ const calculaGasto = (carValue, response) =>{
 
 }
 
+// Todo feito com promises e microservicos
+// Recupera o Id de cliente do Woocommerce
 const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto, tokenWallet, firstName) => {
     console.log(`1 - pegaIdCliente - ${userId} - ${firstName} -  Entrando na função que pega id de cliente do woocommerce.`);
     var dataApi;
@@ -788,7 +966,7 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
                         console.error(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Falha em recuperar ID Array vazio: ${JSON.stringify(res)}`);
                         reject(res)
                         // array empty or does not exist
-                    } else if (res.body[0] !== undefined){
+                    } else {
                         console.log(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Consulta de ID feita com sucesso: ${res.body[0].id}`);
                         console.log(`3 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} -  Status da tentativa de conexão: ${res.status}`);
                         dataApi = res.body[0].id;
@@ -831,7 +1009,6 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
     wpClientRequest(response);
 }
 
-
 // Todo feito com promises e microservicos
 // Recupera o saldo da wallet e salva no banco de dados
 const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, firstName, response) => {
@@ -869,13 +1046,18 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
 
         //adiciona saldo da carteira no banco de dados
         return new Promise((resolve, reject) =>{
+            var perfil = {
+                saldoCreditos: perfilUser.saldoCreditos,
+                saldoDinheiro: perfilUser.saldoDinheiro,
+                idCliente: dataApi
+            }
             promise.update({
                 saldoCreditos: perfilUser.saldoCreditos,
                 saldoDinheiro: perfilUser.saldoDinheiro,
                 idCliente: dataApi
             }).then(() => {
                 console.log(`2 - promiseGravaSaldoDb - pegaSaldoCarteira - ${userId} - ${firstName} - Adicão de saldo feito com sucesso no banco.`);
-                return resolve(true);
+                return resolve(perfil);
             }).catch(error => {
                 console.error(`2 - promiseGravaSaldoDb - pedaSaldoCarteira - ${userId} - ${firstName} - Falha na atualizacão do bando de dados. Saldo desatualizado ${error}`);
                 reject(error)
@@ -894,9 +1076,16 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             return response.json({
                 "messages": [
                     {
-                      "text": `Olá ${firstName}! Terminei de verificar seus dados com sucesso e já posso começar a te proteger. Antes que eu me esqueça, valor do minuto da sua protecão vai ser de R$${valorMinuto/1000} (menos de um centavo) por minuto ou ${valorMinuto} créditos por minuto. Está pronto pra começar?`
+                      "text": `Olá ${firstName}! Terminei de verificar seus dados com sucesso e já posso começar a te proteger. Antes que eu me esqueça, valor do minuto da sua protecão vai ser de R$${valorMinuto/1000} por minuto ou ${valorMinuto} créditos por minuto. Está pronto pra começar?`
                     }
-                ]
+                ],
+                "set_attributes":
+                {
+                    "valorMinuto": valorMinuto,
+                    "user-credit": result.saldoCreditos,
+                    "user-money": result.saldoDinheiro,
+                    "idCliente": result.idCliente
+                }
             });
         }).catch(error => {
             console.error(`2 - gravaSaldoDb - pegaSaldoCarteira - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`);
