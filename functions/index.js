@@ -784,7 +784,11 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
                     if (res.error){
                         console.error(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Falha em recuperar ID: ${JSON.stringify(res.error)}`);
                         reject(res.error)
-                    } else {
+                    } else if (res.body[0] === undefined || res.length === 0) {
+                        console.error(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Falha em recuperar ID Array vazio: ${JSON.stringify(res)}`);
+                        reject(res)
+                        // array empty or does not exist
+                    } else if (res.body[0] !== undefined){
                         console.log(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Consulta de ID feita com sucesso: ${res.body[0].id}`);
                         console.log(`3 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} -  Status da tentativa de conexão: ${res.status}`);
                         dataApi = res.body[0].id;
