@@ -147,14 +147,14 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             console.log(`ligarProtecao - 2 - ${userId} - ${firstName} -  usuário atualizado com sucesso no banco de dados`);
             return;
         }).catch(error => {
-            console.error(`ligarProtecao - 2 - Erro na atualizacão do usuário no banco ${error}`);
+            console.error(new Error(`ligarProtecao - 2 - Erro na atualizacão do usuário no banco ${error}`));
         });
         // Atualiza o log de uso no banco de dados
         promise.child(`/logUse/${numeroAtivacoes}`).update(logUso).then( () => {
             console.log(`ligarProtecao - 3 - ${userId} - ${firstName} -  Log de uso atualizado com sucesso no banco de dados`);
             return;
         }).catch(error => {
-            console.error(`ligarProtecao - 3 - ${userId} - ${firstName} -  Erro na atualizacão do log de uso no banco de dados. ${error}`);
+            console.error(new Error(`ligarProtecao - 3 - ${userId} - ${firstName} -  Erro na atualizacão do log de uso no banco de dados. ${error}`));
         });
       
         console.log(`ligarProtecao - 4 - ${userId} - ${firstName} -  Final da funcão de ligar protecão`);
@@ -208,7 +208,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             console.log(`desligarProtecao - 5 - ${userId} - ${firstName} -  Dados de consumo no desligamento da protecão salvos com sucesso no banco de dados.`);
             return;
         }).catch(error =>{
-            console.error(`desligarProtecao - 5 - ${userId} - ${firstName} -  Erro ao slavar dados de encerramento da protecão no banco de dados. ${error}`);
+            console.error(new Error(`desligarProtecao - 5 - ${userId} - ${firstName} -  Erro ao slavar dados de encerramento da protecão no banco de dados. ${error}`));
         });
 
         // atualizar log de uso
@@ -216,7 +216,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             console.log(`desligarProtecao - 6 - ${userId} - ${firstName} -  Log de uso atualizado com sucesso no banco`);
             return;
         }).catch(error =>{
-            console.error(`desligarProtecao - 6 - ${userId} - ${firstName} -  Erro ao atualizar log de uso. ${error}`);
+            console.error(new Error(`desligarProtecao - 6 - ${userId} - ${firstName} -  Erro ao atualizar log de uso. ${error}`));
         });
 
         // Desconta saldo na woowallet ao realizar o desligamento
@@ -235,7 +235,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         
         req.end(res => {
             if (res.error){
-                console.error(`DesligarProteção - 8 - ${userId} - ${firstName} -  Desconto não realizado: ${JSON.stringify(res.error)}`);
+                console.error(new Error(`DesligarProteção - 8 - ${userId} - ${firstName} -  Desconto não realizado: ${JSON.stringify(res.error)}`));
             } else {
                 console.log(`DesligarProteção - 8 - ${userId} - ${firstName} -  Desconto feito com sucesso na carteira: ${JSON.stringify(res.body)}`);
             }
@@ -245,7 +245,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         response.json({
             "messages": [
                 {
-                    "text": "Vamos desligar sua proteção."
+                    "text": "Sua proteção está desligada!"
                 }
             ],
             "set_attributes":
@@ -279,7 +279,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         // Inicia verificacão para premiacão do usuário por 10 indicacões
         var receberPremio = false;
         // Chama funcão de premiacão e de resposta 
-        premioIndicacao(userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response)    
+        premioIndicacao(userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response, carModel, tokenWallet)
 
     //Protecão ligada. Desliga a proteão
     } else if (estadoProtecao === "ON-H" && numeroAtivacoes >= 1) {
@@ -301,7 +301,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 return response.json({
                     "messages": [
                         {
-                            "text": `Olá ${firstName}, essa é sua primeira ativação. Seja bem vindo à Onsurance. Amamos você.`
+                            "text": `Opa ${firstName}, essa é sua primeira ativação. Seja bem vindo à Onsurance. Amamos você.`
                         }
                     ],
                     "set_attributes":
@@ -315,7 +315,22 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                         ]
                 });
             }).catch(error => {
-                console.error(`2 - atualizaNumIndicadosUserDb - criaNovoUsuario - ${userId} - ${firstName} - Falha ao recuperar user ${error}`);
+                console.error(new Error(`2 - atualizaNumIndicadosUserDb - criaNovoUsuario - ${userId} - ${firstName} - Falha ao recuperar user ${error}`));
+                response.json({
+                    "messages": [
+                        {
+                            "text": `Opa ${firstName}! Não consegui ligar sua proteção. peço que você tente novamente. Caso continue tendo problemas entre em contato com nosso especialista digitando "falar com especialista".`
+                        }
+                    ],
+                    "set_attributes":
+                        {
+                            "ESTADOPROTEÇÃOCARRO": OFF-H,
+                            "numAtivacao": 0,
+                        },
+                        "redirect_to_blocks": [
+                            "welcome homologação"
+                        ]
+                });
             })
         }, 1000)
         
@@ -387,7 +402,7 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
     response.json({
         "messages": [
             {
-                "text": `Conforme suas respostas, o valor do minuto da proteção é de R$${valorMinuto/1000}. Você liga para proteger, desliga para economizar. No seu caso de uso o custo médio da proteção será de R$${consumoAnual} ao ano.`,
+                "text": `Conforme suas respostas, o valor do minuto da proteção é de R$${valorMinuto/1000}. Você liga para proteger e desliga para economizar. No seu caso de uso o custo médio da proteção será de R$${consumoAnual} ao ano.`,
             }
         ],
         "set_attributes": {
@@ -439,7 +454,7 @@ exports.calcPrecoMinuto = functions.https.onRequest((request, response) => {
     var perfilUser = {};
 
     console.log(`2 - ${userId} - ${firstName} - Entrando na funcão de calculo do minuto.`);
-    var valorMinuto = calculaGasto(carValue);
+    var valorMinuto = calculaGasto(carValue, response);
 
     pegaIdCliente(userId, perfilUser, promise, urlWp, response, valorMinuto, tokenWallet, firstName)
 
@@ -509,7 +524,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                 console.log(`2 promiseCriaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} -  Usuário criado com sucesso no Banco de Dados`);
                 return resolve(true);
             }).catch(error => {
-                console.error(`2 promiseCriaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro na cricão do usuário. ${error}`)
+                console.error(new Error(`2 promiseCriaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro na cricão do usuário. ${error}`))
                 reject(error)
             })
         })
@@ -525,7 +540,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
 
             return checaUserIndicadorDb(response, ligarProtecao);
         }).catch(error => {
-            console.error(`2 - criaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`);
+            console.error(new Error(`2 - criaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`))
             response.json({
                     "messages": [
                         {
@@ -552,7 +567,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             data = snapshot.val();
             return resolve(data); 
             }).catch(error => {
-                console.error(`3 - promiseChecaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao receber dados do indicador. ${error}`);
+                console.error(new Error(`3 - promiseChecaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao receber dados do indicador. ${error}`))
                 reject(error)
             })
         })
@@ -582,7 +597,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                                 console.log(`2 - promiseCriaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Indicador criado com sucesso.`);
                                 return resolve(true);
                             }).catch(error => {
-                                console.error(`2 - promiseCriaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao criar usuário indicador. ${error}`);
+                                console.error(new Error(`2 - promiseCriaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao criar usuário indicador. ${error}`))
                                 reject(error)
                             })
                         })
@@ -598,7 +613,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
 
                             return atualizaNumIndicadosUserDb(response, ligarProtecao);
                         }).catch(error => {
-                            console.error(`2 - criaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`);
+                            console.error(new Error(`2 - criaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`))
                             response.json({
                                     "messages": [
                                         {
@@ -624,7 +639,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                                 console.log(`1 - promiseAtualizaNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Número de indicados atualizado com sucesso`);
                                 return resolve(true);
                             }).catch(error => {
-                                console.error(`1 - promiseAtualizaNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao atualizar usuário indicador. ${error}`);
+                                console.error(new Error(`1 - promiseAtualizaNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao atualizar usuário indicador. ${error}`));
                                 reject(error)
                             })
                         })
@@ -639,7 +654,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             console.log(`2 - atualizaNumIndicadosUserDb - criaNovoUsuario - ${userId} - ${firstName} - Usuário atualizado com sucesso no banco de dados. Encerrando fluxo de indicacões`);
                             return ligarProtecao()
                         }).catch(error => {
-                            console.error(`2 - atualizaNumIndicadosUserDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`);
+                            console.error(new Error(`2 - atualizaNumIndicadosUserDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`))
                             response.json({
                                     "messages": [
                                         {
@@ -676,7 +691,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             console.log(`2 - promiseAtualizaNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Número de usuários indicados atualizado com sucesso.`);
                             return resolve(true);
                         }).catch(error => {
-                            console.error(`criaNovoUsuario - 6 - ${userId} - ${firstName} -  Erro ao atualizar o número pessoas indicadas. ${error}`);
+                            console.error(new Error(`criaNovoUsuario - 6 - ${userId} - ${firstName} -  Erro ao atualizar o número pessoas indicadas. ${error}`))
                             reject(error)
                         })
                     })
@@ -690,7 +705,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             console.log(`2 - promiseAtualizaArrayNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Usuário adicionado ao array com sucesso.`);
                             return resolve(true);
                         }).catch(error => {
-                            console.error(`2 - promiseAtualizaArrayNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao adicionar usuário ao array de pessoas indicadas. ${error}`);
+                            console.error(new Error(`2 - promiseAtualizaArrayNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao adicionar usuário ao array de pessoas indicadas. ${error}`))
                             reject(error)
                         });
                     })
@@ -706,7 +721,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             console.log(`2 - promiseAtualizaNumIndicadosUsersDb - criaNovoUsuario - ${userId} - ${firstName} -  Número de indicados do USER atualizado com sucesso`);
                             return resolve(true)
                         }).catch(error => {
-                            console.error(`2 - promiseAtualizaNumIndicadosUsersDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao atualizar o número de indicados na tabela Users. ${error}`);
+                            console.error(new Error(`2 - promiseAtualizaNumIndicadosUsersDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao atualizar o número de indicados na tabela Users. ${error}`))
                             reject(error)
                         })
                     })
@@ -718,7 +733,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             console.log(`2 - executaPromises - criaNovoUsuario - ${userId} - ${firstName} - Promises executadas com sucesso.ligando protecão`);
                             return ligarProtecao()
                         }).catch(error => {
-                            console.error(`2 - executaPromises - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao executar todas as promises. ${error}`);
+                            console.error(new Error(`2 - executaPromises - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao executar todas as promises. ${error}`))
                             response.json({
                                 "messages": [
                                     {
@@ -740,7 +755,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             
             return ;
         }).catch(error => {
-            console.error(`2 - criaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`);
+            console.error(new Error(`2 - criaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`))
             response.json({
                     "messages": [
                         {
@@ -757,7 +772,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
 }
 
 // Checa numero de indicações e premia se usuário atingir requisitos
-const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response, carModel) => {
+const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response, carModel, tokenWallet) => {
     console.log(`premioIndicacao - 1 - ${userId} - ${firstName} -  Entrando na funcão de premiacão por numero de indicacão`);
     
     var data;
@@ -786,12 +801,12 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
             });
             
             req.headers({
-            "Authorization": `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvb25zdXJhbmNlLm1lIiwiaWF0IjoxNTI5OTQ5ODAxLCJuYmYiOjE1Mjk5NDk4MDEsImV4cCI6MTUzMDU1NDYwMSwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMzMifX19._En-wPDp0XXYfqiVAq7A9sQcbdT5htvde-CvQjgY_4o`
+            "Authorization": `Bearer ${tokenWallet}`
             });
             
             req.end(res => {
                 if (res.error){
-                    console.error(`premioIndicacao - 6 - ${userId} - ${firstName} -  Prêmio de indicacão não creditado com sucesso: ${JSON.stringify(res.error)}`);
+                    console.error(new Error(`premioIndicacao - 6 - ${userId} - ${firstName} -  Prêmio de indicacão não creditado com sucesso: ${JSON.stringify(res.error)}`))
                 } else {
                     console.log(`premioIndicacao - 7 - ${userId} - ${firstName} -  Prêmio de indicacão creditado com sucesso!!!: ${JSON.stringify(res.body)}`);
                     receberPremio = true;
@@ -807,7 +822,7 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
                 console.log(`premioIndicacao - 8 - ${userId} - ${firstName} -  Crédito, saldo e status da promocão atualizados com sucesso`);
                 return;
             }).catch(error => {
-                console.error(`premioIndicacao - 8 - ${userId} - ${firstName} -  Erro ao atualizar dados do prêmio de indicacão. ${error}`);
+                console.error(new Error(`premioIndicacao - 8 - ${userId} - ${firstName} -  Erro ao atualizar dados do prêmio de indicacão. ${error}`))
             })
 
             // receberPremio = true;
@@ -840,7 +855,7 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
                 response.json({
                     "messages": [
                         {
-                            "text": `Olá ${firstName}, vamos ativar sua proteção.`
+                            "text": `Sua proteção está ligada! (firebase)`
                         }
                     ],
                     "set_attributes":
@@ -858,7 +873,7 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
 
         return receberPremio, data;
     }).catch(error => {
-        console.error(`premioIndicacao - 2 - ${userId} - ${firstName} -  Erro ao recuperar usuário na base de dados. ${error}`);
+        console.error(new Error(`premioIndicacao - 2 - ${userId} - ${firstName} -  Erro ao recuperar usuário na base de dados. ${error}`))
     })
 
     console.log(`premioIndicacao - 5 ${userId} - ${firstName} -  Atributo de receber prêmio: ${receberPremio}.`);
@@ -932,8 +947,11 @@ const calculaGasto = (carValue, response) =>{
             response.json({
                 "messages": [
                     {
-                        "text": "Ainda não estamos trabalhando com veículos nessa faixa de preço, por favor entre em contato com nossa equipe de suporte."
+                        "text": "Para veículos acima de duzentos mil estamos fazendo uma lista de espera. Vou te colocar em contato com nossos especialistas para que eles possam te explicar melhor a situação."
                     }
+                ],
+                "redirect_to_blocks": [
+                    "Human interaction"
                 ]
             })
         }
@@ -960,10 +978,10 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
         
                 apiRequest.end(res => {
                     if (res.error){
-                        console.error(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Falha em recuperar ID: ${JSON.stringify(res.error)}`);
+                        console.error(new Error(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Falha em recuperar ID: ${JSON.stringify(res.error)}`))
                         reject(res.error)
                     } else if (res.body[0] === undefined || res.length === 0) {
-                        console.error(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Falha em recuperar ID Array vazio: ${JSON.stringify(res)}`);
+                        console.error(new Error(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Falha em recuperar ID Array vazio: ${JSON.stringify(res)}`))
                         reject(res)
                         // array empty or does not exist
                     } else {
@@ -990,7 +1008,7 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
             console.log(`2 - wpClientRequest - pegaIdCliente - ${userId} - ${firstName} -  Id de cliente recuperado com sucesso. ${result}. Chamando funcão de gravar ID no DB`);
             return pegaSaldoCarteira(userId, perfilUser, dataApi, promise, tokenWallet, firstName, response);
         }).catch(error => {
-            console.error(error);
+            console.error(new Error(`2 - wpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Erro ao tentar recuperar id de cliente ${error}`))
             response.json({
                     "messages": [
                         {
@@ -1026,7 +1044,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             
             apiRequest.end(res => {
                 if (res.error){
-                    console.error(`2 - promiseWalletApiRequest - pegaSaldoCarteira - ${userId} - ${firstName} - Falha em pegar o saldo: ${JSON.stringify(res.error)}`);
+                    console.error(new Error(`2 - promiseWalletApiRequest - pegaSaldoCarteira - ${userId} - ${firstName} - Falha em pegar o saldo: ${JSON.stringify(res.error)}`))
                     reject(res.error)
                 } else {
                     console.log(`2 - promiseWalletApiRequest - pegaSaldoCarteira - ${userId} - ${firstName} - Consulta de saldo feito com sucesso na carteira: ${JSON.stringify(res.body)}`);
@@ -1059,7 +1077,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
                 console.log(`2 - promiseGravaSaldoDb - pegaSaldoCarteira - ${userId} - ${firstName} - Adicão de saldo feito com sucesso no banco.`);
                 return resolve(perfil);
             }).catch(error => {
-                console.error(`2 - promiseGravaSaldoDb - pedaSaldoCarteira - ${userId} - ${firstName} - Falha na atualizacão do bando de dados. Saldo desatualizado ${error}`);
+                console.error(new Error(`2 - promiseGravaSaldoDb - pedaSaldoCarteira - ${userId} - ${firstName} - Falha na atualizacão do bando de dados. Saldo desatualizado ${error}`))
                 reject(error)
             })
         })
@@ -1076,7 +1094,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             return response.json({
                 "messages": [
                     {
-                      "text": `Olá ${firstName}! Terminei de verificar seus dados com sucesso e já posso começar a te proteger. Antes que eu me esqueça, valor do minuto da sua protecão vai ser de R$${valorMinuto/1000} por minuto ou ${valorMinuto} créditos por minuto. Está pronto pra começar?`
+                      "text": `Opa ${firstName}! Terminei de verificar seus dados com sucesso e já posso começar a te proteger. Antes que eu me esqueça, valor do minuto da sua protecão vai ser de R$${valorMinuto/1000} por minuto ou ${valorMinuto} créditos por minuto. Está pronto pra começar?`
                     }
                 ],
                 "set_attributes":
@@ -1088,7 +1106,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
                 }
             });
         }).catch(error => {
-            console.error(`2 - gravaSaldoDb - pegaSaldoCarteira - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`);
+            console.error(new Error(`2 - gravaSaldoDb - pegaSaldoCarteira - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`))
             response.json({
                     "messages": [
                         {
@@ -1112,7 +1130,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             console.log(`2 - walletApiRequest - pegaSaldoCarteira - ${userId} - ${firstName} -  Saldo da carteira recuperado com sucesso. ${result}. Chamando funcão de gravar saldo no DB`);
             return gravaSaldoDb(response);
         }).catch(error => {
-            console.error(error);
+            console.error(new Error(`2 - walletApiRequest - pegaSaldoCarteira - ${userId} - ${firstName} - Tivemos um problema para recuperar seu saldo em nosso servidor ${error}`));
             response.json({
                     "messages": [
                         {
