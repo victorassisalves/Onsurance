@@ -172,7 +172,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 Promise.all([attProtecaoUser, attLogUsoPerfilUser]).then(() => {
                     console.log(`executaLigarProtecao - ligarProtecao - 2 - ${userId} - ${firstName} - Promises executadas com sucesso. Ligando protecão`);
                     if (numAtivacao >= 1) {
-                        console.log(`ligarProtecao - 4 - ${userId} - ${firstName} -  chamando funcão premioIndicacão. numAtivacao: ${numAtivacao}`);
+                        console.log(`ligarProtecao - 4 - ${userId} - ${firstName} -  chamando funcão premioIndicacão if ativacão > 0. numAtivacao: ${numAtivacao}`);
 
                         // Inicia verificacão para premiacão do usuário por 10 indicacões
                         var receberPremio = false;
@@ -301,15 +301,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             console.log(`1 - executaDesligarProtecao - desligarProtecao - ${userId} - ${firstName} - Funcão que executa as promises de desligar a protecão.`);
                 
                 Promise.all([descontaDesligarWallet, attPerfilUser, attLogUsoPerfilUser]).then(() => {
-                    console.log(`2 - executaDesligarProtecao - desligarProtecao - ${userId} - ${firstName} - Promises executadas com sucesso. Desligando protecão 
-                    "ESTADOPROTEÇÃOCARRO": ${estadoProtecao},
-                    "user-credit": ${perfilUser.saldoCreditos},
-                    "user-money": ${perfilUser.saldoDinheiro},
-                    "valorconsumido": ${valorConsumido},
-                    "dias": ${dias},
-                    "horas": ${horas},
-                    "minutos": ${minutos},
-                    "segundos": ${segundos}`);
+                    console.log(`2 - executaDesligarProtecao - desligarProtecao - ${userId} - ${firstName} - Promises executadas. Desligando protecão.`);
                     return response.json({
                         "messages": [
                             {
@@ -627,7 +619,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             response.json({
                     "messages": [
                         {
-                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
                         }
                     ],
                     "redirect_to_blocks": [
@@ -700,7 +692,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             response.json({
                                     "messages": [
                                         {
-                                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
                                         }
                                     ],
                                     "redirect_to_blocks": [
@@ -741,7 +733,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             response.json({
                                     "messages": [
                                         {
-                                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
                                         }
                                     ],
                                     "redirect_to_blocks": [
@@ -820,7 +812,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             response.json({
                                 "messages": [
                                     {
-                                        "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                                        "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
                                     }
                                 ],
                                 "redirect_to_blocks": [
@@ -832,8 +824,6 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                     }
 
                     executaPromises(response, ligarProtecao)
-
-
                 }
             
             return ;
@@ -842,7 +832,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             response.json({
                     "messages": [
                         {
-                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
                         }
                     ],
                     "redirect_to_blocks": [
@@ -1101,7 +1091,7 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
             response.json({
                     "messages": [
                         {
-                            "text": `Olá! Identifiquei um pequeno erro. Não consegui recuperar seus dados em nosso servidor. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                            "text": `Olá! Identifiquei um pequeno erro. Não consegui recuperar seus dados em nosso servidor. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
                         }
                     ],
                     "redirect_to_blocks": [
@@ -1183,7 +1173,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             return response.json({
                 "messages": [
                     {
-                      "text": `Opa ${firstName}! Terminei de verificar seus dados com sucesso e já posso começar a te proteger. Antes que eu me esqueça, valor do minuto da sua protecão vai ser de R$${valorMinuto/1000} por minuto ou ${valorMinuto} créditos por minuto. Está pronto pra começar?`
+                      "text": `Opa ${firstName}! Terminei de verificar seus dados com sucesso e já posso começar a te proteger. Antes que eu me esqueça, valor do minuto da sua protecão vai ser de R$${valorMinuto/1000} ou ${valorMinuto} créditos por minuto. Está pronto pra começar?`
                     }
                 ],
                 "set_attributes":
@@ -1199,7 +1189,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             response.json({
                     "messages": [
                         {
-                          "text": `Olá! Identifiquei um pequeno erro. Não consegui atualizar as informações no banco de dados. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                          "text": `Olá! Identifiquei um pequeno erro. Não consegui gravar seus dados em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
                         }
                     ],
                     "redirect_to_blocks": [
@@ -1223,7 +1213,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             response.json({
                     "messages": [
                         {
-                          "text": `Olá! Identifiquei um pequeno erro. Não consegui recuperar seu saldo em nosso servidor. Preciso que você reinforme seus dados e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                          "text": `Olá! Identifiquei um pequeno erro. Não consegui recuperar seu saldo em nosso servidor. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
                         }
                     ],
                     "redirect_to_blocks": [
