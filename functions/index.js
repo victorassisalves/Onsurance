@@ -116,7 +116,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
     // Funcão para acionar a protecão
     const ligarProtecao = () => {
-        console.log(`ligarProtecao - 1 - ${userId} - ${firstName} -  Ligando proteção`);
+        console.log(`ligarProtecao - 1 - ${userId} - ${firstName} -  Funcão Ligar proteção`);
 
         // Gera timeStamp do inicio da protecão
         inicioProtecao = Date.now()/1000|0;
@@ -137,26 +137,73 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         }
 
         // Atualiza o banco de dados do usuário
-        promise.update({
-            qtdAtivacao: numeroAtivacoes,
-            estadoProtecao: estadoProtecao,
-        }).then(() => {
-            console.log(`ligarProtecao - 2 - ${userId} - ${firstName} -  usuário atualizado no Banco`);
-            return;
-        }).catch(error => {
-            console.error(new Error(`ligarProtecao - 2 - Erro ao atualizar usuário no banco ${error}`));
-        });
+        let attProtecaoUser = new Promise((resolve, reject) => {
+            console.log(`ligarProtecao - 2 - ${userId} - ${firstName} -  promise atualiza status ligar proteção no DB`);
+
+            promise.update({
+                qtdAtivacao: numeroAtivacoes,
+                estadoProtecao: estadoProtecao,
+            }).then(() => {
+                console.log(`ligarProtecao - 3 - ${userId} - ${firstName} -  usuário atualizado no Banco`);
+                return resolve(true);
+            }).catch(error => {
+                console.error(new Error(`ligarProtecao - 3 - Erro ao atualizar usuário no banco ${error}`));
+                reject(error)
+            });
+        })
+        
         // Atualiza o log de uso no banco de dados
-        promise.child(`/logUse/${numeroAtivacoes}`).update(logUso).then( () => {
-            console.log(`ligarProtecao - 3 - ${userId} - ${firstName} -  Log de uso atualizado no banco.`);
-            return;
-        }).catch(error => {
-            console.error(new Error(`ligarProtecao - 3 - ${userId} - ${firstName} -  Erro ao atualizar log de uso no banco. ${error}`));
-        });
+        let attLogUsoPerfilUser = new Promise((resolve, reject) => {
+            console.log(`ligarProtecao - 4 - ${userId} - ${firstName} -  promise atualiza log uso ligar no DB`);
+
+            promise.child(`/logUse/${numeroAtivacoes}`).update(logUso).then( () => {
+                console.log(`ligarProtecao - 5 - ${userId} - ${firstName} -  Log de uso atualizado no banco.`);
+                return resolve(true);
+            }).catch(error => {
+                console.error(new Error(`ligarProtecao - 5 - ${userId} - ${firstName} -  Erro ao atualizar log de uso no banco. ${error}`));
+                reject(error)
+            });
+
+        })
       
-        console.log(`ligarProtecao - 4 - ${userId} - ${firstName} -  Final da funcão de ligar protecão`);
+        const executaLigarProtecao = (response) => {
+            console.log(`executaLigarProtecao - ligarProtecao - 1 - ${userId} - ${firstName} - Funcão que executa as promises de ligar a protecão.`);
+                
+                Promise.all([attProtecaoUser, attLogUsoPerfilUser]).then(() => {
+                    console.log(`executaLigarProtecao - ligarProtecao - 2 - ${userId} - ${firstName} - Promises executadas com sucesso. Ligando protecão`);
+                    if (numAtivacao >= 1) {
+                        console.log(`ligarProtecao - 4 - ${userId} - ${firstName} -  chamando funcão premioIndicacão. numAtivacao: ${numAtivacao}`);
+
+                        // Inicia verificacão para premiacão do usuário por 10 indicacões
+                        var receberPremio = false;
+                        // Chama funcão de premiacão e de resposta 
+                        premioIndicacao(userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response, carModel, tokenWallet)
+                }
+                    return 
+                }).catch(error => {
+                    console.error(new Error(`executaLigarProtecao - ligarProtecao - 2 - ${userId} - ${firstName} -  Erro ao executar promises. Protecão não Ligada ${error}`))
+                    response.json({
+                        "messages": [
+                            {
+                                "text": `Opa ${firstName}. Não consegui ligar sua proteção. Vou trazer a função de Ligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                            }
+                        ],
+                        "set_attributes":
+                        {
+                            "ESTADOPROTEÇÃOCARRO": `OFF-H`,
+                        },
+                        "redirect_to_blocks": [
+                            "Ligar homologação"
+                        ]
+                    })
+                })
+
+        }
+
+        executaLigarProtecao(response)     
+        
         return inicioProtecao;
-    };
+    }
 
     const desligarProtecao = () => {
         console.log(`desligarProtecao - 1 - ${userId} - ${firstName} -  Funcão desligar proteção`);
@@ -197,7 +244,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         };
 
 
-        var attPerfilUser = new Promise((resolve, reject) => {
+        let attPerfilUser = new Promise((resolve, reject) => {
             
             // Salva no banco de dados o resultado do desligamento e atualiza o banco de dados
             promise.update({
@@ -213,7 +260,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             });
         })
 
-        var attLogUsoPerfilUser = new Promise((resolve, reject) => {
+        let attLogUsoPerfilUser = new Promise((resolve, reject) => {
             // atualizar log de uso
             promise.child(`/logUse/${numeroAtivacoes}`).update(logUso).then(() =>{
                 console.log(`desligarProtecao - 6 - ${userId} - ${firstName} -  Log de uso atualizado no banco`);
@@ -226,7 +273,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
         // Desconta saldo na woowallet ao realizar o desligamento
         // post method para descontar na carteira o valor consumido.
-        var descontaDesligarWallet = new Promise((resolve, reject) => {
+        let descontaDesligarWallet = new Promise((resolve, reject) => {
         
             var req = unirest("post", `https://onsurance.me/wp-json/wp/v2/wallet/${idCliente}`);
 
@@ -253,7 +300,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         const executaDesligarProtecao = (response) => {
             console.log(`1 - executaDesligarProtecao - desligarProtecao - ${userId} - ${firstName} - Funcão que executa as promises de desligar a protecão.`);
                 
-                Promise.all([attPerfilUser, attLogUsoPerfilUser, descontaDesligarWallet]).then(() => {
+                Promise.all([descontaDesligarWallet, attPerfilUser, attLogUsoPerfilUser]).then(() => {
                     console.log(`2 - executaDesligarProtecao - desligarProtecao - ${userId} - ${firstName} - Promises executadas com sucesso. Desligando protecão 
                     "ESTADOPROTEÇÃOCARRO": ${estadoProtecao},
                     "user-credit": ${perfilUser.saldoCreditos},
@@ -266,7 +313,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                     return response.json({
                         "messages": [
                             {
-                                "text": "Sua proteção está desligada! Rapá"
+                                "text": "Sua proteção está desligada!"
                             }
                         ],
                         "set_attributes":
@@ -292,6 +339,10 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                                 "text": `Opa ${firstName}. Não consegui desligar sua proteção. Vou trazer a função de Desligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
                             }
                         ],
+                        "set_attributes":
+                        {
+                            "ESTADOPROTEÇÃOCARRO": `ON-H`,
+                        },
                         "redirect_to_blocks": [
                             "Desligar homologação"
                         ]
@@ -314,11 +365,6 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         // Chama a funcão de ligar a protecão
         ligarProtecao();
 
-        // Inicia verificacão para premiacão do usuário por 10 indicacões
-        var receberPremio = false;
-        // Chama funcão de premiacão e de resposta 
-        premioIndicacao(userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response, carModel, tokenWallet)
-
     //Protecão ligada. Desliga a proteão
     } else if (estadoProtecao === "ON-H" && numeroAtivacoes >= 1) {
         console.log(`ligaDesligaProtecao - 4 - ${userId} - ${firstName} -  Protecão ligada e número de ativacões maior que 0. ${numeroAtivacoes}`); 
@@ -327,14 +373,14 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
     //primeira ativacão
     if (numeroAtivacoes === 0) {
-        console.log(`PrimeiraAtivação - 1 - ${userId} - ${firstName} -  Primeira ativacão do usuário.`);
+        console.log(`PrimeiraAtivação - 1 - ${userId} - ${firstName} -  Primeira ativacão.`);
 
         criaNovoUsuario(perfilUser, userId, promise, indicadorPromise, promiseIndicadorUser, response, firstName, ligarProtecao);
         
         setTimeout(() => {
             promise.once('value').then(snapshot => {
                 var data = snapshot.val() 
-                console.log(`Dados recuperados e retorno imediato`);
+                console.log(`PrimeiraAtivação - 2 - Dados recuperados e retorno imediato`);
                 return response.json({
                     "messages": [
                         {
@@ -352,7 +398,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                         ]
                 });
             }).catch(error => {
-                console.error(new Error(`2 - atualizaNumIndicadosUserDb - criaNovoUsuario - ${userId} - ${firstName} - Falha ao recuperar user ${error}`));
+                console.error(new Error(`PrimeiraAtivação - 2 - ${userId} - ${firstName} - Falha ao recuperar user ${error}`));
                 response.json({
                     "messages": [
                         {
@@ -369,7 +415,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                         ]
                 });
             })
-        }, 1000)
+        }, 1500)
         
     }
 });
@@ -810,23 +856,22 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
 
 // Checa numero de indicações e premia se usuário atingir requisitos
 const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response, carModel, tokenWallet) => {
-    console.log(`premioIndicacao - 1 - ${userId} - ${firstName} -  Entrando na funcão de premiacão por numero de indicacão`);
+    console.log(`premioIndicacao - 1 - ${userId} - ${firstName} -  Funcão de premiacão por numero de indicacão`);
     
     var data;
     // recupera dados do usuário no Banco de dados
     promise.once('value').then(snapshot => {
         data = snapshot.val();
-        console.log(`premioIndicacao - 2 - ${userId} - ${firstName} -  Dados do Usuário recuperado: ${JSON.stringify(data)}`);
-        console.log(`premioIndicacao - 3 - ${userId} - ${firstName} -  Usuário com: ${data.usuariosIndicados} indicados`);
+        console.log(`premioIndicacao - 2 - ${userId} - ${firstName} -  Dados do Usuário recuperado: ${data.usuariosIndicados} indicados. recebeu promocão: ${data.recebeuPromocao}`);
 
         // checa se número de indicados atingiu mais de 10 pela primeira vez
         // Se o usuário atingiu os requisitos necessários para receber o prênmio
         if (parseInt(data.usuariosIndicados) >= 10 && data.recebeuPromocao === false) {
-            console.log(`premioIndicacao - 4 - ${userId} - ${firstName} -  Usuário com mais de 10 indicados: ${data.usuariosIndicados}`);
+            console.log(`premioIndicacao - 3 - ${userId} - ${firstName} -  Usuário vai receber prêmio por indicacão.`);
             var creditoPlus = data.saldoCreditos + 1000000;
             var saldoPlus = parseFloat(data.saldoDinheiro) + 1000;
 
-            console.log(`premioIndicacao - 5 - ${userId} - ${firstName} -  Iniciando o crédito na woowaleet. IdCliente: ${data.idCliente}`);
+            console.log(`premioIndicacao - 4 - ${userId} - ${firstName} -  Iniciando o crédito na woowaleet. IdCliente: ${data.idCliente}`);
             
             // Faz a conexão com o woowallet e credita 1000 reais
             var req = unirest("post", `https://onsurance.me/wp-json/wp/v2/wallet/${data.idCliente}`);
@@ -843,9 +888,9 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
             
             req.end(res => {
                 if (res.error){
-                    console.error(new Error(`premioIndicacao - 6 - ${userId} - ${firstName} -  Prêmio de indicacão não creditado com sucesso: ${JSON.stringify(res.error)}`))
+                    console.error(new Error(`premioIndicacao - 5 - ${userId} - ${firstName} -  Prêmio de indicacão não creditado: ${JSON.stringify(res.error)}`))
                 } else {
-                    console.log(`premioIndicacao - 7 - ${userId} - ${firstName} -  Prêmio de indicacão creditado com sucesso!!!: ${JSON.stringify(res.body)}`);
+                    console.log(`premioIndicacao - 5 - ${userId} - ${firstName} -  Prêmio de indicacão creditado!!! ${JSON.stringify(res.body)}`);
                     receberPremio = true;
                 }
             });
@@ -856,18 +901,14 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
                 saldoDinheiro: saldoPlus,
                 recebeuPromocao: true
             }).then( () => {
-                console.log(`premioIndicacao - 8 - ${userId} - ${firstName} -  Crédito, saldo e status da promocão atualizados com sucesso`);
+                console.log(`premioIndicacao - 6 - ${userId} - ${firstName} -  Crédito, saldo e status da promocão atualizados no banco.`);
                 return;
             }).catch(error => {
-                console.error(new Error(`premioIndicacao - 8 - ${userId} - ${firstName} -  Erro ao atualizar dados do prêmio de indicacão. ${error}`))
+                console.error(new Error(`premioIndicacao - 6 - ${userId} - ${firstName} -  Erro ao atualizar ganho de prêmio no banco. ${error}`))
             })
 
-            // receberPremio = true;
-            console.log('receberPremio: ', receberPremio);
-           
             // Adicionar os valores atualizados para as variáveis de usuário
-            console.log(`premioIndicacao - 9 - ${userId} - ${firstName} -  Usuário qualificado para receber prêmio por indicacão.`);
-            console.log(`premioIndicacao - 10 - ${userId} - ${firstName} -  Finaliza premiacão e a ativacão da protecão e manda a resposta.`);
+            console.log(`premioIndicacao - 8 - ${userId} - ${firstName} -  Finaliza premiacão e a ativacão da protecão.`);
             response.json({
                 "set_attributes":
                 {
@@ -885,9 +926,9 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
 
         // Caso usuário não tenha atingido os requisitos para receber prêmio
         } else if (data.usuariosIndicados < 10 || data.recebeuPromocao === true){
-            console.log(`premioIndicacao - 4 - ${userId} - ${firstName} -  Usuário com menos de 10 indicados ou já recebeu a promocão: ${data.usuariosIndicados}, ${data.recebeuPromocao}`);
+            console.log(`premioIndicacao - 4 - ${userId} - ${firstName} -  Não tem requisitos para receber promocão: ${data.usuariosIndicados} indicados, recebeu promo: ${data.recebeuPromocao}`);
             receberPremio = false;
-            console.log(`premioIndicacao - 5 - ${userId} - ${firstName} -  Finaliza a ativacão da protecão e manda a resposta.`);
+            console.log(`premioIndicacao - 5 - ${userId} - ${firstName} -  Ligando protecão.`);
     
                 response.json({
                     "messages": [
@@ -911,10 +952,21 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
         return receberPremio, data;
     }).catch(error => {
         console.error(new Error(`premioIndicacao - 2 - ${userId} - ${firstName} -  Erro ao recuperar usuário na base de dados. ${error}`))
+        response.json({
+            "messages": [
+                {
+                    "text": `Opa ${firstName}. Não consegui desligar sua proteção. Vou trazer a função de Desligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                }
+            ],
+            "set_attributes":
+            {
+                "ESTADOPROTEÇÃOCARRO": `ON-H`,
+            },
+            "redirect_to_blocks": [
+                "Desligar homologação"
+            ]
+        })
     })
-
-    console.log(`premioIndicacao - 5 ${userId} - ${firstName} -  Atributo de receber prêmio: ${receberPremio}.`);
-    console.log(`premioIndicacao - 6 ${userId} - ${firstName} -  Final da funcão de premiar usuário por indicacão`);
 }
 
 const calculaGasto = (carValue, response) =>{
