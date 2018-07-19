@@ -3,10 +3,7 @@ const functions = require('firebase-functions');
  // Initialize Firebase
  const admin = require('firebase-admin');
 
- const axios = require('axios');
  var unirest = require("unirest");
-
-
 
 admin.initializeApp({
     apiKey: "AIzaSyD8RCBaeju-ieUb9Ya0rUSJg9OGtSlPPXM",
@@ -21,7 +18,7 @@ admin.initializeApp({
 
 // Função que pega os atributos no chatfuel e identifica se Proteção está On / Off
 exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
-    console.log(`ligaDesligaProtecao - 1 - ${request.query["chatfuel user id"]} - Entrando na funcão Liga/Desliga a protecão:  ${JSON.stringify(request.query)}`);
+    console.log(`1 - ${request.query["chatfuel user id"]} - Entrando na funcão Liga/Desliga a protecão:  ${JSON.stringify(request.query)}`);
 
     // Recebe os parâmetros do chatfuel
     // Dados do usuário
@@ -86,7 +83,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
     // Pega a data com dia da semana para colocar no banco de dados
     const getDate = (date) =>{
-        console.log(`getDate - 1 - ${userId} - ${firstName} - Iniciando funcão para pegar o dia da semana`);
+        console.log(`getDate - 1 - ${userId} - ${firstName} - Funcão para pegar o dia da semana`);
         data = new Date(date);
         
         // Transforma o dia da semana em palavra
@@ -113,7 +110,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 diaSemana = "Sábado";
                 break;
         }
-        console.log(`getDate - 2 - ${userId} - ${firstName} - Data e dia da semana recebidos com sucesso: ${data}, ${diaSemana}`);
+        console.log(`getDate - 2 - ${userId} - ${firstName} - Data e dia da semana recebidos: ${data}, ${diaSemana}`);
         return data;        
     }
 
@@ -144,17 +141,17 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             qtdAtivacao: numeroAtivacoes,
             estadoProtecao: estadoProtecao,
         }).then(() => {
-            console.log(`ligarProtecao - 2 - ${userId} - ${firstName} -  usuário atualizado com sucesso no banco de dados`);
+            console.log(`ligarProtecao - 2 - ${userId} - ${firstName} -  usuário atualizado no Banco`);
             return;
         }).catch(error => {
-            console.error(new Error(`ligarProtecao - 2 - Erro na atualizacão do usuário no banco ${error}`));
+            console.error(new Error(`ligarProtecao - 2 - Erro ao atualizar usuário no banco ${error}`));
         });
         // Atualiza o log de uso no banco de dados
         promise.child(`/logUse/${numeroAtivacoes}`).update(logUso).then( () => {
-            console.log(`ligarProtecao - 3 - ${userId} - ${firstName} -  Log de uso atualizado com sucesso no banco de dados`);
+            console.log(`ligarProtecao - 3 - ${userId} - ${firstName} -  Log de uso atualizado no banco.`);
             return;
         }).catch(error => {
-            console.error(new Error(`ligarProtecao - 3 - ${userId} - ${firstName} -  Erro na atualizacão do log de uso no banco de dados. ${error}`));
+            console.error(new Error(`ligarProtecao - 3 - ${userId} - ${firstName} -  Erro ao atualizar log de uso no banco. ${error}`));
         });
       
         console.log(`ligarProtecao - 4 - ${userId} - ${firstName} -  Final da funcão de ligar protecão`);
@@ -162,7 +159,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
     };
 
     const desligarProtecao = () => {
-        console.log(`desligarProtecao - 1 - ${userId} - ${firstName} -  Inicio da funcão desligar proteção`);
+        console.log(`desligarProtecao - 1 - ${userId} - ${firstName} -  Funcão desligar proteção`);
         // Desliga a proteção, alterando o atributo ESTADOPROTEÇÃOCARRO do chatfuel
         estadoProtecao = "OFF-H";
         getDate(Date.now());
@@ -177,7 +174,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         var minutos = (minTotais - (horas * 60)); // TimeDiffMinnutes
         var segundos = (tempoProtecao - (minTotais*60)); // TimeDiffSeconds
 
-            console.log(`desligarProtecao - 2 - ${userId} - ${firstName} -  tempo de proteão maior que 2 minutos: ${tempoProtecao/60|0}`);
+            console.log(`desligarProtecao - 2 - ${userId} - ${firstName} -  tempo de proteção: ${tempoProtecao/60|0}`);
             // Calcula o valor conumido baseado no tempo de uso. 
             if (segundos >= 30){
                 valorConsumido = (Math.ceil(tempoProtecao/60))*valorMinuto;
@@ -189,7 +186,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         
         perfilUser.saldoCreditos = userCredit - valorConsumido;
         perfilUser.saldoDinheiro = (userMoney - (valorConsumido/1000)).toFixed(3); 
-        console.log(`desligarProtecao - 4.5 - ${userId} - ${firstName} -  Valor consumido calculado com sucesso. ${valorConsumido}`);
+        console.log(`desligarProtecao - 4.5 - ${userId} - ${firstName} -  Valor consumido: ${valorConsumido}`);
 
         // Objeto com dados do desligamento da proteção
         var logUso = {
@@ -199,75 +196,116 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             saldoFinal: perfilUser.saldoCreditos
         };
 
-        // Salva no banco de dados o resultado do desligamento e atualiza o banco de dados
-        promise.update({
-            saldoCreditos: perfilUser.saldoCreditos,
-            saldoDinheiro: perfilUser.saldoDinheiro,
-            estadoProtecao: estadoProtecao,
-        }).then(() =>{
-            console.log(`desligarProtecao - 5 - ${userId} - ${firstName} -  Dados de consumo no desligamento da protecão salvos com sucesso no banco de dados.`);
-            return;
-        }).catch(error =>{
-            console.error(new Error(`desligarProtecao - 5 - ${userId} - ${firstName} -  Erro ao slavar dados de encerramento da protecão no banco de dados. ${error}`));
-        });
 
-        // atualizar log de uso
-        promise.child(`/logUse/${numeroAtivacoes}`).update(logUso).then(() =>{
-            console.log(`desligarProtecao - 6 - ${userId} - ${firstName} -  Log de uso atualizado com sucesso no banco`);
-            return;
-        }).catch(error =>{
-            console.error(new Error(`desligarProtecao - 6 - ${userId} - ${firstName} -  Erro ao atualizar log de uso. ${error}`));
-        });
+        var attPerfilUser = new Promise((resolve, reject) => {
+            
+            // Salva no banco de dados o resultado do desligamento e atualiza o banco de dados
+            promise.update({
+                saldoCreditos: perfilUser.saldoCreditos,
+                saldoDinheiro: perfilUser.saldoDinheiro,
+                estadoProtecao: estadoProtecao,
+            }).then(() =>{
+                console.log(`desligarProtecao - 5 - ${userId} - ${firstName} -  Consumo do desligamento salvo no banco.`);
+                return resolve(true)
+            }).catch(error =>{
+                console.error(new Error(`desligarProtecao - 5 - ${userId} - ${firstName} -  Erro ao slavar dados de encerramento da protecão no banco de dados. ${error}`));
+                reject(error)
+            });
+        })
+
+        var attLogUsoPerfilUser = new Promise((resolve, reject) => {
+            // atualizar log de uso
+            promise.child(`/logUse/${numeroAtivacoes}`).update(logUso).then(() =>{
+                console.log(`desligarProtecao - 6 - ${userId} - ${firstName} -  Log de uso atualizado no banco`);
+                return resolve(true);
+            }).catch(error =>{
+                console.error(new Error(`desligarProtecao - 6 - ${userId} - ${firstName} -  Erro ao atualizar log de uso. ${error}`));
+                reject(error)
+            });
+        })
 
         // Desconta saldo na woowallet ao realizar o desligamento
         // post method para descontar na carteira o valor consumido.
-        console.log(`7 - desligarProtecão - ${userId} - ${firstName} -   Entrando no Post para descontar saldo da carteira. Id cliente: ${idCliente}`);
-        var req = unirest("post", `https://onsurance.me/wp-json/wp/v2/wallet/${idCliente}`);
+        var descontaDesligarWallet = new Promise((resolve, reject) => {
+        
+            var req = unirest("post", `https://onsurance.me/wp-json/wp/v2/wallet/${idCliente}`);
 
-        req.query({
-        "type": "debit",
-        "amount": `${valorConsumido}`,
-        "details": `Desconto do uso da protecão Onsurance. Detalhes do uso. Início da protecão: ${timeStart}, ${JSON.stringify(logUso)}`
-        });
-        
-        req.headers({
-        "Authorization": `Bearer ${tokenWallet}`});
-        
-        req.end(res => {
-            if (res.error){
-                console.error(new Error(`DesligarProteção - 8 - ${userId} - ${firstName} -  Desconto não realizado: ${JSON.stringify(res.error)}`));
-            } else {
-                console.log(`DesligarProteção - 8 - ${userId} - ${firstName} -  Desconto feito com sucesso na carteira: ${JSON.stringify(res.body)}`);
-            }
-        });
+            req.query({
+            "type": "debit",
+            "amount": `${valorConsumido}`,
+            "details": `Desconto do uso da protecão Onsurance. Detalhes do uso. Início da protecão: ${timeStart}, ${JSON.stringify(logUso)}`
+            });
             
-        console.log(`desligarProtecao - 9 - ${userId} - ${firstName} -  Indo para resposta Json. Final da funcão`);
-        response.json({
-            "messages": [
-                {
-                    "text": "Sua proteção está desligada!"
+            req.headers({
+            "Authorization": `Bearer ${tokenWallet}`});
+            
+            req.end(res => {
+                if (res.error){
+                    console.error(new Error(`DesligarProteção - 8 - ${userId} - ${firstName} -  Desconto não realizado no wallet: ${JSON.stringify(res.error)}`));
+                    reject(res.error)
+                } else {
+                    console.log(`DesligarProteção - 8 - ${userId} - ${firstName} -  Desconto feito com sucesso no wallet: ${JSON.stringify(res.body)}`);
+                    resolve(res.body)
                 }
-            ],
-            "set_attributes":
-                {
-                    "ESTADOPROTEÇÃOCARRO": estadoProtecao,
-                    "user-credit": perfilUser.saldoCreditos,
-                    "user-money": perfilUser.saldoDinheiro,
-                    "valorconsumido": valorConsumido,
-                    "dias": dias,
-                    "horas": horas,
-                    "minutos": minutos,
-                    "segundos": segundos
-                },
-                "redirect_to_blocks": [
-                    "Pós Off"
-                ]
-        });
+            });
+        })
+
+        const executaDesligarProtecao = (response) => {
+            console.log(`1 - executaDesligarProtecao - desligarProtecao - ${userId} - ${firstName} - Funcão que executa as promises de desligar a protecão.`);
+                
+                Promise.all([attPerfilUser, attLogUsoPerfilUser, descontaDesligarWallet]).then(() => {
+                    console.log(`2 - executaDesligarProtecao - desligarProtecao - ${userId} - ${firstName} - Promises executadas com sucesso. Desligando protecão 
+                    "ESTADOPROTEÇÃOCARRO": ${estadoProtecao},
+                    "user-credit": ${perfilUser.saldoCreditos},
+                    "user-money": ${perfilUser.saldoDinheiro},
+                    "valorconsumido": ${valorConsumido},
+                    "dias": ${dias},
+                    "horas": ${horas},
+                    "minutos": ${minutos},
+                    "segundos": ${segundos}`);
+                    return response.json({
+                        "messages": [
+                            {
+                                "text": "Sua proteção está desligada! Rapá"
+                            }
+                        ],
+                        "set_attributes":
+                            {
+                                "ESTADOPROTEÇÃOCARRO": estadoProtecao,
+                                "user-credit": perfilUser.saldoCreditos,
+                                "user-money": perfilUser.saldoDinheiro,
+                                "valorconsumido": valorConsumido,
+                                "dias": dias,
+                                "horas": horas,
+                                "minutos": minutos,
+                                "segundos": segundos
+                            },
+                            "redirect_to_blocks": [
+                                "Pós Off"
+                            ]
+                    });
+                }).catch(error => {
+                    console.error(new Error(`2 - executaDesligarProtecao - desligarProtecao - ${userId} - ${firstName} -  Erro ao executar promises. Protecão não desligada ${error}`))
+                    response.json({
+                        "messages": [
+                            {
+                                "text": `Opa ${firstName}. Não consegui desligar sua proteção. Vou trazer a função de Desligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                            }
+                        ],
+                        "redirect_to_blocks": [
+                            "Desligar homologação"
+                        ]
+                    })
+                })
+
+            }
+
+            executaDesligarProtecao(response)     
     }
 
     // Checa estado da proteção - Liga / Desliga
-    console.log(`ligaDesligaProtecao - 2 - ${userId} - ${firstName} -  Checa estado da protecão para acompanhamento de fluxo: ${estadoProtecao}`);
-    console.log(`ligaDesligaProtecao - 3 - ${userId} - ${firstName} -  Checa Número de ativacões para acompanhamento de fluxo: ${numeroAtivacoes}`);
+    console.log(`ligaDesligaProtecao - 2 - ${userId} - ${firstName} -  Estado da protecão: ${estadoProtecao}`);
+    console.log(`ligaDesligaProtecao - 3 - ${userId} - ${firstName} -  Número de ativacões: ${numeroAtivacoes}`);
 
     // Protecão desligada. Liga a Protecão
     if (estadoProtecao === "OFF-H" && numeroAtivacoes >= 1){
@@ -289,11 +327,10 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
     //primeira ativacão
     if (numeroAtivacoes === 0) {
-        console.log(`ligaDesligaProtecao - 4 - ${userId} - ${firstName} -  Primeira ativacão do usuário.`);
+        console.log(`PrimeiraAtivação - 1 - ${userId} - ${firstName} -  Primeira ativacão do usuário.`);
 
         criaNovoUsuario(perfilUser, userId, promise, indicadorPromise, promiseIndicadorUser, response, firstName, ligarProtecao);
         
-        console.log(`ligaDesligaProtecao - 5 final - ${userId} - ${firstName} -  Proteção ativada. Indo para retorno JSON.`);
         setTimeout(() => {
             promise.once('value').then(snapshot => {
                 var data = snapshot.val() 
