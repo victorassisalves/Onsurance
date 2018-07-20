@@ -148,6 +148,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 return resolve(true);
             }).catch(error => {
                 console.error(new Error(`ligarProtecao - 3 - Erro ao atualizar usuário no banco ${error}`));
+                console.error(new Error(error))
                 reject(error)
             });
         })
@@ -161,6 +162,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 return resolve(true);
             }).catch(error => {
                 console.error(new Error(`ligarProtecao - 5 - ${userId} - ${firstName} -  Erro ao atualizar log de uso no banco. ${error}`));
+                console.error(new Error(error))
                 reject(error)
             });
 
@@ -182,6 +184,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                     return 
                 }).catch(error => {
                     console.error(new Error(`executaLigarProtecao - ligarProtecao - 2 - ${userId} - ${firstName} -  Erro ao executar promises. Protecão não Ligada ${error}`))
+                    console.error(new Error(error))
                     response.json({
                         "messages": [
                             {
@@ -256,6 +259,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 return resolve(true)
             }).catch(error =>{
                 console.error(new Error(`desligarProtecao - 5 - ${userId} - ${firstName} -  Erro ao slavar dados de encerramento da protecão no banco de dados. ${error}`));
+                console.error(new Error(error))
                 reject(error)
             });
         })
@@ -267,6 +271,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 return resolve(true);
             }).catch(error =>{
                 console.error(new Error(`desligarProtecao - 6 - ${userId} - ${firstName} -  Erro ao atualizar log de uso. ${error}`));
+                console.error(new Error(error))
                 reject(error)
             });
         })
@@ -289,6 +294,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             req.end(res => {
                 if (res.error){
                     console.error(new Error(`DesligarProteção - 8 - ${userId} - ${firstName} -  Desconto não realizado no wallet: ${JSON.stringify(res.error)}`));
+                    console.error(new Error(res.error))
                     reject(res.error)
                 } else {
                     console.log(`DesligarProteção - 8 - ${userId} - ${firstName} -  Desconto feito com sucesso no wallet: ${JSON.stringify(res.body)}`);
@@ -325,6 +331,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                     });
                 }).catch(error => {
                     console.error(new Error(`2 - executaDesligarProtecao - desligarProtecao - ${userId} - ${firstName} -  Erro ao executar promises. Protecão não desligada ${error}`))
+                    console.error(new Error(error))
                     response.json({
                         "messages": [
                             {
@@ -391,6 +398,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 });
             }).catch(error => {
                 console.error(new Error(`PrimeiraAtivação - 2 - ${userId} - ${firstName} - Falha ao recuperar user ${error}`));
+                console.error(new Error(error))
                 response.json({
                     "messages": [
                         {
@@ -509,6 +517,7 @@ exports.calcPrecoMinuto = functions.https.onRequest((request, response) => {
     // Checa se valor informado é válido
     if (checaValor.includes(".") || checaValor.includes(",")) {
         console.log(`2 - ${userId} - ${firstName} -  usuário informou valor no modelo errado! ${carValue}`);
+        console.error(new Error(`2 - ${userId} - ${firstName} -  usuário informou valor no formato errado! ${carValue}`));
         response.json({
             "set_attributes":
             {
@@ -520,7 +529,7 @@ exports.calcPrecoMinuto = functions.https.onRequest((request, response) => {
                 }
             ],
             "redirect_to_blocks": [
-                "Informar Dados Faltantes"
+                "Informar preço erro homologação"
             ]
         });
     }
@@ -601,6 +610,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                 return resolve(true);
             }).catch(error => {
                 console.error(new Error(`2 promiseCriaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro na cricão do usuário. ${error}`))
+                console.error(new Error(error))
                 reject(error)
             })
         })
@@ -617,6 +627,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             return checaUserIndicadorDb(response, ligarProtecao);
         }).catch(error => {
             console.error(new Error(`2 - criaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`))
+            console.error(new Error(error))
             response.json({
                     "messages": [
                         {
@@ -644,6 +655,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             return resolve(data); 
             }).catch(error => {
                 console.error(new Error(`3 - promiseChecaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao receber dados do indicador. ${error}`))
+                console.error(new Error(error))
                 reject(error)
             })
         })
@@ -674,6 +686,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                                 return resolve(true);
                             }).catch(error => {
                                 console.error(new Error(`2 - promiseCriaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao criar usuário indicador. ${error}`))
+                                console.error(new Error(error))
                                 reject(error)
                             })
                         })
@@ -690,6 +703,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             return atualizaNumIndicadosUserDb(response, ligarProtecao);
                         }).catch(error => {
                             console.error(new Error(`2 - criaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`))
+                            console.error(new Error(error))
                             response.json({
                                     "messages": [
                                         {
@@ -716,6 +730,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                                 return resolve(true);
                             }).catch(error => {
                                 console.error(new Error(`1 - promiseAtualizaNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao atualizar usuário indicador. ${error}`));
+                                console.error(new Error(error))
                                 reject(error)
                             })
                         })
@@ -731,6 +746,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             return ligarProtecao()
                         }).catch(error => {
                             console.error(new Error(`2 - atualizaNumIndicadosUserDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`))
+                            console.error(new Error(error))
                             response.json({
                                     "messages": [
                                         {
@@ -768,6 +784,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             return resolve(true);
                         }).catch(error => {
                             console.error(new Error(`criaNovoUsuario - 6 - ${userId} - ${firstName} -  Erro ao atualizar o número pessoas indicadas. ${error}`))
+                            console.error(new Error(error))
                             reject(error)
                         })
                     })
@@ -782,6 +799,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             return resolve(true);
                         }).catch(error => {
                             console.error(new Error(`2 - promiseAtualizaArrayNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao adicionar usuário ao array de pessoas indicadas. ${error}`))
+                            console.error(new Error(error))
                             reject(error)
                         });
                     })
@@ -798,6 +816,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             return resolve(true)
                         }).catch(error => {
                             console.error(new Error(`2 - promiseAtualizaNumIndicadosUsersDb - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao atualizar o número de indicados na tabela Users. ${error}`))
+                            console.error(new Error(error))
                             reject(error)
                         })
                     })
@@ -810,6 +829,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             return ligarProtecao()
                         }).catch(error => {
                             console.error(new Error(`2 - executaPromises - criaNovoUsuario - ${userId} - ${firstName} -  Erro ao executar todas as promises. ${error}`))
+                            console.error(new Error(error))
                             response.json({
                                 "messages": [
                                     {
@@ -830,6 +850,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             return ;
         }).catch(error => {
             console.error(new Error(`2 - criaPerfilIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`))
+            console.error(new Error(error))
             response.json({
                     "messages": [
                         {
@@ -880,6 +901,7 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
             req.end(res => {
                 if (res.error){
                     console.error(new Error(`premioIndicacao - 5 - ${userId} - ${firstName} -  Prêmio de indicacão não creditado: ${JSON.stringify(res.error)}`))
+                    console.error(new Error(res.error))
                 } else {
                     console.log(`premioIndicacao - 5 - ${userId} - ${firstName} -  Prêmio de indicacão creditado!!! ${JSON.stringify(res.body)}`);
                     receberPremio = true;
@@ -896,6 +918,7 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
                 return;
             }).catch(error => {
                 console.error(new Error(`premioIndicacao - 6 - ${userId} - ${firstName} -  Erro ao atualizar ganho de prêmio no banco. ${error}`))
+                console.error(new Error(error))
             })
 
             // Adicionar os valores atualizados para as variáveis de usuário
@@ -943,6 +966,7 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
         return receberPremio, data;
     }).catch(error => {
         console.error(new Error(`premioIndicacao - 2 - ${userId} - ${firstName} -  Erro ao recuperar usuário na base de dados. ${error}`))
+        console.error(new Error(error))
         response.json({
             "messages": [
                 {
@@ -1059,11 +1083,13 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
                 apiRequest.end(res => {
                     if (res.error){
                         console.error(new Error(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Falha em recuperar ID: ${JSON.stringify(res.error)}`))
+                        console.error(new Error(res.error))
                         reject(res.error)
 
                         // array empty or does not exist
                     } else if (res.body[0] === undefined || res.length === 0) {
                         console.error(new Error(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Falha em recuperar ID Array vazio: ${JSON.stringify(res)}`))
+                        console.error(new Error(res.error))
                         reject(res)
                     } else {
                         console.log(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Consulta de ID feita com sucesso: ${res.body[0].id}`);
@@ -1090,6 +1116,7 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
             return pegaSaldoCarteira(userId, perfilUser, dataApi, promise, tokenWallet, firstName, response);
         }).catch(error => {
             console.error(new Error(`2 - wpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Erro ao tentar recuperar id de cliente ${error} - Status: ${error.status}`))
+            console.error(new Error(error))
             response.json({
                     "messages": [
                         {
@@ -1126,11 +1153,14 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             apiRequest.end(res => {
                 if (res.error){
                     console.error(new Error(`2 - promiseWalletApiRequest - pegaSaldoCarteira - ${userId} - ${firstName} - Falha em pegar o saldo: ${JSON.stringify(res.error)}`))
+                    console.error(new Error(res.error))
                     reject(res.error)
                 } else {
                     console.log(`2 - promiseWalletApiRequest - pegaSaldoCarteira - ${userId} - ${firstName} - Consulta de saldo feito com sucesso na carteira: ${JSON.stringify(res.body)}`);
-                    perfilUser.saldoCreditos = parseInt(res.body.toString())
+                    perfilUser.saldoCreditos = parseFloat(res.body.toString())                    
+                    console.log('perfilUser.saldoCreditos: ', perfilUser.saldoCreditos);
                     perfilUser.saldoDinheiro = (perfilUser.saldoCreditos/1000).toFixed(4)
+                    console.log('perfilUser.saldoDinheiro: ', perfilUser.saldoDinheiro);
                     resolve(res.status)
                 }
             
@@ -1159,6 +1189,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
                 return resolve(perfil);
             }).catch(error => {
                 console.error(new Error(`2 - promiseGravaSaldoDb - pedaSaldoCarteira - ${userId} - ${firstName} - Falha na atualizacão do bando de dados. Saldo desatualizado ${error}`))
+                console.error(new Error(error))
                 reject(error)
             })
         })
@@ -1188,6 +1219,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             });
         }).catch(error => {
             console.error(new Error(`2 - gravaSaldoDb - pegaSaldoCarteira - ${userId} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`))
+            console.error(new Error(error))
             response.json({
                     "messages": [
                         {
@@ -1212,6 +1244,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             return gravaSaldoDb(response);
         }).catch(error => {
             console.error(new Error(`2 - walletApiRequest - pegaSaldoCarteira - ${userId} - ${firstName} - Tivemos um problema para recuperar seu saldo em nosso servidor ${error}`));
+            console.error(new Error(error))
             response.json({
                     "messages": [
                         {
