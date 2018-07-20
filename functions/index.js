@@ -68,7 +68,6 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         qtdAtivacao: numAtivacao,
         estadoProtecao: ESTADOPROTEÇÃOCARRO,
         valorMinuto: valorMinuto,
-        usuariosIndicados: 0,
         indicador: indicador,
         timezone: timezone,
         recebeuPromocao: false
@@ -232,7 +231,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
             }
         
         perfilUser.saldoCreditos = userCredit - valorConsumido;
-        perfilUser.saldoDinheiro = (userMoney - (valorConsumido/1000)).toFixed(3); 
+        perfilUser.saldoDinheiro = (userMoney - (valorConsumido/1000)).toFixed(4); 
         console.log(`desligarProtecao - 4.5 - ${userId} - ${firstName} -  Valor consumido: ${valorConsumido}`);
 
         // Objeto com dados do desligamento da proteção
@@ -535,6 +534,7 @@ exports.calcPrecoMinuto = functions.https.onRequest((request, response) => {
 
 
 })
+
 exports.getTimeStart = functions.https.onRequest((request, response) =>{
         // Pega a data com dia da semana para colocar no banco de dados
         var inicioProtecao = Date.now()/1000|0;
@@ -590,7 +590,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
 
     // Contém a chamada de promise que cria o perfil do novo usuário no banco de dados
     const promiseCriaPerfilUserDb = () => {
-        console.log(`1 - promiseCriaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} -  Estrando na promise que cria o perfil do usuário`);
+        console.log(`1 - promiseCriaPerfilUserDb - criaNovoUsuario - ${userId} - ${firstName} -  Promise que cria o perfil do usuário`);
     
         //adiciona saldo da carteira no banco de dados
         return new Promise((resolve, reject) =>{
@@ -804,7 +804,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                     const executaPromises = (response, ligarProtecao) => {
                     console.log(`1 - executaPromises - criaNovoUsuario - ${userId} - ${firstName} - Entrando na funcão que executa as promises quando existe Indicador.`);
                         
-                        Promise.all([promiseAtualizaNumIndicadosIndicadorDb, promiseAtualizaArrayNumIndicadosIndicadorDb, promiseAtualizaNumIndicadosUsersDb]).then(() => {
+                        Promise.all([promiseAtualizaNumIndicadosIndicadorDb, promiseAtualizaArrayNumIndicadosIndicadorDb]).then(() => {
                             console.log(`2 - executaPromises - criaNovoUsuario - ${userId} - ${firstName} - Promises executadas com sucesso.ligando protecão`);
                             return ligarProtecao()
                         }).catch(error => {
@@ -1059,10 +1059,11 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
                     if (res.error){
                         console.error(new Error(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Falha em recuperar ID: ${JSON.stringify(res.error)}`))
                         reject(res.error)
+
+                        // array empty or does not exist
                     } else if (res.body[0] === undefined || res.length === 0) {
                         console.error(new Error(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Falha em recuperar ID Array vazio: ${JSON.stringify(res)}`))
                         reject(res)
-                        // array empty or does not exist
                     } else {
                         console.log(`2 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Consulta de ID feita com sucesso: ${res.body[0].id}`);
                         console.log(`3 - promiseWpClientRequest - pegaIdCliente - ${userId} - ${firstName} -  Status da tentativa de conexão: ${res.status}`);
@@ -1087,7 +1088,7 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
             console.log(`2 - wpClientRequest - pegaIdCliente - ${userId} - ${firstName} -  Id de cliente recuperado com sucesso. ${result}. Chamando funcão de gravar ID no DB`);
             return pegaSaldoCarteira(userId, perfilUser, dataApi, promise, tokenWallet, firstName, response);
         }).catch(error => {
-            console.error(new Error(`2 - wpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Erro ao tentar recuperar id de cliente ${error}`))
+            console.error(new Error(`2 - wpClientRequest - pegaIdCliente - ${userId} - ${firstName} - Erro ao tentar recuperar id de cliente ${error} - Status: ${error.status}`))
             response.json({
                     "messages": [
                         {
@@ -1128,7 +1129,7 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
                 } else {
                     console.log(`2 - promiseWalletApiRequest - pegaSaldoCarteira - ${userId} - ${firstName} - Consulta de saldo feito com sucesso na carteira: ${JSON.stringify(res.body)}`);
                     perfilUser.saldoCreditos = parseInt(res.body.toString())
-                    perfilUser.saldoDinheiro = (perfilUser.saldoCreditos/1000).toFixed(3)
+                    perfilUser.saldoDinheiro = (perfilUser.saldoCreditos/1000).toFixed(4)
                     resolve(res.status)
                 }
             
