@@ -66,6 +66,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         carPlate: carPlate,
         carValue: carValue,
         qtdAtivacao: numAtivacao,
+        usuariosIndicados: 0,
         estadoProtecao: ESTADOPROTEÇÃOCARRO,
         valorMinuto: valorMinuto,
         indicador: indicador,
@@ -582,7 +583,7 @@ exports.getTimeEnd = functions.https.onRequest((request, response) =>{
 const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseIndicadorUser, response, firstName, ligarProtecao ) => {
     console.log(`criaNovoUsuario - 1 - ${userId} - ${firstName} -  Entra na funcão de criar novo usuário`);
     var perfilIndicador = {
-        numeroIndicados: 1,
+        usuariosIndicados: 1,
         indicados: {
             1: userId
         }
@@ -750,9 +751,9 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
 
                 // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
                 console.log(`3 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Indicador já existe na base. ${JSON.stringify(data)}`);
-                console.log(`4 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Numero de indicados: ${result.numeroIndicados}`);
+                console.log(`4 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Numero de indicados: ${result.usuariosIndicados}`);
 
-                var numIndicados = parseInt(result.numeroIndicados) + 1;
+                var numIndicados = parseInt(result.usuariosIndicados) + 1;
     
                  // Result. Existe indicador no banco de dados
                     // promise para atualizar o numero de indicados no DB INDICADOR.
@@ -761,7 +762,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
 
                         //Atualiza o numero de indicados (indicadores)
                         indicadorPromise.update({
-                            numeroIndicados: numIndicados
+                            usuariosIndicados: numIndicados
                         }).then(() =>{
                             console.log(`2 - promiseAtualizaNumIndicadosIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Número de usuários indicados atualizado com sucesso.`);
                             return resolve(true);
