@@ -14,7 +14,7 @@ admin.initializeApp({
     messagingSenderId: "241481831218"
   });
 
-  var tokenWallet = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvb25zdXJhbmNlLm1lIiwiaWF0IjoxNTMxODQ1MTIxLCJuYmYiOjE1MzE4NDUxMjEsImV4cCI6MTUzMjQ0OTkyMSwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMyJ9fX0.I1zSaaug4A25w5Co-C1-sUdwtBQqQ0Nw23L-htE42dk'
+  var tokenWallet = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvb25zdXJhbmNlLm1lIiwiaWF0IjoxNTMyMzA4NDQyLCJuYmYiOjE1MzIzMDg0NDIsImV4cCI6MTUzMjkxMzI0MiwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMyJ9fX0.cKWdr4aiI9Dqk1_xLrB_L7A-6BO09Vi3YClW-HXNLYw'
 
 // Função que pega os atributos no chatfuel e identifica se Proteção está On / Off
 exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
@@ -42,8 +42,8 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
     const timeStart = request.query["timeStart"];
 
     // Dados da proteção
-    const ESTADOPROTEÇÃOCARRO = request.query["ESTADOPROTEÇÃOCARRO"];
-    var estadoProtecao = ESTADOPROTEÇÃOCARRO.toString();
+    const statusProtecao = request.query["status-protecao"];
+    var estadoProtecao = statusProtecao;
     const numAtivacao = request.query["numAtivacao"];
 
 // Referencia do Banco de dados
@@ -67,7 +67,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         carValue: carValue,
         qtdAtivacao: numAtivacao,
         usuariosIndicados: 0,
-        estadoProtecao: ESTADOPROTEÇÃOCARRO,
+        estadoProtecao: estadoProtecao,
         valorMinuto: valorMinuto,
         indicador: indicador,
         timezone: timezone,
@@ -120,7 +120,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
         // Gera timeStamp do inicio da protecão
         inicioProtecao = Date.now()/1000|0;
-        estadoProtecao = "ON-H";
+        estadoProtecao = "ON";
         numeroAtivacoes += 1;
 
         // Chama a função de pegar a data atual para salval no BD        
@@ -188,15 +188,15 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                     response.json({
                         "messages": [
                             {
-                                "text": `Opa ${firstName}. Não consegui ligar sua proteção. Vou trazer a função de Ligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                                "text": `Opa ${firstName}. Não consegui ligar sua proteção. Vou trazer a função de Ligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
                             }
                         ],
                         "set_attributes":
                         {
-                            "ESTADOPROTEÇÃOCARRO": `OFF-H`,
+                            "status-protecao": `OFF`,
                         },
                         "redirect_to_blocks": [
-                            "Ligar homologação"
+                            "Ligar"
                         ]
                     })
                 })
@@ -210,8 +210,8 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
     const desligarProtecao = () => {
         console.log(`desligarProtecao - 1 - ${userId} - ${firstName} -  Funcão desligar proteção`);
-        // Desliga a proteção, alterando o atributo ESTADOPROTEÇÃOCARRO do chatfuel
-        estadoProtecao = "OFF-H";
+        // Desliga a proteção, alterando o atributo status-protecao do chatfuel
+        estadoProtecao = "OFF";
         getDate(Date.now());
         // Pega o tempo do desligamento
         // Criando minha própria funcão de tempo
@@ -221,7 +221,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
         var horasTotais = (tempoProtecao/60/60|0); // TimeDiffHours Totais
         var minTotais = (tempoProtecao/60|0); // TimeDiffMinutes Totais
         var horas = (horasTotais - (dias*24)); // TimeDiffHours
-        var minutos = (minTotais - (horas * 60)); // TimeDiffMinnutes
+        var minutos = (minTotais - (horasTotais * 60)); // TimeDiffMinutes
         var segundos = (tempoProtecao - (minTotais*60)); // TimeDiffSeconds
 
             console.log(`desligarProtecao - 2 - ${userId} - ${firstName} -  tempo de proteção: ${tempoProtecao/60|0}`);
@@ -316,7 +316,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                         ],
                         "set_attributes":
                             {
-                                "ESTADOPROTEÇÃOCARRO": estadoProtecao,
+                                "status-protecao": estadoProtecao,
                                 "user-credit": perfilUser.saldoCreditos,
                                 "user-money": perfilUser.saldoDinheiro,
                                 "valorconsumido": valorConsumido,
@@ -335,15 +335,15 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                     response.json({
                         "messages": [
                             {
-                                "text": `Opa ${firstName}. Não consegui desligar sua proteção. Vou trazer a função de Desligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                                "text": `Opa ${firstName}. Não consegui desligar sua proteção. Vou trazer a função de Desligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
                             }
                         ],
                         "set_attributes":
                         {
-                            "ESTADOPROTEÇÃOCARRO": `ON-H`,
+                            "status-protecao": "ON",
                         },
                         "redirect_to_blocks": [
-                            "Desligar homologação"
+                            "Desligar"
                         ]
                     })
                 })
@@ -358,14 +358,14 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
     console.log(`ligaDesligaProtecao - 3 - ${userId} - ${firstName} -  Número de ativacões: ${numeroAtivacoes}`);
 
     // Protecão desligada. Liga a Protecão
-    if (estadoProtecao === "OFF-H" && numeroAtivacoes >= 1){
+    if (estadoProtecao === "OFF" && numeroAtivacoes >= 1){
         console.log(`ligaDesligaProtecao - 4 - ${userId} - ${firstName} -  Protecão desligada e número de ativacões maior que 0. ${numeroAtivacoes}`);
 
         // Chama a funcão de ligar a protecão
         ligarProtecao();
 
     //Protecão ligada. Desliga a proteão
-    } else if (estadoProtecao === "ON-H" && numeroAtivacoes >= 1) {
+    } else if (estadoProtecao === "ON" && numeroAtivacoes >= 1) {
         console.log(`ligaDesligaProtecao - 4 - ${userId} - ${firstName} -  Protecão ligada e número de ativacões maior que 0. ${numeroAtivacoes}`); 
         desligarProtecao();
     }
@@ -381,19 +381,14 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 var data = snapshot.val() 
                 console.log(`PrimeiraAtivação - 2 - Dados recuperados e retorno imediato`);
                 return response.json({
-                    "messages": [
-                        {
-                            "text": `Opa ${firstName}, essa é sua primeira ativação. Seja bem vindo à Onsurance. Amamos você.`
-                        }
-                    ],
                     "set_attributes":
                         {
-                            "ESTADOPROTEÇÃOCARRO": data.estadoProtecao,
+                            "status-protecao": data.estadoProtecao,
                             "numAtivacao": 1,
                             "timeStart": inicioProtecao,
                         },
                         "redirect_to_blocks": [
-                            "oi"
+                            "Mensagem de boas vindas primeira proteção"
                         ]
                 });
             }).catch(error => {
@@ -407,7 +402,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                     ],
                     "set_attributes":
                         {
-                            "ESTADOPROTEÇÃOCARRO": OFF-H,
+                            "status-protecao": "OFF",
                             "numAtivacao": 0,
                         },
                         "redirect_to_blocks": [
@@ -525,11 +520,11 @@ exports.calcPrecoMinuto = functions.https.onRequest((request, response) => {
             },
             "messages": [
                 {
-                    "text": `O formato digitado está incorreto, por favor digite sem utilizar pontos ou vírgulas. Ex: "55000".`,
+                    "text": `O valor do veículo foi digitado no formato errado, por favor NÃO utilize pontos ou vírgulas. Ex: "55000".`,
                 }
             ],
             "redirect_to_blocks": [
-                "Informar preço erro homologação"
+                "Erro no preco do veiculo"
             ]
         });
     }
@@ -631,11 +626,11 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             response.json({
                     "messages": [
                         {
-                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
                         }
                     ],
                     "redirect_to_blocks": [
-                        "Informar Email Homologação"
+                        "Informar Email"
                     ]
             })
         })
@@ -672,7 +667,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             // Indicador não existe !Result
             if (!result){
                 //caso não exista cria na tabela indicadores
-                console.log(`3 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Indicador não existe na base. ${JSON.stringify(data)}/${JSON.stringify(result)}. Chamando a funcão de criar indicador no DB.`);  
+                console.log(`3 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Indicador não existe na base. ${JSON.stringify(result)}. Chamando a funcão de criar indicador no DB.`);  
                 // !result -> não existe usuário indicador
                 
                     // Contém a chamada de promise que cria um novo indicador no DB
@@ -707,11 +702,11 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             response.json({
                                     "messages": [
                                         {
-                                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
                                         }
                                     ],
                                     "redirect_to_blocks": [
-                                        "Informar Email Homologação"
+                                        "Informar Email"
                                     ]
                             })
                         })
@@ -750,11 +745,11 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             response.json({
                                     "messages": [
                                         {
-                                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
                                         }
                                     ],
                                     "redirect_to_blocks": [
-                                        "Informar Email Homologação"
+                                        "Informar Email"
                                     ]
                             })
                         })
@@ -766,7 +761,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             } else if (result){
 
                 // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
-                console.log(`3 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Indicador já existe na base. ${JSON.stringify(data)}`);
+                console.log(`3 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Indicador já existe na base. ${JSON.stringify(result)}`);
                 console.log(`4 - checaUserIndicadorDb - criaNovoUsuario - ${userId} - ${firstName} -  Numero de indicados: ${result.usuariosIndicados}`);
 
                 var numIndicados = parseInt(result.usuariosIndicados) + 1;
@@ -833,11 +828,11 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
                             response.json({
                                 "messages": [
                                     {
-                                        "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                                        "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
                                     }
                                 ],
                                 "redirect_to_blocks": [
-                                    "Informar Email Homologação"
+                                    "Informar Email"
                                 ]
                             })
                         })
@@ -854,11 +849,11 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
             response.json({
                     "messages": [
                         {
-                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                            "text": `Olá! Identifiquei um pequeno erro. Não consegui criar seu perfil em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
                         }
                     ],
                     "redirect_to_blocks": [
-                        "Informar Email Homologação"
+                        "Informar Email"
                     ]
             })
         })
@@ -926,7 +921,7 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
             response.json({
                 "set_attributes":
                 {
-                    "ESTADOPROTEÇÃOCARRO": estadoProtecao,
+                    "status-protecao": estadoProtecao,
                     "numAtivacao": numeroAtivacoes,
                     "timeStart": inicioProtecao,
                     "user-credit": creditoPlus,
@@ -947,12 +942,12 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
                 response.json({
                     "messages": [
                         {
-                            "text": `Sua proteção está ligada! (firebase)`
+                            "text": `Sua proteção está ligada!`
                         }
                     ],
                     "set_attributes":
                     {
-                        "ESTADOPROTEÇÃOCARRO": estadoProtecao,
+                        "status-protecao": estadoProtecao,
                         "numAtivacao": numeroAtivacoes,
                         "timeStart": inicioProtecao,
                         "afiliados": data.usuariosIndicados
@@ -970,15 +965,15 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
         response.json({
             "messages": [
                 {
-                    "text": `Opa ${firstName}. Não consegui desligar sua proteção. Vou trazer a função de Desligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                    "text": `Opa ${firstName}. Não consegui desligar sua proteção. Vou trazer a função de Desligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
                 }
             ],
             "set_attributes":
             {
-                "ESTADOPROTEÇÃOCARRO": `ON-H`,
+                "status-protecao": "ON",
             },
             "redirect_to_blocks": [
-                "Desligar homologação"
+                "Desligar"
             ]
         })
     })
@@ -1120,11 +1115,11 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
             response.json({
                     "messages": [
                         {
-                            "text": `Olá! Identifiquei um pequeno erro. Não consegui recuperar seus dados em nosso servidor. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                            "text": `Olá! Identifiquei um pequeno erro. Não consegui recuperar seus dados em nosso servidor. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
                         }
                     ],
                     "redirect_to_blocks": [
-                        "Informar Email Homologação"
+                        "Informar Email"
                     ]
             })
         })
@@ -1223,11 +1218,11 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             response.json({
                     "messages": [
                         {
-                          "text": `Olá! Identifiquei um pequeno erro. Não consegui gravar seus dados em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                          "text": `Olá! Identifiquei um pequeno erro. Não consegui gravar seus dados em nosso sistema. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
                         }
                     ],
                     "redirect_to_blocks": [
-                        "Informar Email Homologação"
+                        "Informar Email"
                     ]
             })
         })
@@ -1248,11 +1243,11 @@ const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, fi
             response.json({
                     "messages": [
                         {
-                          "text": `Olá! Identifiquei um pequeno erro. Não consegui recuperar seu saldo em nosso servidor. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista". ${error}`
+                          "text": `Olá! Identifiquei um pequeno erro. Não consegui recuperar seu saldo em nosso servidor. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
                         }
                     ],
                     "redirect_to_blocks": [
-                        "Informar Email Homologação"
+                        "Informar Email"
                     ]
             })
         })
