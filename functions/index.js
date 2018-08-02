@@ -278,7 +278,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
         // Desconta saldo na woowallet ao realizar o desligamento
         // post method para descontar na carteira o valor consumido.
-        let descontaDesligarWallet = new Promise((resolve, reject) => {
+        /* let descontaDesligarWallet = new Promise((resolve, reject) => {
         
             var req = unirest("post", `https://onsurance.me/wp-json/wp/v2/wallet/${idCliente}`);
 
@@ -302,11 +302,12 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 }
             });
         })
+        */
 
         const executaDesligarProtecao = (response) => {
             console.log(`1 - executaDesligarProtecao - desligarProtecao - ${userId} - ${firstName} - Funcão que executa as promises de desligar a protecão.`);
                 
-                Promise.all([descontaDesligarWallet, attPerfilUser, attLogUsoPerfilUser]).then(() => {
+                Promise.all([attPerfilUser, attLogUsoPerfilUser]).then(() => {
                     console.log(`2 - executaDesligarProtecao - desligarProtecao - ${userId} - ${firstName} - Promises executadas. Desligando protecão.`);
                     return response.json({
                         "messages": [
@@ -350,7 +351,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
 
             }
 
-            executaDesligarProtecao(response)     
+        return executaDesligarProtecao(response)     
     }
 
     // Checa estado da proteção - Liga / Desliga
@@ -540,46 +541,151 @@ exports.calcPrecoMinuto = functions.https.onRequest((request, response) => {
 
 })
 
-exports.getTimeStart = functions.https.onRequest((request, response) =>{
-        // Pega a data com dia da semana para colocar no banco de dados
-        var inicioProtecao = Date.now()/1000|0;
-        response.json({
-            "set_attributes":
+exports.simLigaDesliga = functions.https.onRequest((request, response) =>{
+    console.log(`1 - ${request.query["messenger user id"]} - Entrando na funcão Liga/Desliga a protecão:  ${JSON.stringify(request.query)}`);
+
+       // Dados do usuário
+       const userId = request.query["messenger user id"];
+       const firstName = request.query["first name"];
+       const userCredit = request.query["user-credit-sim"];
+       const userMoney = request.query["user-money-sim"];
+   
+       // Dados do veículo
+       const carValue = request.query["car-value-sim"];
+       const valorMinuto = request.query["valorMinuto-sim"];
+   
+       // Dados de tempo
+       const timeStart = request.query["timeStart-sim"];
+   
+       // Dados da proteção
+       const statusProtecao = request.query["status-protecao-sim"];
+       const numAtivacao = parseInt(request.query["numAtivacao-sim"]);
+       
+       var numeroAtivacoes = numAtivacao; 
+
+            // Funcão para acionar a protecão
+    const ligarProtecao = () => {
+        console.log(`ligarProtecao - 1 - ${userId} - ${firstName} -  Funcão Ligar proteção numAtivacao: ${numAtivacao}`);
+
+
+        // Gera timeStamp do inicio da protecão
+        inicioProtecao = Date.now()/1000|0;
+        estadoProtecao = "ON-SIM";
+        numeroAtivacoes = numAtivacao + 1;
+
+
+        if (numAtivacao === 0){
+        console.log(`ligarProtecao - 1 - ${userId} - ${firstName} -  primeira ativacão`);
+
+            var valorMinutoSim = calculaGasto(carValue, response)
+
+            response.json({
+                "messages": [
+                    {
+                        "text": `Parabéns pela primeira ativação de sua proteção simulada. O custo da sua proteção é de ${valorMinutoSim} créditos por minuto. Baseado nesse valor, você tem aproximadamente ${(10000/valorMinutoSim).toFixed(0)} minutos para simular a proteção do seu veículo. Aproveite bastante.`
+                    }
+                ],
+                "set_attributes":
                 {
-                    "timeStart": inicioProtecao
+                    "status-protecao-sim": estadoProtecao,
+                    "numAtivacao-sim": numeroAtivacoes,
+                    "timeStart-sim": inicioProtecao,
+                    "primeira-ativacao": inicioProtecao,
+                    "valorMinuto-sim": valorMinutoSim
                 },
                 "redirect_to_blocks": [
-                    "Trigger"
+                    "Mensagem de boas vindas primeira proteção Simulação"
                 ]
-        });
+            });
+        } else if (numAtivacao >= 1 && userCredit > 300 ) {
 
-})
-exports.getTimeEnd = functions.https.onRequest((request, response) =>{
-    const timeStart = request.query["timeStart"];
 
+            response.json({
+                "messages": [
+                    {
+                        "text": `Sua proteção simulada está ligada!`
+                    }
+                ],
+                "set_attributes":
+                {
+                    "status-protecao-sim": estadoProtecao,
+                    "numAtivacao-sim": numeroAtivacoes,
+                    "timeStart-sim": inicioProtecao,
+                },
+                "redirect_to_blocks": [
+                    "Desligar Simulação"
+                ]
+            });
+
+        }
+
+    }
+
+    const desligarProtecao = () => {
+        console.log(`desligarProtecao - 1 - ${userId} - ${firstName} -  Funcão desligar proteção`);
+        // Desliga a proteção, alterando o atributo status-protecao do chatfuel
+        estadoProtecao = "OFF-SIM";
+        // Pega o tempo do desligamento
+        // Criando minha própria funcão de tempo
         var finalProtecao = Date.now()/1000|0;
         var tempoProtecao = finalProtecao - timeStart; // TimeDiff
         var dias = (tempoProtecao/60/60/24|0); // TimeDiffDays
         var horasTotais = (tempoProtecao/60/60|0); // TimeDiffHours Totais
         var minTotais = (tempoProtecao/60|0); // TimeDiffMinutes Totais
         var horas = (horasTotais - (dias*24)); // TimeDiffHours
-        var minutos = (minTotais - (horas * 60)); // TimeDiffMinnutes
+        var minutos = (minTotais - (horasTotais * 60)); // TimeDiffMinutes
         var segundos = (tempoProtecao - (minTotais*60)); // TimeDiffSeconds
 
+            console.log(`desligarProtecao - 2 - ${userId} - ${firstName} -  tempo de proteção: ${tempoProtecao/60|0}`);
+            // Calcula o valor conumido baseado no tempo de uso. 
+            if (segundos >= 30){
+                valorConsumido = (Math.ceil(tempoProtecao/60))*valorMinuto;
+                console.log(`desligarProtecao - 3 - ${userId} - ${firstName} -  Segundos Maior que 30: ${segundos}`);
+            } else if (segundos < 30) {
+                valorConsumido = (Math.floor(tempoProtecao/60))*valorMinuto;
+                console.log(`desligarProtecao - 4 - ${userId} - ${firstName} -  Segundos Menor que 30: ${segundos}`);
+            }
+        
+        var saldoCreditos = userCredit - valorConsumido;
+        var saldoDinheiro = (userMoney - (valorConsumido/1000)).toFixed(4); 
+        console.log(`desligarProtecao - 4.5 - ${userId} - ${firstName} -  Valor consumido: ${valorConsumido}`);
+
         response.json({
+            "messages": [
+                {
+                    "text": "Sua proteção está desligada!"
+                }
+            ],
             "set_attributes":
                 {
-                    "timeEnd": finalProtecao,
-                    "timeDiff": tempoProtecao,
-                    "timeDiffMinutes": minutos,
-                    "timeDiffHours": horas,
-                    "timeDiffDays": dias,
-                    "timeDiffSeconds": segundos
+                    "status-protecao-sim": estadoProtecao,
+                    "user-credit-sim": saldoCreditos,
+                    "user-money-sim": saldoDinheiro,
+                    "valorconsumido-sim": valorConsumido,
+                    "dias": dias,
+                    "horas": horas,
+                    "minutos": minutos,
+                    "segundos": segundos
                 },
                 "redirect_to_blocks": [
-                    "Trigger"
+                    "Pós Off simulação"
                 ]
-        });
+        });    
+    }
+
+    // Protecão desligada. Liga a Protecão
+    if (statusProtecao === "OFF-SIM"){
+        console.log(`ligaDesligaProtecao - 4 - ${userId} - ${firstName} -  Protecão desligada e número de ativacões: ${numAtivacao}`);
+
+        // Chama a funcão de ligar a protecão
+        ligarProtecao();
+
+    //Protecão ligada. Desliga a proteão
+    } else if (statusProtecao === "ON-SIM") {
+        console.log(`ligaDesligaProtecao - 4 - ${userId} - ${firstName} -  Protecão ligada e número de ativacões maior que 0. ${numeroAtivacoes}`); 
+        desligarProtecao();
+    }
+
 
 })
 
