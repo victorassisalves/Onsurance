@@ -4,17 +4,24 @@ const functions = require('firebase-functions');
  const admin = require('firebase-admin');
 
  var unirest = require("unirest");
-
-admin.initializeApp({
+const homolog = {
+    apiKey: "AIzaSyDXehFd5rJfnIH3dgLBHoOc_O5R7D3IuHw",
+    authDomain: "onsurance-co.firebaseapp.com",
+    databaseURL: "https://onsurance-co.firebaseio.com",
+    projectId: "onsurance-co",
+    storageBucket: "onsurance-co.appspot.com",
+    messagingSenderId: "1087999485424"
+}
+const product = {
     apiKey: "AIzaSyD8RCBaeju-ieUb9Ya0rUSJg9OGtSlPPXM",
     authDomain: "onsuranceme-co.firebaseapp.com",
     databaseURL: "https://onsuranceme-co.firebaseio.com",
     projectId: "onsuranceme-co",
     storageBucket: "onsuranceme-co.appspot.com",
     messagingSenderId: "241481831218"
-  });
+}
+admin.initializeApp(homolog);
 
-  var tokenWallet = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvb25zdXJhbmNlLm1lIiwiaWF0IjoxNTMyMzA4NDQyLCJuYmYiOjE1MzIzMDg0NDIsImV4cCI6MTUzMjkxMzI0MiwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMyJ9fX0.cKWdr4aiI9Dqk1_xLrB_L7A-6BO09Vi3YClW-HXNLYw'
 
 // Função que pega os atributos no chatfuel e identifica se Proteção está On / Off
 exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
@@ -179,7 +186,7 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                         // Inicia verificacão para premiacão do usuário por 10 indicacões
                         var receberPremio = false;
                         // Chama funcão de premiacão e de resposta 
-                        premioIndicacao(userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response, carModel, tokenWallet)
+                        premioIndicacao(userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response, carModel)
                 }
                     return 
                 }).catch(error => {
@@ -275,34 +282,6 @@ exports.ligaDesligaProtecao = functions.https.onRequest((request, response) => {
                 reject(error)
             });
         })
-
-        // Desconta saldo na woowallet ao realizar o desligamento
-        // post method para descontar na carteira o valor consumido.
-        /* let descontaDesligarWallet = new Promise((resolve, reject) => {
-        
-            var req = unirest("post", `https://onsurance.me/wp-json/wp/v2/wallet/${idCliente}`);
-
-            req.query({
-            "type": "debit",
-            "amount": `${valorConsumido}`,
-            "details": `Desconto do uso da protecão Onsurance. Detalhes do uso. Início da protecão: ${timeStart}, ${JSON.stringify(logUso)}`
-            });
-            
-            req.headers({
-            "Authorization": `Bearer ${tokenWallet}`});
-            
-            req.end(res => {
-                if (res.error){
-                    console.error(new Error(`DesligarProteção - 8 - ${userId} - ${firstName} -  Desconto não realizado no wallet: ${JSON.stringify(res.error)}`));
-                    console.error(new Error(res.error))
-                    reject(res.error)
-                } else {
-                    console.log(`DesligarProteção - 8 - ${userId} - ${firstName} -  Desconto feito com sucesso no wallet: ${JSON.stringify(res.body)}`);
-                    resolve(res.body)
-                }
-            });
-        })
-        */
 
         const executaDesligarProtecao = (response) => {
             console.log(`1 - executaDesligarProtecao - desligarProtecao - ${userId} - ${firstName} - Funcão que executa as promises de desligar a protecão.`);
@@ -536,7 +515,7 @@ exports.calcPrecoMinuto = functions.https.onRequest((request, response) => {
     console.log(`2 - ${userId} - ${firstName} - Entrando na funcão de calculo do minuto.`);
     var valorMinuto = calculaGasto(carValue, response);
 
-    pegaIdCliente(userId, perfilUser, promise, urlWp, response, valorMinuto, tokenWallet, firstName)
+    pegaIdCliente(userId, perfilUser, promise, urlWp, response, valorMinuto, firstName)
 
 
 })
@@ -574,7 +553,7 @@ exports.simLigaDesliga = functions.https.onRequest((request, response) =>{
         numeroAtivacoes = numAtivacao + 1;
 
 
-        if (numAtivacao === 0){
+        if (numAtivacao === 0){ // Primeira Ativacão
         console.log(`ligarProtecao - 1 - ${userId} - ${firstName} -  primeira ativacão`);
 
             var valorMinutoSim = calculaGasto(carValue, response)
@@ -597,7 +576,7 @@ exports.simLigaDesliga = functions.https.onRequest((request, response) =>{
                     "Mensagem de boas vindas primeira proteção Simulação"
                 ]
             });
-        } else if (numAtivacao >= 1 && userCredit > 300 ) {
+        } else if (numAtivacao >= 1 && userCredit >= 300 ) {  // pode usar a Proteção
 
 
             response.json({
@@ -617,6 +596,23 @@ exports.simLigaDesliga = functions.https.onRequest((request, response) =>{
                 ]
             });
 
+        } else if (numAtivacao >1 && userCredit < 300) { // pouco crédito
+            response.json({
+                "messages": [
+                    {
+                        "text": `Seus créditos acabaram! Para usar a proteção Onsurance de verdade compre agora e tenha todos os benefícios da proteção On Demand.`
+                    }
+                ],
+                "set_attributes":
+                {
+                    "status-protecao-sim": "OFF-SIM",
+                    "numAtivacao-sim": numeroAtivacoes,
+                    "timeStart-sim": inicioProtecao,
+                },
+                "redirect_to_blocks": [
+                    "Comprar Proteção"
+                ]
+            });
         }
 
     }
@@ -684,6 +680,250 @@ exports.simLigaDesliga = functions.https.onRequest((request, response) =>{
     } else if (statusProtecao === "ON-SIM") {
         console.log(`ligaDesligaProtecao - 4 - ${userId} - ${firstName} -  Protecão ligada e número de ativacões maior que 0. ${numeroAtivacoes}`); 
         desligarProtecao();
+    }
+
+
+})
+
+exports.wooWebhook = functions.https.onRequest((request, response) =>{
+    console.log(`1 - resposta do request ${JSON.stringify(request.body)}`);
+
+    const requestMockup = {
+        "id":957,"parent_id":0,"number":"957","order_key":"wc_order_5b69e63226210","created_via":"admin","version":"3.4.4","status":"completed","currency":"CRD","date_created":"2018-08-07T15:33:14","date_created_gmt":"2018-08-07T18:33:14","date_modified":"2018-08-07T15:35:28","date_modified_gmt":"2018-08-07T18:35:28","discount_total":"0.00","discount_tax":"0.00","shipping_total":"0.00","shipping_tax":"0.00","cart_tax":"0.00","total":"6198.00","total_tax":"0.00","prices_include_tax":false,"customer_id":20,"customer_ip_address":"","customer_user_agent":"","customer_note":"",
+        "billing":{
+            "first_name":"Victor","last_name":"Assis","company":"","address_1":"Núcleo Rural Córrego da Onça Rua B Chácara 8","address_2":"","city":"","state":"","postcode":"","country":"BR","email":"vitor_alves164@hotmail.com","phone":"","number":"","neighborhood":"","persontype":"F","cpf":"","rg":"","cnpj":"","ie":"","birthdate":"","sex":false,"cellphone":""
+        },
+        "shipping":{
+            "first_name":"","last_name":"","company":"","address_1":"","address_2":"","city":"","state":"","postcode":"","country":"","number":"","neighborhood":""
+        },
+        "payment_method":"","payment_method_title":"","transaction_id":"","date_paid":"2018-08-07T15:35:28","date_paid_gmt":"2018-08-07T18:35:28","date_completed":null,"date_completed_gmt":null,"cart_hash":"",
+            "meta_data":[
+                {"id":12442,"key":"_vc_post_settings",
+                    "value":{"vc_grid_id":[]}
+                },
+                {"id":12499,"key":"slide_template","value":"default"},
+                {"id":12500,"key":"_billing_persontype","value":"0"},
+                {"id":12501,"key":"_billing_cpf","value":""},
+                {"id":12502,"key":"_billing_cnpj","value":""},
+                {"id":12503,"key":"_billing_birthdate","value":""},
+                {"id":12504,"key":"_billing_sex","value":""},
+                {"id":12505,"key":"_billing_number","value":""},
+                {"id":12506,"key":"_billing_neighborhood","value":""},
+                {"id":12507,"key":"_billing_cellphone","value":""},
+                {"id":12508,"key":"_shipping_number","value":""},
+                {"id":12509,"key":"_shipping_neighborhood","value":""},
+                {"id":12513,"key":"_wc_bitrix24_send","value":"1"}
+        ],
+        "line_items":[
+            {"id":63,"name":"Assistência 24hs anual","product_id":386,"variation_id":0,"quantity":1,"tax_class":"","subtotal":"199.00","subtotal_tax":"0.00","total":"199.00","total_tax":"0.00","taxes":[],"meta_data":[],"sku":"","price":199},{"id":64,"name":"Crédito Inicial para Proteção Onsurance","product_id":384,"variation_id":0,"quantity":1,"tax_class":"","subtotal":"999.00","subtotal_tax":"0.00","total":"999.00","total_tax":"0.00","taxes":[],"meta_data":[],"sku":"","price":999},{"id":65,"name":"Investimento na Proteção Revolucionária Onsurance (PROn)","product_id":543,"variation_id":0,"quantity":1,"tax_class":"","subtotal":"5000.00","subtotal_tax":"0.00","total":"5000.00","total_tax":"0.00","taxes":[],"meta_data":[],"sku":"","price":5000}
+        ],
+        "tax_lines":[],"shipping_lines":[],"fee_lines":[],"coupon_lines":[],"refunds":[],"correios_tracking_code":""
+    }
+
+   
+
+    const wooRequest= JSON.stringify(request.body)
+    console.log('wooRequest: ', wooRequest);
+    const wooRequestParsed = JSON.parse(wooRequest)
+    console.log('wooRequestParsed: ', wooRequestParsed);
+    const lineItems = wooRequestParsed.line_items
+    console.log('lineItems: ', lineItems);
+    const qtdItensCompra = lineItems.length;
+    console.log('qtdItensCompra: ', qtdItensCompra);
+    var valorCrédito = 0
+
+    if (wooRequestParsed.status === "completed") {
+    
+        for (let value of lineItems){
+
+            if (value.product_id === 386 || value.product_id === 543){
+                    console.log(` Produto que não entra no crédito: ${JSON.stringify(value)}`);
+
+            } else {
+                    console.log(` Produto que entra no crédito: ${JSON.stringify(value)}`);
+                    console.log(`Preco do produto:${JSON.parse(value.price)}`);
+
+                valorCrédito = JSON.parse(value.price) + valorCrédito
+                console.log('valorCrédito: ', valorCrédito);
+            }
+        }
+        console.log(`Valor total da compra para créditos: ${valorCrédito}`);
+
+        const billing = wooRequestParsed.billing
+        console.log('billing: ', billing);
+        
+        const clienteId = wooRequestParsed.customer_id  
+        console.log('clienteId: ', clienteId);
+        const firstName = billing.first_name
+        console.log('firstName: ', firstName);
+        const lastName = billing.last_name
+        console.log('lastName: ', lastName);
+        const email = billing.email
+        console.log('email: ', email);
+
+    
+
+        const perfilUser = {
+        lastName: lastName,
+        recebeuPromocao: false,
+        saldoCreditos: (valorCrédito * 1000),
+        saldoDinheiro: valorCrédito,
+        userEmail: email,
+        userName: firstName
+        }
+        
+        // Referencia do Banco de dados
+        const promise = admin.database().ref('/users').child(clienteId);
+        
+        const resposta = response.json({
+            "messages": [
+                {
+                    "text": `Olá ${firstName}! Retorno de webhook.`
+                }
+            ]
+        })
+        // Checar existência de usuário no banco de dados
+
+            // Contém a chamada de promise que checa se já existe o User
+            const checaUserDb = () => {
+                console.log(`1 checaUserDb - ${email} - ${firstName} -  Estrando na promise que checa se existe o usuário indicador`);
+            
+                return new Promise((resolve, reject) =>{
+                    // Pega no banco de dados o usuário que fez a indicação para realizar as acões necessáriis
+                    promise.once('value').then(snapshot => {
+                    data = snapshot.val();
+                    return resolve(data); 
+                    }).catch(error => {
+                        console.error(new Error(`2 - checaUserDb - ${email} - ${firstName} -  Erro ao receber dados do comprador. ${error}`))
+                        console.error(new Error(error))
+                        reject(error)
+                    })
+                })
+            }
+        
+            // Executa a promise que checa se existe User. 
+            const executaChecaUserDb = (response) => {
+                console.log(`1 - executaChecaUserDb - ${email} - ${firstName} -  executando promise que checa se já existe USER no Bando de Dados.`);
+                var checaUser = checaUserDb();
+                checaUser.then(result => {
+                console.log(`2 - executaChecaUserDb - ${email} - ${firstName} - Checagem efetuada com sucesso. ${JSON.stringify(result)}. Indo para as tratativas.`);
+                
+                // checa se existe indicador no banco 
+                    // Indicador não existe !Result
+                    if (!result){
+                        //caso não exista cria na tabela indicadores
+                        console.log(`3 - executaChecaUserDb - ${email} - ${firstName} -  User não existe na base. ${JSON.stringify(result)}. Chamando a funcão de criar indicador no DB.`);  
+                        // !result -> não existe usuário indicador
+                        
+                            // Contém a chamada de promise que cria um novo indicador no DB
+                            const criaPerfilDb = () => {
+                                console.log(`1 - criaPerfilDb - ${email} - ${firstName} -  Estrando na promise que cria o perfil do usuário`);
+                            
+                                return new Promise((resolve, reject) =>{
+                                    // cria perfil de usuário no banco de dados de indicador  
+                                    promise.set(perfilUser).then(() =>{
+                                        console.log(`2 - criaPerfilDb - ${email} - ${firstName} -  User criado com sucesso.`);
+                                        return resolve(true);
+                                    }).catch(error => {
+                                        console.error(new Error(`2 - criaPerfilDb - ${email} - ${firstName} -  Erro ao criar usuário. ${error}`))
+                                        console.error(new Error(error))
+                                        reject(error)
+                                    })
+                                })
+                            }       
+        
+                            //Chama a promise que salva os dados no banco de dados. Faz a tratativa pro usuário em caso de erro
+                            const executaCriaPerfilDb = (response) =>{
+                                console.log(`1 - criaPerfilIndicadorDb - criaNovoUsuario - ${email} - ${firstName} -  Executando na promise que cria perfil de Indicador no Bando de Dados.`);
+        
+                                var criaPerfil = criaPerfilDb();
+                                criaPerfil.then(result => {
+                                    console.log(`2 - executaCriaPerfilDb - ${email} - ${firstName} - User criado com sucesso no banco de dados.`);
+                                    return resposta;
+                                }).catch(error => {
+                                    console.error(new Error(`2 - executaCriaPerfilDb - ${email} - ${firstName} - User não foi gravado no Banco de Dados. Erro: ${error}`))
+                                    console.error(new Error(error))
+                                })
+                            }
+        
+                            executaCriaPerfilDb(response)
+        
+                        // Usuário indicador existe na base dados
+                    } else if (result){
+        
+                        // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
+                        console.log(`3 - executaChecaUserDb - ${email} - ${firstName} -  User já existe na base. ${JSON.stringify(result)}`);
+                        console.log(`4 - executaChecaUserDb - ${email} - ${firstName} -  Saldo de creditos: ${result.saldoCreditos}, Saldo dinheiro: ${result.saldoDinheiro}`);
+        
+                        var saldoCreditos = parseFloat(result.saldoCreditos + perfilUser.saldoCreditos)
+                        var saldoDinheiro = parseFloat(result.saldoDinheiro + perfilUser.saldoDinheiro)
+            
+                        // Result. Existe indicador no banco de dados
+                            // promise para atualizar o numero de indicados no DB INDICADOR.
+                        var atualizaSaldo =  new Promise((resolve, reject) =>{
+                            console.log(`1 - atualizaSaldo - ${email} - ${firstName} - Entrando na promise para atualizar o saldo após compra.`);
+        
+                            //Atualiza o numero de indicados (indicadores)
+                            promise.update({
+                                saldoCreditos: saldoCreditos,
+                                saldoDinheiro: saldoDinheiro
+                            }).then(() =>{
+                                console.log(`2 - atualizaSaldo - ${email} - ${firstName} -  Saldo User atualizado com sucesso.`);
+                                return resolve(true);
+                            }).catch(error => {
+                                console.error(new Error(`2 - atualizaSaldo - ${email} - ${firstName} -  Erro ao atualizar o saldo. ${error}`))
+                                console.error(new Error(error))
+                                reject(error)
+                            })
+                        })
+                            
+                            const executaPromises = (response) => {
+                                
+                            console.log(`1 - executaPromises - ${email} - ${firstName} - Entrando na funcão que executa as promises quando existe Usuário.`);
+                                
+                                Promise.all([atualizaSaldo]).then((result) => {
+                                    console.log('result: ', result);
+                                    console.log(`2 - executaPromises - ${email} - ${firstName} - Promises executadas com sucesso.`);
+                                    return resposta;
+                                }).catch(error => {
+
+                                    console.error(new Error(`2 - executaPromises - ${email} - ${firstName} -  Erro ao executar todas as promises. ${error}`))
+                                    console.error(new Error(error))
+                                    return error;
+
+                                })
+        
+                            }
+                            
+                            executaPromises(response)
+                    }
+                    
+                    return ;
+                }).catch(error => {
+                    console.error(new Error(`2 - executaChecaUserDb - ${email} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`))
+                    console.error(new Error(error))
+                    return response.json({
+                        "messages": [
+                            {
+                                "text": "Erro maldito"
+                            }
+                        ]
+                    });
+                })
+            }
+            executaChecaUserDb(response)
+        // Dados do usuário
+        //    console.log(`4 - resposta do request ${userEmail}`)
+
+    } else {
+        console.log("status de ordem não concluida ainda");
+        response.json({
+            "messages": [
+                {
+                    "text": `Status de ordem: ${wooRequestParsed.status}`
+                }
+            ]
+        })
     }
 
 
@@ -968,7 +1208,7 @@ const criaNovoUsuario = (perfilUser, userId, promise, indicadorPromise, promiseI
 }
 
 // Checa numero de indicações e premia se usuário atingir requisitos
-const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response, carModel, tokenWallet) => {
+const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response, carModel) => {
     console.log(`premioIndicacao - 1 - ${userId} - ${firstName} -  Funcão de premiacão por numero de indicacão`);
     
     var data;
@@ -983,31 +1223,6 @@ const premioIndicacao = (userId, promise, receberPremio, estadoProtecao, numeroA
             console.log(`premioIndicacao - 3 - ${userId} - ${firstName} -  Usuário vai receber prêmio por indicacão.`);
             var creditoPlus = data.saldoCreditos + 1000000;
             var saldoPlus = parseFloat(data.saldoDinheiro) + 1000;
-
-            console.log(`premioIndicacao - 4 - ${userId} - ${firstName} -  Iniciando o crédito na woowaleet. IdCliente: ${data.idCliente}`);
-            
-            // Faz a conexão com o woowallet e credita 1000 reais
-            var req = unirest("post", `https://onsurance.me/wp-json/wp/v2/wallet/${data.idCliente}`);
-
-            req.query({
-            "type": "credit",
-            "amount": 1000000,
-            "details": `Parabéns ${firstName}, você acaba de ganhar Um milhão de créditos por indicar a Onsurance para pelo menos 10 pessoas. Agora vc pode proteger seu ${carModel} por muito mais tempo.`
-            });
-            
-            req.headers({
-            "Authorization": `Bearer ${tokenWallet}`
-            });
-            
-            req.end(res => {
-                if (res.error){
-                    console.error(new Error(`premioIndicacao - 5 - ${userId} - ${firstName} -  Prêmio de indicacão não creditado: ${JSON.stringify(res.error)}`))
-                    console.error(new Error(res.error))
-                } else {
-                    console.log(`premioIndicacao - 5 - ${userId} - ${firstName} -  Prêmio de indicacão creditado!!! ${JSON.stringify(res.body)}`);
-                    receberPremio = true;
-                }
-            });
 
             // Atualiza dados do usuário no banco de dados
             promise.update({
@@ -1169,7 +1384,7 @@ const calculaGasto = (carValue, response) =>{
 
 // Todo feito com promises e microservicos
 // Recupera o Id de cliente do Woocommerce
-const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto, tokenWallet, firstName) => {
+const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto, firstName) => {
     console.log(`1 - pegaIdCliente - ${userId} - ${firstName} -  Entrando na função que pega id de cliente do woocommerce.`);
     var dataApi;
 
@@ -1238,7 +1453,7 @@ const pegaIdCliente = (userId, perfilUser, promise, urlWp, response, valorMinuto
 
 // Todo feito com promises e microservicos
 // Recupera o saldo da wallet e salva no banco de dados
-const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, tokenWallet, firstName, response) => {
+const pegaSaldoCarteira = (userId, perfilUser, dataApi, promise, firstName, response) => {
     console.log(`1 - pegaSaldoCarteira - ${userId} - ${firstName} -  Entrando na funcão de receber o saldo da carteira. Id de cliente:${dataApi}`);
     
     // Contém a chamada de api que pega o saldo no woowallet
