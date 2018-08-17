@@ -172,7 +172,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                 dbRef.child(`/logUse/${numeroAtivacoes}`).update(logUso).then( () => {
                     console.log(`ligarProtecao - 3 - ${userEmail} - ${firstName} -  Log de uso atualizado no banco.`);
                     console.log("*** Protecão completamente ligada no servidor. ***")
-                    sucessoLigar = {       // Retorna para o chat 
+                    sucessoLigar = { 
                         "messages": [
                             {
                                 "text": "Sua proteção está ativada!"
@@ -200,7 +200,6 @@ exports.protecao = functions.https.onRequest((request, response) =>{
             }
             atualizaStatus()
         })
-
     }  
 
     // Funcão para desativar a protecão
@@ -239,10 +238,10 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                 dbRef.once('value').then(snapshot => {
                     data = snapshot.val()   
 
-                    console.log(`pegarDadosDb - desligarProtecao - 3 - ${userEmail} - ${firstName} -  Dados recuperados do DB. ${JSON.stringify(data)}.`);
+                    console.log(`pegarDadosDb - desligarProtecao - 3 - ${userEmail} - ${firstName} -  Dados recuperados do DB.`);
 
                     perfilUser.saldoCreditos = data.saldoCreditos - valorConsumido                          // 
-                    perfilUser.saldoDinheiro = (data.saldoDinheiro - (valorConsumido/1000)).toFixed(4)
+                    perfilUser.saldoDinheiro = (parseFloat(data.saldoDinheiro) - (valorConsumido/1000)).toFixed(4)
                     var sucessoDesligar = {
                         "messages": [
                             {
@@ -272,7 +271,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                         tempoUso: `${dias} dias : ${horas} horas : ${minutos} minutos : ${segundos} segundos`,
                         saldoFinal: perfilUser.saldoCreditos
                     }
-                    return atualizaPerfilUser(logUso, perfilUser,sucessoDesligar)
+                    return atualizaPerfilUser(logUso, perfilUser, sucessoDesligar)
 
                     }).catch(error =>{
                         console.error(new Error(`desligarProtecao - 3 - ${userEmail} - ${firstName} -  Erro ao recuperar dados. ${error}`));
@@ -325,29 +324,15 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                     dbRef.once('value').then(snapshot => {
                         data = snapshot.val();
                         console.log(`verificaIndicacao - 2 - ${userEmail} - ${firstName} -  Dados do Usuário recuperado: ${data.usuariosIndicados} indicados. recebeu promocão: ${data.recebeuPromocao}`);
-                        return executaPrimiacao(data)
+                        return executaPremiacao(data)
                     }).catch(error => {
                         console.error(new Error(`verificaIndicacao - 2 - ${userEmail} - ${firstName} -  Erro ao recuperar usuário na base de dados. ${error}`))
                         numeroAtivacoes -= 1                        
-                        reject(response.json({
-                            "messages": [
-                                {
-                                    "text": `Olá! Identifiquei um pequeno erro. Não consegui recuperar seus dados em nosso servidor. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
-                                }
-                            ],
-                            "set_attributes":
-                                {
-                                    "status-protecao": `OFF`,
-                                    "numAtivacao": numeroAtivacoes
-                                },
-                            "redirect_to_blocks": [
-                                "Ligar"
-                            ]
-                        }))
+                        reject(response.json(falhaLigar))
                     })
             }
 
-            let executaPrimiacao = result => {
+            let executaPremiacao = result => {
                 // checa se número de indicados atingiu mais de 10 pela primeira vez
                 // Se o usuário atingiu os requisitos necessários para receber o prênmio
                 if (parseInt(result.usuariosIndicados) >= 10 && result.recebeuPromocao === false) {
@@ -355,24 +340,36 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                     var creditoPlus = result.saldoCreditos + 1000000;
                     var saldoPlus = parseFloat(result.saldoDinheiro) + 1000;
 
-                    // Atualiza dados do usuário no banco de dados
-                    dbRef.update({
+                    adicionaPromocao(creditoPlus, saldoPlus, result)
+
+                // Caso usuário não tenha atingido os requisitos para receber prêmio
+                } else if (result.usuariosIndicados < 10 || result.recebeuPromocao === true){
+                    console.log(`executaVerificaUserIndicacao - 2 - ligarProtecão - ${userEmail} - ${firstName} -  Não tem requisitos para receber promocão: ${result.usuariosIndicados} indicados, recebeu promo: ${result.recebeuPromocao}`);
+                    console.log("*** Verificacão do indicador feita completamente no servidor. ***")                    
+                    receberPremio = false
+                    resolve(receberPremio)
+                }
+            }
+
+            let adicionaPromocao = (creditoPlus, saldoPlus, result) => {
+                // Atualiza dados do usuário no banco de dados
+                dbRef.update({
                     saldoCreditos: creditoPlus,
                     saldoDinheiro: saldoPlus,
                     recebeuPromocao: true
-                    }).then( () => {
+                    }).then(() => {
                         console.log(`executaVerificaUserIndicacao - 3 - ligaProtecão - ${userEmail} - ${firstName} -  Crédito, saldo e status da promocão atualizados no banco.`);
                         receberPremio = true
                         console.log(`executaVerificaUserIndicacao - 4 - ${userEmail} - ${firstName} -  Finaliza premiacão e a ativacão da protecão.`);
                         console.log("*** Verificacão do indicador feita completamente no servidor. ***")
-
+                        console.log("*** Retorno Imediato Messenger User recebendo promocão indocacão ***")
                         // Adicionar os valores atualizados para as variáveis de usuário
                         return resolve(
                             response.json({
                             "set_attributes":
                                 {
-                                    "status-protecao": estadoProtecao,
-                                    "numAtivacao": numeroAtivacoes,
+                                    "status-protecao": "ON",
+                                    "numAtivacao": result.qtdAtivacao,
                                     "timeStart": inicioProtecao,
                                     "user-credit": creditoPlus,
                                     "user-money": saldoPlus,
@@ -387,29 +384,8 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                         console.error(new Error(`executaVerificaUserIndicacao - 3 - ${userEmail} - ${firstName} -  Erro ao atualizar ganho de prêmio no banco. ${error}`))
                         console.error(new Error(error))
                         numeroAtivacoes -= 1
-                        response.json({
-                            "messages": [
-                                {
-                                    "text": `Olá! Identifiquei um pequeno erro. Não consegui executar sua premiação. Preciso que você tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
-                                }
-                            ],
-                            "set_attributes":
-                            {
-                                "status-protecao": `OFF`,
-                                "numAtivacao": numeroAtivacoes
-                            },
-                            "redirect_to_blocks": [
-                                "Ligar"
-                            ]
-                        })
+                        reject(response.json(falhaLigar))
                     })
-
-                // Caso usuário não tenha atingido os requisitos para receber prêmio
-                } else if (result.usuariosIndicados < 10 || result.recebeuPromocao === true){
-                    console.log(`executaVerificaUserIndicacao - 2 - ligarProtecão - ${userEmail} - ${firstName} -  Não tem requisitos para receber promocão: ${result.usuariosIndicados} indicados, recebeu promo: ${result.recebeuPromocao}`);
-                    console.log("*** Verificacão do indicador feita completamente no servidor. ***")                    
-                    resolve(receberPremio = false)
-                }
             }
 
             verificaUserIndicacao()
@@ -421,10 +397,10 @@ exports.protecao = functions.https.onRequest((request, response) =>{
     if (estadoProtecao === "OFF" && numeroAtivacoes >= 1){
 
         // Liga a protecão, verifica a quantidade de indicacões e retorna para o chat
-        ligarProtecao().then(result =>{ 
+        ligarProtecao().then(result => { 
                 // Liga a protecão no banco de dados, atualiza o log de uso.
-            return // verificaIndicacao()   // Verifica se user tem qrequisitos para receber premio por indicacão e premia
-        }).then(() =>{
+            return verificaIndicacao()   // Verifica se user tem requisitos para receber premio por indicacão e premia
+        }).then(() => {
             console.log("*** Retorno Imediato Messenger ***")
             return response.json(sucessoLigar)
         }).catch(error =>{
@@ -584,8 +560,8 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
     console.log('urlWp: ', urlWp);
 
     // Referencia do Banco de dados
-    // const dbRefIndicadorUser = admin.database().ref('/users').child(indicador);
-    // const indicadorPromise = admin.database().ref('/indicadores').child(indicador);
+    const dbRefIndicadorUser = admin.database().ref('/users').child(indicador);
+    const dbRefIndicador = admin.database().ref('/indicadores').child(indicador);
 
     var checaValor = carValue.toString();
 
@@ -626,7 +602,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
         });
     }
 
-    console.log(`2 - ${userEmail} - ${firstName} - 2 - Calcula minuto da protecão.`);
+    console.log(`2 - ${userEmail} - ${firstName} - Calcula minuto da protecão.`);
     var valorMinuto = calculaGasto(carValue, response);
 
     var dataApi;
@@ -659,9 +635,9 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                             checaPerfilDB(dataApi)
                         }
                     });
-                unirestRequest()
       
                 }
+                unirestRequest()
             }
             
             // Checa se já foi criado o peril do user pelo webhook do woocommerce
@@ -672,7 +648,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
 
                 // Recuperar dados do usuário para checar se pré perfil foi criado
                 dbRef.once('value').then(snapshot => {
-                    console.log(`checaPerfilDB - 2 - ${userEmail} - ${firstName} - ID recuperado, com sucesso. DataAPI: ${snapshot.val()}`)
+                    console.log(`checaPerfilDB - 2 - ${userEmail} - ${firstName} - ID recuperado, com sucesso. User: ${JSON.stringify(snapshot.val())}`)
                     perfilUser = snapshot.val()
                     console.log(perfilUser)
                     return criaPerfilUser(perfilUser, dbRef)
@@ -709,10 +685,19 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                         reject(error)
                     })
                 }
-            } 
+            }
 
             pegaIdCliente()
 
+        })
+    }
+
+    const indicacao = () => {
+        console.log(`1 - indicacao - ${userEmail} - ${firstName} - Calcula minuto da protecão.`)
+        return new Promise((resove, reject) => {
+            let criaPerfilIndicador = () => {
+
+            }
         })
     }
 
@@ -1133,100 +1118,6 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
 
 })
 
-
-// Checa numero de indicações e premia se usuário atingir requisitos
-const premioIndicacao = (userEmail, promise, receberPremio, estadoProtecao, numeroAtivacoes, inicioProtecao, firstName, response) => {
-    console.log(`premioIndicacao - 1 - ${userEmail} - ${firstName} -  Funcão de premiacão por numero de indicacão`);
-    
-    var data;
-    // recupera dados do usuário no Banco de dados
-    promise.once('value').then(snapshot => {
-        data = snapshot.val();
-        console.log(`premioIndicacao - 2 - ${userEmail} - ${firstName} -  Dados do Usuário recuperado: ${data.usuariosIndicados} indicados. recebeu promocão: ${data.recebeuPromocao}`);
-
-        // checa se número de indicados atingiu mais de 10 pela primeira vez
-        // Se o usuário atingiu os requisitos necessários para receber o prênmio
-        if (parseInt(data.usuariosIndicados) >= 10 && data.recebeuPromocao === false) {
-            console.log(`premioIndicacao - 3 - ${userEmail} - ${firstName} -  Usuário vai receber prêmio por indicacão.`);
-            var creditoPlus = data.saldoCreditos + 1000000;
-            var saldoPlus = parseFloat(data.saldoDinheiro) + 1000;
-
-            // Atualiza dados do usuário no banco de dados
-            promise.update({
-                saldoCreditos: creditoPlus,
-                saldoDinheiro: saldoPlus,
-                recebeuPromocao: true
-            }).then( () => {
-                console.log(`premioIndicacao - 6 - ${userEmail} - ${firstName} -  Crédito, saldo e status da promocão atualizados no banco.`);
-                return;
-            }).catch(error => {
-                console.error(new Error(`premioIndicacao - 6 - ${userEmail} - ${firstName} -  Erro ao atualizar ganho de prêmio no banco. ${error}`))
-                console.error(new Error(error))
-            })
-
-            // Adicionar os valores atualizados para as variáveis de usuário
-            console.log(`premioIndicacao - 8 - ${userEmail} - ${firstName} -  Finaliza premiacão e a ativacão da protecão.`);
-            response.json({
-                "set_attributes":
-                {
-                    "status-protecao": estadoProtecao,
-                    "numAtivacao": numeroAtivacoes,
-                    "timeStart": inicioProtecao,
-                    "user-credit": creditoPlus,
-                    "user-money": saldoPlus,
-                    "afiliados": data.usuariosIndicados
-                },
-                "redirect_to_blocks": [
-                    "receber-promo"
-                ]
-            }); 
-
-        // Caso usuário não tenha atingido os requisitos para receber prêmio
-        } else if (data.usuariosIndicados < 10 || data.recebeuPromocao === true){
-            console.log(`premioIndicacao - 4 - ${userEmail} - ${firstName} -  Não tem requisitos para receber promocão: ${data.usuariosIndicados} indicados, recebeu promo: ${data.recebeuPromocao}`);
-            receberPremio = false;
-            console.log(`premioIndicacao - 5 - ${userEmail} - ${firstName} -  Ligando protecão.`);
-    
-                response.json({
-                    "messages": [
-                        {
-                            "text": `Sua proteção está ligada!`
-                        }
-                    ],
-                    "set_attributes":
-                    {
-                        "status-protecao": estadoProtecao,
-                        "numAtivacao": numeroAtivacoes,
-                        "timeStart": inicioProtecao,
-                        "afiliados": data.usuariosIndicados
-                    },
-                    "redirect_to_blocks": [
-                        "Pós On"
-                    ]
-                });
-        }
-
-        return receberPremio, data;
-    }).catch(error => {
-        console.error(new Error(`premioIndicacao - 2 - ${userEmail} - ${firstName} -  Erro ao recuperar usuário na base de dados. ${error}`))
-        console.error(new Error(error))
-        response.json({
-            "messages": [
-                {
-                    "text": `Opa ${firstName}. Não consegui desligar sua proteção. Vou trazer a função de Desligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
-                }
-            ],
-            "set_attributes":
-            {
-                "status-protecao": "ON",
-            },
-            "redirect_to_blocks": [
-                "Desligar"
-            ]
-        })
-    })
-}
-
 const calculaGasto = (carValue, response) =>{
 
     console.log('iniciando funcão de calcular valor do min');
@@ -1308,56 +1199,3 @@ const calculaGasto = (carValue, response) =>{
         return valorMinuto;
 
 }
-
-
-exports.getrequest = functions.https.onRequest((request, response) => {
-    console.log(JSON.stringify(request.query))
-
-    const userEmail = request.query["email_address"];
-
-    var urlWp = `https://onsurance.me/wp-json/wc/v2/customers?email=${userEmail}&consumer_key=ck_d5a4ce9df6f00c3820c27b035a65d674f1959ac2&consumer_secret=cs_55bc1321117b71cf8c80fe8a4504f8d381063265`
-
-    console.log('urlWp: ', urlWp);
-
-    // Make a request for a user with a given ID
-    axios.get(urlWp).then(response => {
-        // handle success
-        console.log(response);
-        return unirestRequest(response)
-    }).catch(error => {
-        // handle error
-        console.error(error, "axios");
-        return unirestRequest(error)
-    })
-    
-    let unirestRequest = (data) => {
-        var req = unirest("GET", urlWp)
-    req.end(res => {
-    if (res.error) {
-        console.error(new Error(res.error))
-        response.json({
-            "messages": [
-                {
-                    "text":`Erro na requisicão. ${JSON.stringify(res.error)}, ${data}`
-                }
-            ]
-        })
-    } else {
-
-        console.log(res.body);
-        response.json({
-            "messages": [
-                {
-                    "text":`Sucesso na requisicão. ${JSON.stringify(res.body)}, ${data}`
-                }
-            ]
-        })
-    }
-    });
-    }
-    
-
-
-})
-
-
