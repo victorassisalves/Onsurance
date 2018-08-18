@@ -1,10 +1,9 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin')
 const unirest = require("unirest");
-const axios = require('axios');
-
+const crypto = require('crypto');
   
-const homolog = {
+const homologacao = {
     apiKey: "AIzaSyABa9PXOgiVggDHjt1MD9bMVux-4UpObt4",
     authDomain: "onsurance-homologacao.firebaseapp.com",
     databaseURL: "https://onsurance-homologacao.firebaseio.com",
@@ -13,7 +12,7 @@ const homolog = {
     messagingSenderId: "451230477262"
   }
 
-const product = {
+const producao = {
     apiKey: "AIzaSyD8RCBaeju-ieUb9Ya0rUSJg9OGtSlPPXM",
     authDomain: "onsuranceme-co.firebaseapp.com",
     databaseURL: "https://onsuranceme-co.firebaseio.com",
@@ -21,7 +20,7 @@ const product = {
     storageBucket: "onsuranceme-co.appspot.com",
     messagingSenderId: "241481831218"
 }
-admin.initializeApp(homolog);
+admin.initializeApp(homologacao);
 
 
 exports.protecao = functions.https.onRequest((request, response) =>{
@@ -46,13 +45,11 @@ exports.protecao = functions.https.onRequest((request, response) =>{
     const numAtivacao = request.query["numAtivacao"];
 
     // Referencia do Banco de dados
-    const dbRef = admin.database().ref('/users').child(clienteId);
-    // const dbRefIndicadorUser = admin.database().ref('/users').child(indicador);
-    // const indicadorPromise = admin.database().ref('/indicadores').child(indicador);
+    var userDbId = crypto.createHash('md5').update(userEmail).digest("hex");
+    const dbRef = admin.database().ref('/users').child(userDbId);
 
     var numeroAtivacoes = parseInt(numAtivacao);
     var valorConsumido = 0;
-    var urlWp = `https://onsurance.me/wp-json/wc/v2/customers?email=${userEmail}&consumer_key=ck_f56f3caf157dd3384abb0adc66fea28368ff22f4&consumer_secret=cs_b5df2c161badb57325d09487a5bf703aad0b81a4`
 
     // Objeto de perfil do user
     var perfilUser = {
@@ -286,7 +283,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                 // Salva no banco de dados o resultado do desligamento e atualiza o banco de dados
                 dbRef.update({
                     saldoCreditos: perfilUser.saldoCreditos,
-                    saldoDinheiro: perfilUser.saldoDinheiro,
+                    saldoDinheiro: parseFloat(perfilUser.saldoDinheiro),
                     estadoProtecao: estadoProtecao,
                 }).then(() =>{
                     console.log(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Consumo do desligamento salvo no banco. ${JSON.stringify(perfilUser)}`);
@@ -336,9 +333,9 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                 // checa se número de indicados atingiu mais de 10 pela primeira vez
                 // Se o usuário atingiu os requisitos necessários para receber o prênmio
                 if (parseInt(result.usuariosIndicados) >= 10 && result.recebeuPromocao === false) {
-                    console.log(`executaVerificaUserIndicacao - 2 - ligarProtecão${userEmail} - ${firstName} -  Usuário vai receber prêmio por indicacão.`);
-                    var creditoPlus = result.saldoCreditos + 1000000;
-                    var saldoPlus = parseFloat(result.saldoDinheiro) + 1000;
+                    console.log(`executaVerificaUserIndicacao - 2 - ligarProtecão - ${userEmail} - ${firstName} -  Usuário vai receber prêmio por indicacão.`);
+                    var creditoPlus = result.saldoCreditos + 1000000
+                    var saldoPlus = (parseFloat(result.saldoDinheiro) + 1000).toFixed(4)
 
                     adicionaPromocao(creditoPlus, saldoPlus, result)
 
@@ -420,7 +417,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
             perfilUser.saldoDinheiro = (data.saldoDinheiro + (valorConsumido/1000)).toFixed(4)
             dbRef.update({
                 saldoCreditos: perfilUser.saldoCreditos,
-                saldoDinheiro: perfilUser.saldoDinheiro,
+                saldoDinheiro: parseFloat(perfilUser.saldoDinheiro),
                 estadoProtecao: 'ON',
             }).then(() =>{
                 console.log(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Consumo do desligamento salvo no banco. ${JSON.stringify(perfilUser)}`);
@@ -554,29 +551,26 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
     const carValue = request.query["car-value"];
     const carModel = request.query["car-model"];
     const carPlate = request.query["car-plate"];
-   
-    var urlWp = `https://onsurance.me/wp-json/wc/v2/customers?email=${userEmail}&consumer_key=ck_d5a4ce9df6f00c3820c27b035a65d674f1959ac2&consumer_secret=cs_55bc1321117b71cf8c80fe8a4504f8d381063265`
-    
-    console.log('urlWp: ', urlWp);
 
     // Referencia do Banco de dados
-    const dbRefIndicadorUser = admin.database().ref('/users').child(indicador);
-    const dbRefIndicador = admin.database().ref('/indicadores').child(indicador);
+    var userDbId = crypto.createHash('md5').update(userEmail).digest("hex");
+    console.log('userDbId: ', userDbId);
+    var indicadorDbId = crypto.createHash('md5').update(indicador).digest("hex");
+    const dbRef = admin.database().ref('/users').child(userDbId);
+    const dbRefIndicadorUser = admin.database().ref('/users').child(indicadorDbId);
+    const dbRefIndicador = admin.database().ref('/indicadores').child(indicadorDbId);
+    
 
     var checaValor = carValue.toString();
 
      // Objeto de perfil do user
      var perfilUsuario = {
         messengerId: userId,
-        firstName: firstName,
         lastName: lastName,
-        userEmail: userEmail,
         carModel: carModel,
         carPlate: carPlate,
         carValue: carValue,
         qtdAtivacao: 0,
-        idCliente: "",
-        usuariosIndicados: 0,
         estadoProtecao: "OFF",
         indicador: indicador,
         timezone: timezone,
@@ -606,52 +600,28 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
     var valorMinuto = calculaGasto(carValue, response);
 
     var dataApi;
+    var data;
     var perfilUser;
-    
+    var perfilIndicador = {
+        usuariosIndicados: 1,
+        indicados: {
+            1: userEmail
+        }
+    }
+
+    // Verificacão/Criacão do perfil de usuário
     const criaPerfil = () => {
         return new Promise((resolve, reject) => {
-
-            // Recupera o id de cliente no Woocommerce
-            let pegaIdCliente = () => {
-                console.log(`pegaIdCliente - 1 - ${userEmail} - ${firstName} - GET Request para pegar id do cliente Woocommerce`)
-                
-                var req = unirest("GET", urlWp);
-                
-                let unirestRequest = () => {
-                    req.end(res => {
-                        if (res.error){
-                            console.error(new Error(`pegaIdCliente - 2 - ${userEmail} - ${firstName} - Falha em recuperar ID: ${JSON.stringify(res.error)}`))
-                            reject(res.error)
-
-                            // Array do perfil de cliente Vazio ou não existe (geralmente acontece com Admin do WP)
-                        } else if (res.body[0] === undefined || res.length === 0) {
-                            console.error(new Error(`pegaIdCliente - 2 - ${userEmail} - ${firstName} - Falha em recuperar ID Array vazio: ${JSON.stringify(res)}`))
-                            reject(res)
-                        } else {
-                            console.log(`pegaIdCliente - 2 - ${userEmail} - ${firstName} - Consulta de ID feita com sucesso: ${res.body[0].id}`);
-                            dataApi = res.body[0].id;
-                            perfilUsuario.idCliente = dataApi
-                            console.log(`pegaIdCliente - 3 - ${userEmail} - ${firstName} -  Informacões do usuário no woocommerce. ${JSON.stringify(res.body)}`);
-                            checaPerfilDB(dataApi)
-                        }
-                    });
-      
-                }
-                unirestRequest()
-            }
-            
+           
             // Checa se já foi criado o peril do user pelo webhook do woocommerce
-            let checaPerfilDB = dataApi => {
-                console.log(`checaPerfilDB - 1 - ${userEmail} - ${firstName} - ID recuperado, checando se existe pefil. DataAPI: ${dataApi}`)
-
-                const dbRef = admin.database().ref('/users').child(dataApi);
+            let checaPerfilDB = () => {
+                console.log(`checaPerfilDB - 1 - ${userEmail} - ${firstName} - Checando se existe pefil.`)
 
                 // Recuperar dados do usuário para checar se pré perfil foi criado
                 dbRef.once('value').then(snapshot => {
-                    console.log(`checaPerfilDB - 2 - ${userEmail} - ${firstName} - ID recuperado, com sucesso. User: ${JSON.stringify(snapshot.val())}`)
+                    console.log(`checaPerfilDB - 2 - ${userEmail} - ${firstName} - Checado com sucesso. User: ${JSON.stringify(snapshot.val())}`)
                     perfilUser = snapshot.val()
-                    console.log(perfilUser)
-                    return criaPerfilUser(perfilUser, dbRef)
+                    return criaPerfilUser(perfilUser)
 
                 }).catch( error => {
                     console.error(new Error(`checaPerfilDB - 2 - ${userEmail} - ${firstName} - Erro ao tentar recuperar perfil de Usuário ${error}.`))
@@ -660,8 +630,8 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
             }
 
             // Cria perfil do usuário usando ID de cliente Woocommerce como Chave primária            
-            let criaPerfilUser = (perfilUser, dbRef) => {
-                if (!perfilUser) {      // Não existem dados do perfil do usuário no sistema
+            let criaPerfilUser = perfilUser => {
+                if (!perfilUser.idCliente) {      // Não existem dados do perfil do usuário no sistema
                     console.error(new Error(`criaPerfilUser - 1 - ${userEmail} - ${firstName} - Usuário sem perfil. Result: ${JSON.stringify(perfilUser)}.`))
                     reject(
                         response.json({
@@ -675,11 +645,11 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                             ]
                         })
                     )
-                } else {
-                    console.log(`criaPerfilUser - 1 - ${userEmail} - ${firstName} - Usuário com perfil Result: ${JSON.stringify(perfilUser)}.`) // Como Tratar? Retorna* pro bot
-                    dbRef.update(perfilUsuario).then(result => {
+                } else if (perfilUser.idCliente) {
+                    console.log(`criaPerfilUser - 1 - ${userEmail} - ${firstName} - Usuário com perfil: ${JSON.stringify(perfilUser)}.`) // Como Tratar? Retorna* pro bot
+                    dbRef.update(perfilUsuario).then(() => {
                         console.log(`criaPerfilUser - 2 - ${userEmail} - ${firstName} - Perfil gravado com sucesso no DB.`)
-                        return resolve()
+                        return resolve(true)
                     }).catch(error => {
                         console.error(new Error(`gravaPerfilDb - 2 - ${userEmail} - ${firstName} - Falha ao criar perfil. ${error}`))
                         reject(error)
@@ -687,29 +657,106 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                 }
             }
 
-            pegaIdCliente()
+            checaPerfilDB()
 
         })
     }
 
+    // Verificacão/Criacão do indicador
     const indicacao = () => {
-        console.log(`1 - indicacao - ${userEmail} - ${firstName} - Calcula minuto da protecão.`)
-        return new Promise((resove, reject) => {
-            let criaPerfilIndicador = () => {
+        console.log(`indicacao - 1 - ${userEmail} - ${firstName} - Verificacão indicacão de usuário.`)
+        return new Promise((resolve, reject) => {
 
+            // Busca perfil do indicador na tabela de indicadores
+            let checaPerfilIndicador = () => {
+                dbRefIndicador.once('value').then(snapshot => {
+                    data = snapshot.val()
+                    console.log(`checaPerfilIndicador - 1 - ${userEmail} - ${firstName} - resultado checagem ${data}`)
+                    return acaoIndicador(data)
+
+                }).catch(error => {
+                    console.error(new Error(`checaPerfilIndicador - 1 - ${userEmail} - ${firstName} - Erro ao checar perfil de indicador. ${error}`))
+                    reject(error)
+                })
             }
+
+            // Checa se indicador existe e faz as tratativas
+            let acaoIndicador = (data) => {
+                if (!data) {
+                    console.log(`atualizaIndicador - 1 - ${userEmail} - ${firstName} - Indicador não existe no banco.`)
+                    criaIndicador()
+                } else if (data) {
+                    console.log(`acaoIndicador - 1 - ${userEmail} - ${firstName} - Indicador existe no banco.`)
+                    var numIndicados = parseInt(data.usuariosIndicados) + 1
+                    atualizaIndicador(numIndicados)
+                }
+            }
+
+            // Caso exista o perfil, atualiza o número de indicados
+            let atualizaIndicador = numIndicados => {
+                dbRefIndicador.update({
+                    usuariosIndicados: numIndicados
+                }).then(() => {
+                    console.log(`atualizaIndicador - 1 - ${userEmail} - ${firstName} - Num de indicados atualizado.`)
+                    return atualizaArrayIndicador(numIndicados)
+                }).catch(error => {
+                    console.error(new Error(`atualizaIndicador - 1 - ${userEmail} - ${firstName} - Erro ao atualizar num de indicados. ${error}`))
+                    reject(error)
+                })
+            }
+
+            // Caso exista, atualiza o array de indicados
+            let atualizaArrayIndicador = numIndicados => {
+                dbRefIndicador.child(`/indicados/${numIndicados}`).set(userEmail).then(() =>{
+                    console.log(`atualizaArrayIndicador - 1 - ${userEmail} - ${firstName} -  Usuário adicionado ao array.`);
+                    return atualizaUserIndicador(numIndicados)
+                }).catch(error => {
+                    console.error(new Error(`atualizaArrayIndicador - 1 - ${userEmail} - ${firstName} -  Erro ao adicionar usuário ao array. ${error}`))
+                    reject(error)
+                });
+            }
+
+            //Caso nnao exista, cria o perfil do indicador.
+            let criaIndicador = () => {
+                dbRefIndicador.set(perfilIndicador).then(() => {
+                    console.log(`criaIndicador - 1 - ${userEmail} - ${firstName} - Indicador criado com sucesso.`)
+                    return atualizaUserIndicador(1)
+                }).catch(error => {
+                    console.error(new Error(`criaIndicador - 1 - ${userEmail} - ${firstName} - Erro ao criar indicador. ${error}`))
+                    reject(error)
+                })
+            }
+
+            // Atualiza o numero de indicados do perfil de User do indicador
+            let atualizaUserIndicador = numIndicados => {
+                dbRefIndicadorUser.update({
+                    usuariosIndicados: numIndicados
+                }).then(() => {
+                    console.log(`atualizaUserIndicador - 1 - ${userEmail} - ${firstName} - Numero de indicados no perfil do User atualizados`)
+                    return resolve(true)
+                }).catch(error => {
+                    console.log(`atualizaUserIndicador - 1 - ${userEmail} - ${firstName} - Erro ao atualiza numero de indicados. ${error}`)
+                    reject(error)
+                })
+            }
+
+            checaPerfilIndicador()
+
         })
     }
 
     criaPerfil().then(result => {
-        console.log(`*** criaPerfil - Final - Todas as funcões foram executadas com sucesso. Retorno Imediato ***`)
+        console.log(`*** criaPerfil - Final - Todas as funcões foram executadas com sucesso. ***`)
+        return indicacao()
+    }).then(()=> {
+        console.log(`*** indicacao - Final - Todas as funcões foram executadas com sucesso. ***`)
         return response.json({
             "messages": [
                 {
                 "text": `Opa ${firstName}! Terminei de verificar seus dados com sucesso e já posso começar a te proteger. Antes que eu me esqueça, valor da sua protecão vai ser de R$${valorMinuto/1000} ou ${valorMinuto} créditos por minuto. Está pronto pra começar?`
                 },
                 {
-                    "text": `Opa ${firstName}! Créditos: ${perfilUser.saldoCreditos}. Saldo R$: ${perfilUser.saldoDinheiro}. Id cliente: ${dataApi}.`
+                    "text": `Opa ${firstName}! Créditos: ${perfilUser.saldoCreditos}. Saldo R$: ${perfilUser.saldoDinheiro}. Id cliente: ${perfilUser.idCliente}.`
                 }
             ],
             "set_attributes":
@@ -717,12 +764,12 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                 "valorMinuto": valorMinuto,
                 "user-credit": perfilUser.saldoCreditos,
                 "user-money": perfilUser.saldoDinheiro,
-                "idCliente": dataApi
+                "idCliente": perfilUser.idCliente
             },
             "redirect_to_blocks": [
                 "welcome"
             ]
-        });
+        })
     }).catch(error => {
         console.error(new Error(`*** criaPerfil - final - Erro ao executar funcões. Retorno imediato. ${error} ***`));
         response.json({
@@ -908,11 +955,10 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
     console.log(`1 - resposta do request ${JSON.stringify(request.body)}`);
 
     const wooRequest= JSON.stringify(request.body)
-    console.log('wooRequest: ', wooRequest);
     const wooRequestParsed = JSON.parse(wooRequest)
-    console.log('wooRequestParsed: ', wooRequestParsed);
+    console.log('Resposta do request Parsed: ', wooRequestParsed);
     const lineItems = wooRequestParsed.line_items
-    console.log('lineItems: ', lineItems);
+    console.log('Itens comprados pelo usuário: ', lineItems);
     const qtdItensCompra = lineItems.length;
     console.log('qtdItensCompra: ', qtdItensCompra);
     var valorCrédito = 0
@@ -936,8 +982,6 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
         console.log(`Valor total da compra para créditos: ${valorCrédito}`);
 
         const billing = wooRequestParsed.billing
-        console.log('billing: ', billing);
-        
         const clienteId = wooRequestParsed.customer_id  
         console.log('clienteId: ', clienteId);
         const firstName = billing.first_name
@@ -946,176 +990,126 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
         console.log('lastName: ', lastName);
         const email = billing.email
         console.log('email: ', email);
-
+        var userDbId = crypto.createHash('md5').update(email).digest("hex");
         const perfilUser = {
-        lastName: lastName,
-        recebeuPromocao: false,
-        saldoCreditos: (valorCrédito * 1000),
-        saldoDinheiro: valorCrédito,
-        userEmail: email,
-        userName: firstName
-        }
-        
+            lastName: lastName,
+            recebeuPromocao: false,
+            saldoCreditos: (valorCrédito * 1000),
+            saldoDinheiro: valorCrédito,
+            userEmail: email,
+            userName: firstName,
+            idCliente: clienteId
+            }  
+     
         // Referencia do Banco de dados
-        const promise = admin.database().ref('/users').child(clienteId);
-        
-        const resposta = response.json({
-            "messages": [
-                {
-                    "text": `Olá ${firstName}! Retorno de webhook.`
-                }
-            ]
-        })
-        // Checar existência de usuário no banco de dados
+        const dbRef = admin.database().ref('/users').child(userDbId);
 
-            // Contém a chamada de promise que checa se já existe o User
-            const checaUserDb = () => {
-                console.log(`1 checaUserDb - ${email} - ${firstName} -  Estrando na promise que checa se existe o usuário indicador`);
-            
-                return new Promise((resolve, reject) =>{
-                    // Pega no banco de dados o usuário que fez a indicação para realizar as acões necessáriis
-                    promise.once('value').then(snapshot => {
-                    data = snapshot.val();
-                    return resolve(data); 
+        // Checar existência de usuário no banco de dados
+        const criaPrePerfil = perfilUser => {
+            return new Promise((resolve, reject) => {
+
+                // Checa se já existe o User no DB
+                let checaUserDb = () => {
+                    console.log(`1 checaUserDb - ${email} - ${firstName} -  Checa existência do USER.`);
+                        // Pega no banco de dados o usuário que fez a indicação para realizar as acões necessáriis
+                        dbRef.once('value').then(snapshot => {
+                        data = snapshot.val();
+                        return acaoPerfil(data)
+                        }).catch(error => {
+                            console.error(new Error(`2 - checaUserDb - ${email} - ${firstName} -  Erro ao receber dados do comprador. ${error}`))
+                            reject(error)
+                        })
+                }
+
+                // Após recuperar dados no DB verifica se o user existe ou não e faz as tratativas
+                let acaoPerfil = (data) => {
+                    if (!data) {
+                        console.log(`acaoPerfil - 1 - ${email} - ${firstName} -  User não existe na base. ${JSON.stringify(data)}.`)
+                        criaPerfilDb(perfilUser)
+                    } else if (data.idCliente) {
+                        // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
+                        console.log(`acaoPerfil - 1 - ${email} - ${firstName} -  User já existe na base. ${JSON.stringify(data)}`);
+                        console.log(`acaoPerfil - 2 - ${email} - ${firstName} -  Saldo de creditos: ${data.saldoCreditos}, Saldo dinheiro: ${data.saldoDinheiro}`);
+                        var saldoCreditos = parseFloat(data.saldoCreditos + (valorCrédito * 1000))
+                        var saldoDinheiro = parseFloat(data.saldoDinheiro) + valorCrédito
+                        console.log('novo saldoDinheiro: ', saldoDinheiro);
+                        console.log('novo saldoCreditos: ', saldoCreditos); 
+                        atualizaSaldo(saldoCreditos, saldoDinheiro)  
+                        
+                    } else if (!data.idCliente) {
+                        console.log(`acaoPerfil - 1 - ${email} - ${firstName} -  User existe na base. Mas não tinha comprado ainda${JSON.stringify(data)}.`)
+                        criaPerfilDb(perfilUser)
+                    }
+                } 
+
+                // Caso o user não exista, cria o perfil dele no DB
+                let criaPerfilDb = perfilUser => {
+                    console.log(`1 - criaPerfilDb - ${email} - ${firstName} -  Criando o perfil do novo usuário`);
+                
+                    // cria perfil de usuário no banco de dados de indicador  
+                    dbRef.update(perfilUser).then(() =>{
+                        console.log(`criaPerfilDb - 2 - ${email} - ${firstName} -  User criado com sucesso.`);
+                        return resolve(true);
                     }).catch(error => {
-                        console.error(new Error(`2 - checaUserDb - ${email} - ${firstName} -  Erro ao receber dados do comprador. ${error}`))
-                        console.error(new Error(error))
+                        console.error(new Error(`criaPerfilDb - 2 - ${email} - ${firstName} -  Erro ao criar usuário. ${error}`))
                         reject(error)
                     })
-                })
-            }
-        
-            // Executa a promise que checa se existe User. 
-            const executaChecaUserDb = (response) => {
-                console.log(`1 - executaChecaUserDb - ${email} - ${firstName} -  executando promise que checa se já existe USER no Bando de Dados.`);
-                var checaUser = checaUserDb();
-                checaUser.then(result => {
-                console.log(`2 - executaChecaUserDb - ${email} - ${firstName} - Checagem efetuada com sucesso. ${JSON.stringify(result)}. Indo para as tratativas.`);
+                }  
+
+                // Caso o user exista, atualiza o saldo dele no DB
+                let atualizaSaldo = (saldoCreditos, saldoDinheiro) => {
+                    console.log(saldoCreditos, saldoDinheiro)
+                    console.log(`1 - atualizaSaldo - ${email} - ${firstName} - Entrando na promise para atualizar o saldo após compra.`);
+
+                    //Atualiza o numero de indicados (indicadores)
+                    dbRef.update({
+                        saldoCreditos: saldoCreditos,
+                        saldoDinheiro: saldoDinheiro
+                    }).then(() =>{
+                        console.log(`2 - atualizaSaldo - ${email} - ${firstName} -  Saldo User atualizado com sucesso.`);
+                        return resolve(true);
+                    }).catch(error => {
+                        console.error(new Error(`2 - atualizaSaldo - ${email} - ${firstName} -  Erro ao atualizar o saldo. ${error}`))
+                        reject(error)
+                    })
+                } 
                 
-                // checa se existe indicador no banco 
-                    // Indicador não existe !Result
-                    if (!result){
-                        //caso não exista cria na tabela indicadores
-                        console.log(`3 - executaChecaUserDb - ${email} - ${firstName} -  User não existe na base. ${JSON.stringify(result)}. Chamando a funcão de criar indicador no DB.`);  
-                        // !result -> não existe usuário indicador
-                        
-                            // Contém a chamada de promise que cria um novo indicador no DB
-                            const criaPerfilDb = () => {
-                                console.log(`1 - criaPerfilDb - ${email} - ${firstName} -  Estrando na promise que cria o perfil do usuário`);
-                            
-                                return new Promise((resolve, reject) =>{
-                                    // cria perfil de usuário no banco de dados de indicador  
-                                    promise.set(perfilUser).then(() =>{
-                                        console.log(`2 - criaPerfilDb - ${email} - ${firstName} -  User criado com sucesso.`);
-                                        return resolve(true);
-                                    }).catch(error => {
-                                        console.error(new Error(`2 - criaPerfilDb - ${email} - ${firstName} -  Erro ao criar usuário. ${error}`))
-                                        console.error(new Error(error))
-                                        reject(error)
-                                    })
-                                })
-                            }       
+                checaUserDb()
+            })
+        }
         
-                            //Chama a promise que salva os dados no banco de dados. Faz a tratativa pro usuário em caso de erro
-                            const executaCriaPerfilDb = (response) =>{
-                                console.log(`1 - criaPerfilIndicadorDb - criaNovoUsuario - ${email} - ${firstName} -  Executando na promise que cria perfil de Indicador no Bando de Dados.`);
-        
-                                var criaPerfil = criaPerfilDb();
-                                criaPerfil.then(result => {
-                                    console.log(`2 - executaCriaPerfilDb - ${email} - ${firstName} - User criado com sucesso no banco de dados.`);
-                                    return resposta;
-                                }).catch(error => {
-                                    console.error(new Error(`2 - executaCriaPerfilDb - ${email} - ${firstName} - User não foi gravado no Banco de Dados. Erro: ${error}`))
-                                    console.error(new Error(error))
-                                })
-                            }
-        
-                            executaCriaPerfilDb(response)
-        
-                        // Usuário indicador existe na base dados
-                    } else if (result){
-        
-                        // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
-                        console.log(`3 - executaChecaUserDb - ${email} - ${firstName} -  User já existe na base. ${JSON.stringify(result)}`);
-                        console.log(`4 - executaChecaUserDb - ${email} - ${firstName} -  Saldo de creditos: ${result.saldoCreditos}, Saldo dinheiro: ${result.saldoDinheiro}`);
-        
-                        var saldoCreditos = parseFloat(result.saldoCreditos + perfilUser.saldoCreditos)
-                        var saldoDinheiro = parseFloat(result.saldoDinheiro + valorCrédito)
-                        console.log('saldoDinheiro: ', saldoDinheiro);
-                        var saldo = result.saldoDinheiro + valorCrédito
-                        console.log('saldo: ', saldo);
-
-            
-                        // Result. Existe indicador no banco de dados
-                        // promise para atualizar o numero de indicados no DB INDICADOR.
-                        var atualizaSaldo =  new Promise((resolve, reject) =>{
-                            console.log(saldoCreditos, saldoDinheiro)
-                            console.log(`1 - atualizaSaldo - ${email} - ${firstName} - Entrando na promise para atualizar o saldo após compra.`);
-        
-                            //Atualiza o numero de indicados (indicadores)
-                            promise.update({
-                                saldoCreditos: saldoCreditos,
-                                saldoDinheiro: saldoDinheiro
-                            }).then(() =>{
-                                console.log(`2 - atualizaSaldo - ${email} - ${firstName} -  Saldo User atualizado com sucesso.`);
-                                return resolve(true);
-                            }).catch(error => {
-                                console.error(new Error(`2 - atualizaSaldo - ${email} - ${firstName} -  Erro ao atualizar o saldo. ${error}`))
-                                console.error(new Error(error))
-                                reject(error)
-                            })
-                        })
-                            
-                            const executaPromises = (response) => {
-                                
-                            console.log(`1 - executaPromises - ${email} - ${firstName} - Entrando na funcão que executa as promises quando existe Usuário.`);
-                                
-                                Promise.all([atualizaSaldo]).then((result) => {
-                                    console.log('result: ', result);
-                                    console.log(`2 - executaPromises - ${email} - ${firstName} - Promises executadas com sucesso.`);
-                                    return resposta;
-                                }).catch(error => {
-
-                                    console.error(new Error(`2 - executaPromises - ${email} - ${firstName} -  Erro ao executar todas as promises. ${error}`))
-                                    console.error(new Error(error))
-                                    return error;
-
-                                })
-        
-                            }
-                            
-                            executaPromises(response)
-                    }
-                    
-                    return ;
-                }).catch(error => {
-                    console.error(new Error(`2 - executaChecaUserDb - ${email} - ${firstName} - Saldo não foi gravado no Banco de Dados. Erro: ${error}`))
-                    console.error(new Error(error))
-                    return response.json({
-                        "messages": [
-                            {
-                                "text": "Erro maldito"
-                            }
-                        ]
-                    });
-                })
-            }
-            executaChecaUserDb(response)
-        // Dados do usuário
-        //    console.log(`4 - resposta do request ${userEmail}`)
-
+        criaPrePerfil(perfilUser).then(() => {
+            console.log('*** Criacão de perfil executada com sucesso. ***')
+            return response.json(true)
+        }).catch(error => {
+            console.log(`*** Erro ao criar/atualizar perfil do usuário. ${error} ***`)
+            response.json(false)
+        })
     } else {
         console.log("status de ordem não concluida ainda");
-        response.json({
-            "messages": [
-                {
-                    "text": `Status de ordem: ${wooRequestParsed.status}`
-                }
-            ]
-        })
+        response.json(false)
     }
 
 
+})
+
+exports.getrequest = functions.https.onRequest((request, response) => {
+    const userEmail = request.query["email_address"]
+
+    var hashString = crypto.createHash('md5').update(userEmail).digest("hex");
+    const cipher = crypto.createCipher('aes192', 'a password');
+
+let encrypted = cipher.update('some clear text data', 'utf8', 'hex');
+encrypted += cipher.final('hex');
+console.log(encrypted);
+    console.log(hashString)
+    response.json({
+        "messages": [
+            {
+                "text": `String em hash: ${hashString}, ${encrypted}`
+            }
+        ]
+    })
 })
 
 const calculaGasto = (carValue, response) =>{
