@@ -238,7 +238,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                     console.log(`pegarDadosDb - desligarProtecao - 3 - ${userEmail} - ${firstName} -  Dados recuperados do DB.`);
 
                     perfilUser.saldoCreditos = data.saldoCreditos - valorConsumido                          // 
-                    perfilUser.saldoDinheiro = (parseFloat(data.saldoDinheiro) - (valorConsumido/1000)).toFixed(4)
+                    perfilUser.saldoDinheiro = parseFloat((data.saldoDinheiro) - (valorConsumido/1000)).toFixed(4)
                     var sucessoDesligar = {
                         "messages": [
                             {
@@ -599,7 +599,6 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
     console.log(`2 - ${userEmail} - ${firstName} - Calcula minuto da protecão.`);
     var valorMinuto = calculaGasto(carValue, response);
 
-    var dataApi;
     var data;
     var perfilUser;
     var perfilIndicador = {
@@ -998,7 +997,8 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
             saldoDinheiro: valorCrédito,
             userEmail: email,
             userName: firstName,
-            idCliente: clienteId
+            idCliente: clienteId,
+            usuariosIndicados: 0
             }  
      
         // Referencia do Banco de dados
@@ -1038,6 +1038,7 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
                         
                     } else if (!data.idCliente) {
                         console.log(`acaoPerfil - 1 - ${email} - ${firstName} -  User existe na base. Mas não tinha comprado ainda${JSON.stringify(data)}.`)
+                        perfilUser.usuariosIndicados = data.usuariosIndicados
                         criaPerfilDb(perfilUser)
                     }
                 } 
@@ -1097,7 +1098,7 @@ exports.getrequest = functions.https.onRequest((request, response) => {
     const userEmail = request.query["email_address"]
 
     var hashString = crypto.createHash('md5').update(userEmail).digest("hex");
-    const cipher = crypto.createCipher('aes192', 'a password');
+    const cipher = crypto.createCipher('aes192', 'senhaLouca');
 
 let encrypted = cipher.update('some clear text data', 'utf8', 'hex');
 encrypted += cipher.final('hex');
