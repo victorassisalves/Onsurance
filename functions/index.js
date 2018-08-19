@@ -30,10 +30,10 @@ exports.protecao = functions.https.onRequest((request, response) =>{
     // Dados do usuário
     const clienteId = request.query["idCliente"];
     const firstName = request.query["first name"];
-    const userEmail = request.query["email_address"];
+    const userEmail = (request.query["email_address"]).toLowerCase()
     const userCredit = request.query["user-credit"];
     const userMoney = request.query["user-money"];
-    const indicador = request.query["indicador"];
+    const indicador = (request.query["indicador"]).toLowerCase()
     const valorMinuto = request.query["valorMinuto"];
 
     // Dados de tempo
@@ -97,7 +97,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
 
     // Pega a data com dia da semana para colocar no banco de dados
     const pegarData = (date) => {
-        console.log(`getDate - 1 - ${userEmail} - ${firstName} - Funcão para pegar o dia da semana`);
+        console.log(`getDate - 1 - ${userEmail} - ${firstName} - Pegar o dia da semana`);
         data = new Date(date);
         
         // Transforma o dia da semana em palavra
@@ -132,7 +132,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
         
         return new Promise((resolve, reject) => {
 
-            console.log(`ligarProtecao - 1 - ${userEmail} - ${firstName} -  Funcão Ligar proteção`);
+            console.log(`ligarProtecao - 1 - ${userEmail} - ${firstName} - Ligar proteção`);
 
             // Gera timeStamp do inicio da protecão
             inicioProtecao = Date.now()/1000|0;
@@ -173,9 +173,6 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                         "messages": [
                             {
                                 "text": "Sua proteção está ativada!"
-                            },
-                            {
-                                "text": `Verificacão de vairáveis: Status: ${estadoProtecao}, Numero de aticacões: ${numeroAtivacoes} e TimeStart: ${inicioProtecao}.`
                             }
                         ],
                         "set_attributes":
@@ -188,7 +185,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                             "Pós On"
                         ]
                     }
-                    return resolve()
+                    return resolve(sucessoLigar)
                 }).catch(error => {
                     console.error(new Error(`ligarProtecao - 3 - ${userEmail} - ${firstName} -  Erro ao atualizar log de uso no banco. ${error}`));
                     numeroAtivacoes -= 1                    
@@ -219,22 +216,20 @@ exports.protecao = functions.https.onRequest((request, response) =>{
             var minutos = (minTotais - (horasTotais * 60));     // TimeDiffMinutes - Tempo de uso da protecão em minutos dentro de 60Min
             var segundos = (tempoProtecao - (minTotais*60));    // TimeDiffSeconds - Tempo de uso da protecão em segundos dentro de 60Segundos
 
-            // Calcula o valor conumido baseado no tempo de uso. 
-            if (segundos >= 30){
-                valorConsumido = (Math.ceil(tempoProtecao/60))*valorMinuto;
-                console.log(`desligarProtecao - 2 - ${userEmail} - ${firstName} -  Segundos Maior que 30: ${segundos}s`);
-            } else if (segundos < 30) {
-                valorConsumido = (Math.floor(tempoProtecao/60))*valorMinuto;
-                console.log(`desligarProtecao - 2 - ${userEmail} - ${firstName} -  Segundos Menor que 30: ${segundos}s`);
-            }
             var data
             
             let pegarDadosDb = () => {
                 
                 // Recupera os dados no DB para garantir a confiabilidade
                 dbRef.once('value').then(snapshot => {
-                    data = snapshot.val()   
-
+                    data = snapshot.val()  
+                    console.log('data.valorMinuto : ', data.valorMinuto );
+                    // Calcula o valor conumido baseado no tempo de uso. 
+                    if (segundos >= 30){
+                        valorConsumido = (Math.ceil(tempoProtecao/60))*data.valorMinuto;
+                    } else if (segundos < 30) {
+                        valorConsumido = (Math.floor(tempoProtecao/60))*data.valorMinuto;
+                    }
                     console.log(`pegarDadosDb - desligarProtecao - 3 - ${userEmail} - ${firstName} -  Dados recuperados do DB.`);
 
                     perfilUser.saldoCreditos = data.saldoCreditos - valorConsumido                          // 
@@ -286,7 +281,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                     saldoDinheiro: parseFloat(perfilUser.saldoDinheiro),
                     estadoProtecao: estadoProtecao,
                 }).then(() =>{
-                    console.log(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Consumo do desligamento salvo no banco. ${JSON.stringify(perfilUser)}`);
+                    console.log(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Consumo do desligamento salvo no banco.`);
                     return atualizaLogUso(logUso, sucessoDesligar)
                 }).catch(error =>{
                     console.error(new Error(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Erro ao slavar dados de encerramento da protecão no banco de dados. ${error}`));
@@ -359,7 +354,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                         receberPremio = true
                         console.log(`executaVerificaUserIndicacao - 4 - ${userEmail} - ${firstName} -  Finaliza premiacão e a ativacão da protecão.`);
                         console.log("*** Verificacão do indicador feita completamente no servidor. ***")
-                        console.log("*** Retorno Imediato Messenger User recebendo promocão indocacão ***")
+                        console.log("*** Retorno Imediato Messenger User recebendo promocão indicacão ***")
                         // Adicionar os valores atualizados para as variáveis de usuário
                         return resolve(
                             response.json({
@@ -437,7 +432,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
             return response.json({
                 "messages": [
                     {
-                        "text": `Verificacão de vairáveis: Status: ${estadoProtecao}, Numero de aticacões: ${numeroAtivacoes} e TimeStart: ${inicioProtecao}.`
+                        "text": `Sua proteção está ligada!`
                     },
                 ],
                 "set_attributes":
@@ -465,6 +460,7 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
 
     // dados do usuário
     const userId = request.query["messenger user id"];
+    const userEmail = request.query["email_address"];
     const firstName = request.query["first name"];
 
     // Dados do veículo
@@ -542,9 +538,11 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
     // dados do usuário
     const userId = request.query["messenger user id"];
     const firstName = request.query["first name"];
-    const userEmail = request.query["email_address"];
+    const userEmail = (request.query["email_address"]).toLowerCase()
+    console.log('userEmail: ', userEmail);
     const lastName = request.query["last name"];
-    const indicador = request.query["indicador"];
+    const indicador = (request.query["indicador"]).toLowerCase()
+    console.log('indicador: ', indicador);
     const timezone = request.query["timezone"];
 
     // Dados do veículo
@@ -556,6 +554,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
     var userDbId = crypto.createHash('md5').update(userEmail).digest("hex");
     console.log('userDbId: ', userDbId);
     var indicadorDbId = crypto.createHash('md5').update(indicador).digest("hex");
+    console.log('indicadorDbId: ', indicadorDbId);
     const dbRef = admin.database().ref('/users').child(userDbId);
     const dbRefIndicadorUser = admin.database().ref('/users').child(indicadorDbId);
     const dbRefIndicador = admin.database().ref('/indicadores').child(indicadorDbId);
@@ -563,18 +562,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
 
     var checaValor = carValue.toString();
 
-     // Objeto de perfil do user
-     var perfilUsuario = {
-        messengerId: userId,
-        lastName: lastName,
-        carModel: carModel,
-        carPlate: carPlate,
-        carValue: carValue,
-        qtdAtivacao: 0,
-        estadoProtecao: "OFF",
-        indicador: indicador,
-        timezone: timezone,
-    }
+    
 
     // Checa se valor informado é válido
     if (checaValor.includes(".") || checaValor.includes(",")) {
@@ -598,6 +586,20 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
 
     console.log(`2 - ${userEmail} - ${firstName} - Calcula minuto da protecão.`);
     var valorMinuto = calculaGasto(carValue, response);
+
+     // Objeto de perfil do user
+     var perfilUsuario = {
+        messengerId: userId,
+        lastName: lastName,
+        carModel: carModel,
+        carPlate: carPlate,
+        carValue: carValue,
+        qtdAtivacao: 0,
+        estadoProtecao: "OFF",
+        indicador: indicador,
+        timezone: timezone,
+        valorMinuto: valorMinuto
+    }
 
     var data;
     var perfilUser;
@@ -670,7 +672,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
             let checaPerfilIndicador = () => {
                 dbRefIndicador.once('value').then(snapshot => {
                     data = snapshot.val()
-                    console.log(`checaPerfilIndicador - 1 - ${userEmail} - ${firstName} - resultado checagem ${data}`)
+                    console.log(`checaPerfilIndicador - 1 - ${userEmail} - ${firstName} - resultado checagem ${JSON.stringify(data)}`)
                     return acaoIndicador(data)
 
                 }).catch(error => {
@@ -752,10 +754,10 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
         return response.json({
             "messages": [
                 {
-                "text": `Opa ${firstName}! Terminei de verificar seus dados com sucesso e já posso começar a te proteger. Antes que eu me esqueça, valor da sua protecão vai ser de R$${valorMinuto/1000} ou ${valorMinuto} créditos por minuto. Está pronto pra começar?`
+                "text": `Opa ${firstName}! Terminei de verificar seus dados com sucesso e já posso começar a te proteger. Antes que eu me esqueça, valor da sua protecão vai ser de R$${valorMinuto/1000} ou ${valorMinuto} créditos por minuto.`
                 },
                 {
-                    "text": `Opa ${firstName}! Créditos: ${perfilUser.saldoCreditos}. Saldo R$: ${perfilUser.saldoDinheiro}. Id cliente: ${perfilUser.idCliente}.`
+                    "text": `Seu saldo atual é de: ${perfilUser.saldoCreditos} Créditos, que é o equivalente a R$${perfilUser.saldoDinheiro}.`
                 }
             ],
             "set_attributes":
@@ -1095,23 +1097,28 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
 })
 
 exports.getrequest = functions.https.onRequest((request, response) => {
-    const userEmail = request.query["email_address"]
+    const userEmail = (request.query["email_address"]).toLowerCase()
 
     var hashString = crypto.createHash('md5').update(userEmail).digest("hex");
-    const cipher = crypto.createCipher('aes192', 'senhaLouca');
 
-let encrypted = cipher.update('some clear text data', 'utf8', 'hex');
-encrypted += cipher.final('hex');
-console.log(encrypted);
+
     console.log(hashString)
     response.json({
         "messages": [
             {
-                "text": `String em hash: ${hashString}, ${encrypted}`
+                "text": `String em hash: ${hashString}`
             }
         ]
     })
 })
+
+exports.carStatus = functions.https.onRequest((request, response) =>{
+    console.log(`${JSON.stringify(request.query)}`);
+    console.log(`${JSON.stringify(request.body)}`);
+    console.log(`${JSON.stringify(request)}`);
+})
+
+
 
 const calculaGasto = (carValue, response) =>{
 
