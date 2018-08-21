@@ -20,21 +20,18 @@ const producao = {
     storageBucket: "onsuranceme-co.appspot.com",
     messagingSenderId: "241481831218"
 }
-admin.initializeApp(homologacao);
+admin.initializeApp(producao);
 
 
-exports.protecao = functions.https.onRequest((request, response) =>{
+exports.protecao = functions.https.onRequest((request, response) => {
     console.log(`${request.query["email_address"]} - Entrando na funcão Liga/Desliga a protecão:  ${JSON.stringify(request.query)}`);
 
     // Recebe os parâmetros do chatfuel
     // Dados do usuário
-    const clienteId = request.query["idCliente"];
     const firstName = request.query["first name"];
     const userEmail = (request.query["email_address"]).toLowerCase()
     const userCredit = request.query["user-credit"];
     const userMoney = request.query["user-money"];
-    const indicador = (request.query["indicador"]).toLowerCase()
-    const valorMinuto = request.query["valorMinuto"];
 
     // Dados de tempo
     const timeStart = request.query["timeStart"];
@@ -224,6 +221,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                 dbRef.once('value').then(snapshot => {
                     data = snapshot.val()  
                     console.log('data.valorMinuto : ', data.valorMinuto );
+                    numeroAtivacoes = parseInt(data.qtdAtivacao)
                     // Calcula o valor conumido baseado no tempo de uso. 
                     if (segundos >= 30){
                         valorConsumido = (Math.ceil(tempoProtecao/60))*data.valorMinuto;
@@ -293,7 +291,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
             let atualizaLogUso = (logUso, sucessoDesligar) => {
                 // atualizar log de uso
                 dbRef.child(`/logUse/${numeroAtivacoes}`).update(logUso).then(() =>{
-                    console.log(`desligarProtecao - 6 - ${userEmail} - ${firstName} -  Log de uso atualizado no banco. `);
+                    console.log(`desligarProtecao - 6 - ${userEmail} - ${firstName} -  Log de uso atualizado no banco.`);
                     return resolve(sucessoDesligar);
                 }).catch(error =>{
                     console.error(new Error(`desligarProtecao - 6 - ${userEmail} - ${firstName} -  Erro ao atualizar log de uso. ${error}`));
@@ -421,10 +419,7 @@ exports.protecao = functions.https.onRequest((request, response) =>{
                 console.error(new Error(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Erro ao slavar dados de encerramento da protecão no banco de dados. ${error}`));
             });
         })
-    }
-
-    //primeira ativacão
-    if (numeroAtivacoes === 0) {
+    } else if (numeroAtivacoes === 0) {
         console.log(`PrimeiraAtivação - 1 - ${userEmail} - ${firstName} -  Primeira ativacão.`);
         
         ligarProtecao().then((result) => {
@@ -451,6 +446,17 @@ exports.protecao = functions.https.onRequest((request, response) =>{
             response.json(falhaLigar)
         })
         
+    } else {
+        return response.json({
+            "messages": [
+                {
+                    "text": `Identifiquei um pequeno erro! Preciso que entre em contato com nossa equipe de suporte. Pedimos desculpas pelo inconveniente.`
+                },
+            ],
+            "redirect_to_blocks": [
+                "Human interaction"
+            ]
+        });
     }
 })
 
@@ -460,7 +466,7 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
 
     // dados do usuário
     const userId = request.query["messenger user id"];
-    const userEmail = request.query["email_address"];
+    const userEmail = request.query["email_address-sim"];
     const firstName = request.query["first name"];
 
     // Dados do veículo
@@ -507,6 +513,13 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
         creditoMin = (carValue*0.025).toFixed(2);
     }
 
+    var franquia;
+    if (carValue < 37500){
+        franquia = 1500
+    } else if (carValue >= 37500) {
+        franquia = carValue * 0.04
+    }
+
     // Calcula valor do seguro tradicional caso o usuário não tenha seguro
     if (valorSemSeguro === "0.05"){
         var valorDoSeguro = (valorSemSeguro*carValue).toFixed(2);
@@ -526,12 +539,14 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
             "valorSeguro-sim": valorDoSeguro,
             "valorProtecaoAnual-sim": consumoAnual,
             "creditoMin-sim": creditoMin,
-            "valorMinRS-sim": valorMinRS
+            "valorMinRS-sim": valorMinRS,
+            "franquia-sim": franquia
         }
     });
 
 });
 
+// Criacão de perfil do usuário antes da primeira ativacão
 exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
     console.log(`${request.query["first name"]} - ${request.query["messenger user id"]} - 1 - Cria perfil completo do user:   ${JSON.stringify(request.query)}`);
 
@@ -647,7 +662,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                         })
                     )
                 } else if (perfilUser.idCliente) {
-                    console.log(`criaPerfilUser - 1 - ${userEmail} - ${firstName} - Usuário com perfil: ${JSON.stringify(perfilUser)}.`) // Como Tratar? Retorna* pro bot
+                    console.log(`criaPerfilUser - 1 - ${userEmail} - ${firstName} - Usuário com perfil.`)
                     dbRef.update(perfilUsuario).then(() => {
                         console.log(`criaPerfilUser - 2 - ${userEmail} - ${firstName} - Perfil gravado com sucesso no DB.`)
                         return resolve(true)
@@ -776,7 +791,10 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
         response.json({
             "messages": [
                 {
-                    "text": `Olá! Identifiquei um pequeno erro. Não consegui recuperar seus dados em nosso servidor. Preciso que você reinforme suas informações e tente novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
+                    "text": `Olá! Identifiquei um pequeno erro. Não consegui recuperar seus dados em nosso servidor. Preciso que você verifique suas informações e tente novamente.`
+                },
+                {
+                    "text": `Verifique também se sua compra foi efetivada. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista" ou mande mensagem em nosso Whatsapp: +1 (800) 718-0234.`
                 }
             ],
             "redirect_to_blocks": [
@@ -989,7 +1007,7 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
         console.log('firstName: ', firstName);
         const lastName = billing.last_name
         console.log('lastName: ', lastName);
-        const email = billing.email
+        const email = (billing.email).toLowerCase()
         console.log('email: ', email);
         var userDbId = crypto.createHash('md5').update(email).digest("hex");
         const perfilUser = {
@@ -1117,8 +1135,6 @@ exports.carStatus = functions.https.onRequest((request, response) =>{
     console.log(`${JSON.stringify(request.body)}`);
     console.log(`${JSON.stringify(request)}`);
 })
-
-
 
 const calculaGasto = (carValue, response) =>{
 
