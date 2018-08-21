@@ -212,7 +212,6 @@ exports.protecao = functions.https.onRequest((request, response) => {
             var horas = (horasTotais - (dias*24));              // TimeDiffHours - Tempo de uso da protecão em horas dentro de 24H
             var minutos = (minTotais - (horasTotais * 60));     // TimeDiffMinutes - Tempo de uso da protecão em minutos dentro de 60Min
             var segundos = (tempoProtecao - (minTotais*60));    // TimeDiffSeconds - Tempo de uso da protecão em segundos dentro de 60Segundos
-
             var data
             
             let pegarDadosDb = () => {
@@ -809,7 +808,8 @@ exports.simLigaDesliga = functions.https.onRequest((request, response) =>{
     console.log(`1 - ${request.query["messenger user id"]} - Entrando na funcão Liga/Desliga a protecão:  ${JSON.stringify(request.query)}`);
 
        // Dados do usuário
-       const userId = request.query["messenger user id"];
+       const userEmail = request.query["email_address-sim"];
+       console.log('userEmail: ', userEmail);
        const firstName = request.query["first name"];
        const userCredit = request.query["user-credit-sim"];
        const userMoney = request.query["user-money-sim"];
@@ -861,7 +861,7 @@ exports.simLigaDesliga = functions.https.onRequest((request, response) =>{
                     "Mensagem de boas vindas primeira proteção Simulação"
                 ]
             });
-        } else if (numAtivacao >= 1 && userCredit >= 300 ) {  // pode usar a Proteção
+        } else if (numAtivacao >= 1 && userCredit >= 100 ) {  // pode usar a Proteção
 
 
             response.json({
@@ -881,7 +881,7 @@ exports.simLigaDesliga = functions.https.onRequest((request, response) =>{
                 ]
             });
 
-        } else if (numAtivacao >1 && userCredit < 300) { // pouco crédito
+        } else if (numAtivacao >1 && userCredit < 100) { // pouco crédito
             response.json({
                 "messages": [
                     {
