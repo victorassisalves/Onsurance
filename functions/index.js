@@ -1,6 +1,5 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin')
-const unirest = require("unirest");
 const crypto = require('crypto');
   
 const homologacao = {
@@ -20,7 +19,7 @@ const producao = {
     storageBucket: "onsuranceme-co.appspot.com",
     messagingSenderId: "241481831218"
 }
-admin.initializeApp(producao);
+admin.initializeApp(homologacao);
 
 
 exports.protecao = functions.https.onRequest((request, response) => {
@@ -30,8 +29,9 @@ exports.protecao = functions.https.onRequest((request, response) => {
     // Dados do usuário
     const firstName = request.query["first name"];
     const userEmail = (request.query["email_address"]).toLowerCase()
-    const userCredit = request.query["user-credit"];
-    const userMoney = request.query["user-money"];
+    const userCredit = parseFloat(request.query["user-credit"])
+    const userMoney = parseFloat(request.query["user-money"])
+    const timezone = request.query["timezone"]
 
     // Dados de tempo
     const timeStart = request.query["timeStart"];
@@ -43,15 +43,17 @@ exports.protecao = functions.https.onRequest((request, response) => {
 
     // Referencia do Banco de dados
     var userDbId = crypto.createHash('md5').update(userEmail).digest("hex");
-    const dbRef = admin.database().ref('/users').child(userDbId);
+    const dbRefProfile = admin.database().ref(`/clients/${userDbId}/`).child('profile');
+    const dbRefLogUso = admin.database().ref(`/clients/${userDbId}/`).child('logUse');
+
 
     var numeroAtivacoes = parseInt(numAtivacao);
     var valorConsumido = 0;
 
     // Objeto de perfil do user
     var perfilUser = {
-        saldoCreditos: userCredit,
-        saldoDinheiro: userMoney,
+        switch: userCredit,
+        money: userMoney,
     }
 
     // Recebe dia da semana e data completa
@@ -135,21 +137,21 @@ exports.protecao = functions.https.onRequest((request, response) => {
             inicioProtecao = Date.now()/1000|0;
             estadoProtecao = "ON";
             numeroAtivacoes += 1;
+            var horario = Date.now()
+            var timezoneDiff = timezone * 1000 * 3600
+            horario += timezoneDiff;
+
 
             // Chama a função de pegar a data atual para salval no BD        
-            pegarData(Date.now());
+            pegarData(horario);
 
             // **  Fata ajustar ao timezone do usuário ** //
             var logUso = {
                 inicioProtecao: `${inicioProtecao} - ${diaSemana} - ${data.getDate()}/${data.getMonth()+1}/${data.getFullYear()} - ${data.getHours()}:${data.getMinutes()}:${data.getSeconds()}`,
-                finalProtecao: ``,
-                valorconsumido: ``,
-                tempoUso: ``,
                 saldoInicial: userCredit,
-                saldoFinal: ``    
             };
             let atualizaStatus = () =>{
-                dbRef.update({
+                dbRefProfile.update({
                     qtdAtivacao: numeroAtivacoes,
                     estadoProtecao: estadoProtecao,
                 }).then(() => {
@@ -163,7 +165,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
             }
 
             let atualizaLog = () => {
-                dbRef.child(`/logUse/${numeroAtivacoes}`).update(logUso).then( () => {
+                dbRefLogUso.child(`${numeroAtivacoes}`).update(logUso).then( () => {
                     console.log(`ligarProtecao - 3 - ${userEmail} - ${firstName} -  Log de uso atualizado no banco.`);
                     console.log("*** Protecão completamente ligada no servidor. ***")
                     sucessoLigar = { 
@@ -195,7 +197,6 @@ exports.protecao = functions.https.onRequest((request, response) => {
 
     // Funcão para desativar a protecão
     const desligarProtecao = () => {
-
         return new Promise((resolve, reject) => {
             console.log(`desligarProtecao - 1 - ${userEmail} - ${firstName} -  Desligando Protecão`);
             // Desliga a proteção, alterando o atributo status-protecao do chatfuel
@@ -217,20 +218,19 @@ exports.protecao = functions.https.onRequest((request, response) => {
             let pegarDadosDb = () => {
                 
                 // Recupera os dados no DB para garantir a confiabilidade
-                dbRef.once('value').then(snapshot => {
+                dbRefProfile.once('value').then(snapshot => {
                     data = snapshot.val()  
-                    console.log('data.valorMinuto : ', data.valorMinuto );
                     numeroAtivacoes = parseInt(data.qtdAtivacao)
                     // Calcula o valor conumido baseado no tempo de uso. 
                     if (segundos >= 30){
-                        valorConsumido = (Math.ceil(tempoProtecao/60))*data.valorMinuto;
+                        valorConsumido = (Math.ceil(tempoProtecao/60))*data.minuteValue;
                     } else if (segundos < 30) {
-                        valorConsumido = (Math.floor(tempoProtecao/60))*data.valorMinuto;
+                        valorConsumido = (Math.floor(tempoProtecao/60))*data.minuteValue;
                     }
                     console.log(`pegarDadosDb - desligarProtecao - 3 - ${userEmail} - ${firstName} -  Dados recuperados do DB.`);
 
-                    perfilUser.saldoCreditos = data.saldoCreditos - valorConsumido                          // 
-                    perfilUser.saldoDinheiro = parseFloat((data.saldoDinheiro) - (valorConsumido/1000)).toFixed(4)
+                    perfilUser.switch = parseFloat(data.switch) - valorConsumido                          // 
+                    perfilUser.money = parseFloat((data.money) - (valorConsumido/1000)).toFixed(4)
                     var sucessoDesligar = {
                         "messages": [
                             {
@@ -240,8 +240,8 @@ exports.protecao = functions.https.onRequest((request, response) => {
                         "set_attributes":
                             {
                                 "status-protecao": estadoProtecao,
-                                "user-credit": perfilUser.saldoCreditos,
-                                "user-money": perfilUser.saldoDinheiro,
+                                "user-credit": perfilUser.switch,
+                                "user-money": perfilUser.money,
                                 "valorconsumido": valorConsumido,
                                 "dias": dias,
                                 "horas": horas,
@@ -252,19 +252,25 @@ exports.protecao = functions.https.onRequest((request, response) => {
                                 "Pós Off"
                             ]
                     }
-                    var date = new Date()
+
+                    var horario = Date.now()
+                    var timezoneDiff = timezone * 1000 * 3600
+                    horario += timezoneDiff
+                    var date = new Date(horario)
+                    
                     // Objeto com dados do desligamento da proteção
                     var logUso = {
                         finalProtecao: `${finalProtecao} - ${diaSemana} - ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
                         valorconsumido: valorConsumido,
                         tempoUso: `${dias} dias : ${horas} horas : ${minutos} minutos : ${segundos} segundos`,
-                        saldoFinal: perfilUser.saldoCreditos
+                        saldoFinal: perfilUser.switch
                     }
                     return atualizaPerfilUser(logUso, perfilUser, sucessoDesligar)
 
                     }).catch(error =>{
                         console.error(new Error(`desligarProtecao - 3 - ${userEmail} - ${firstName} -  Erro ao recuperar dados. ${error}`));
                         reject(error)
+                        response.json(falhaDesligar)
                     });
             }
             
@@ -273,9 +279,9 @@ exports.protecao = functions.https.onRequest((request, response) => {
             let atualizaPerfilUser = (logUso, perfilUser, sucessoDesligar) => {
                 
                 // Salva no banco de dados o resultado do desligamento e atualiza o banco de dados
-                dbRef.update({
-                    saldoCreditos: perfilUser.saldoCreditos,
-                    saldoDinheiro: parseFloat(perfilUser.saldoDinheiro),
+                dbRefProfile.update({
+                    switch: perfilUser.switch,
+                    money: parseFloat(perfilUser.money),
                     estadoProtecao: estadoProtecao,
                 }).then(() =>{
                     console.log(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Consumo do desligamento salvo no banco.`);
@@ -289,7 +295,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
             // Atualiza no DB o log de uso do desligamento
             let atualizaLogUso = (logUso, sucessoDesligar) => {
                 // atualizar log de uso
-                dbRef.child(`/logUse/${numeroAtivacoes}`).update(logUso).then(() =>{
+                dbRefLogUso.child(`${numeroAtivacoes}`).update(logUso).then(() =>{
                     console.log(`desligarProtecao - 6 - ${userEmail} - ${firstName} -  Log de uso atualizado no banco.`);
                     return resolve(sucessoDesligar);
                 }).catch(error =>{
@@ -310,9 +316,9 @@ exports.protecao = functions.https.onRequest((request, response) => {
             var data;
             let verificaUserIndicacao = () => {
                     // recupera dados do usuário no Banco de dados
-                    dbRef.once('value').then(snapshot => {
+                    dbRefProfile.once('value').then(snapshot => {
                         data = snapshot.val();
-                        console.log(`verificaIndicacao - 2 - ${userEmail} - ${firstName} -  Dados do Usuário recuperado: ${data.usuariosIndicados} indicados. recebeu promocão: ${data.recebeuPromocao}`);
+                        console.log(`verificaIndicacao - 2 - ${userEmail} - ${firstName} -  Dados do Usuário recuperado: ${data.indicatedUsers} indicados. recebeu promocão: ${data.indicationPromo}`);
                         return executaPremiacao(data)
                     }).catch(error => {
                         console.error(new Error(`verificaIndicacao - 2 - ${userEmail} - ${firstName} -  Erro ao recuperar usuário na base de dados. ${error}`))
@@ -324,17 +330,16 @@ exports.protecao = functions.https.onRequest((request, response) => {
             let executaPremiacao = result => {
                 // checa se número de indicados atingiu mais de 10 pela primeira vez
                 // Se o usuário atingiu os requisitos necessários para receber o prênmio
-                if (parseInt(result.usuariosIndicados) >= 10 && result.recebeuPromocao === false) {
+                if (parseInt(result.indicatedUsers) >= 10 && result.indicationPromo === false) {
                     console.log(`executaVerificaUserIndicacao - 2 - ligarProtecão - ${userEmail} - ${firstName} -  Usuário vai receber prêmio por indicacão.`);
-                    var creditoPlus = result.saldoCreditos + 1000000
-                    var saldoPlus = (parseFloat(result.saldoDinheiro) + 1000).toFixed(4)
+                    var creditoPlus = result.switch + 1000000
+                    var saldoPlus = (parseFloat(result.money) + 1000).toFixed(4)
 
                     adicionaPromocao(creditoPlus, saldoPlus, result)
 
                 // Caso usuário não tenha atingido os requisitos para receber prêmio
-                } else if (result.usuariosIndicados < 10 || result.recebeuPromocao === true){
-                    console.log(`executaVerificaUserIndicacao - 2 - ligarProtecão - ${userEmail} - ${firstName} -  Não tem requisitos para receber promocão: ${result.usuariosIndicados} indicados, recebeu promo: ${result.recebeuPromocao}`);
-                    console.log("*** Verificacão do indicador feita completamente no servidor. ***")                    
+                } else if (result.indicatedUsers < 10 || result.indicationPromo === true){
+                    console.log(`executaVerificaUserIndicacao - 2 - ligarProtecão - ${userEmail} - ${firstName} -  Não tem requisitos para receber promocão: ${result.indicatedUsers} indicados, recebeu promo: ${result.indicationPromo}`);
                     receberPremio = false
                     resolve(receberPremio)
                 }
@@ -342,14 +347,13 @@ exports.protecao = functions.https.onRequest((request, response) => {
 
             let adicionaPromocao = (creditoPlus, saldoPlus, result) => {
                 // Atualiza dados do usuário no banco de dados
-                dbRef.update({
-                    saldoCreditos: creditoPlus,
-                    saldoDinheiro: saldoPlus,
-                    recebeuPromocao: true
+                dbRefProfile.update({
+                    switch: creditoPlus,
+                    money: saldoPlus,
+                    indicationPromo: true
                     }).then(() => {
                         console.log(`executaVerificaUserIndicacao - 3 - ligaProtecão - ${userEmail} - ${firstName} -  Crédito, saldo e status da promocão atualizados no banco.`);
                         receberPremio = true
-                        console.log(`executaVerificaUserIndicacao - 4 - ${userEmail} - ${firstName} -  Finaliza premiacão e a ativacão da protecão.`);
                         console.log("*** Verificacão do indicador feita completamente no servidor. ***")
                         console.log("*** Retorno Imediato Messenger User recebendo promocão indicacão ***")
                         // Adicionar os valores atualizados para as variáveis de usuário
@@ -362,7 +366,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                                     "timeStart": inicioProtecao,
                                     "user-credit": creditoPlus,
                                     "user-money": saldoPlus,
-                                    "afiliados": result.usuariosIndicados
+                                    "afiliados": result.indicatedUsers
                                 },
                                 "redirect_to_blocks": [
                                     "receber-promo"
@@ -405,17 +409,17 @@ exports.protecao = functions.https.onRequest((request, response) => {
             return response.json(result)
         }).catch(error => {
             console.error(new Error(`DesligarProtecão - 2 - ${userEmail} - ${firstName} -  Erro ao executar promise. Protecão não desligada ${error}`))
-            perfilUser.saldoCreditos = data.saldoCreditos + valorConsumido                          // 
-            perfilUser.saldoDinheiro = (data.saldoDinheiro + (valorConsumido/1000)).toFixed(4)
-            dbRef.update({
-                saldoCreditos: perfilUser.saldoCreditos,
-                saldoDinheiro: parseFloat(perfilUser.saldoDinheiro),
+            perfilUser.switch = parseFloat(data.switch + valorConsumido)                          // 
+            perfilUser.money = (data.money + (valorConsumido/1000)).toFixed(4)
+            dbRefProfile.update({
+                switch: perfilUser.switch,
+                money: parseFloat(perfilUser.money),
                 estadoProtecao: 'ON',
             }).then(() =>{
                 console.log(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Consumo do desligamento salvo no banco. ${JSON.stringify(perfilUser)}`);
                 return response.json(falhaDesligar)
             }).catch(error =>{
-                console.error(new Error(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Erro ao slavar dados de encerramento da protecão no banco de dados. ${error}`));
+                console.error(new Error(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Erro ao salvar dados de encerramento da protecão no banco de dados. ${error}`));
             });
         })
     } else if (numeroAtivacoes === 0) {
@@ -464,7 +468,6 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
     console.log(`1 - ${request.query["first name"]} - ${request.query["messenger user id"]} - Bot de simuacão :   ${JSON.stringify(request.query)}`);
 
     // dados do usuário
-    const userId = request.query["messenger user id"];
     const userEmail = request.query["email_address-sim"];
     const firstName = request.query["first name"];
 
@@ -553,10 +556,8 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
     const userId = request.query["messenger user id"];
     const firstName = request.query["first name"];
     const userEmail = (request.query["email_address"]).toLowerCase()
-    console.log('userEmail: ', userEmail);
     const lastName = request.query["last name"];
     const indicador = (request.query["indicador"]).toLowerCase()
-    console.log('indicador: ', indicador);
     const timezone = request.query["timezone"];
 
     // Dados do veículo
@@ -566,12 +567,13 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
 
     // Referencia do Banco de dados
     var userDbId = crypto.createHash('md5').update(userEmail).digest("hex");
-    console.log('userDbId: ', userDbId);
     var indicadorDbId = crypto.createHash('md5').update(indicador).digest("hex");
-    console.log('indicadorDbId: ', indicadorDbId);
-    const dbRef = admin.database().ref('/users').child(userDbId);
-    const dbRefIndicadorUser = admin.database().ref('/users').child(indicadorDbId);
-    const dbRefIndicador = admin.database().ref('/indicadores').child(indicadorDbId);
+    // caminho do DB para o perfil de usuário
+    const dbRef = admin.database().ref(`/clients/${userDbId}/`).child(`profile`);
+    // Caminho do DB para o perfil de usuário do Indicador
+    const dbRefIndicadorUser = admin.database().ref(`/clients/${indicadorDbId}/`).child(`profile`);
+    // Caminho do DB para a Lista de Indicados do Indicador
+    const dbRefIndicador = admin.database().ref(`/clients/${indicadorDbId}/`).child(`indication`);
     
 
     var checaValor = carValue.toString();
@@ -610,16 +612,16 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
         carValue: carValue,
         qtdAtivacao: 0,
         estadoProtecao: "OFF",
-        indicador: indicador,
+        indicator: indicador,
         timezone: timezone,
-        valorMinuto: valorMinuto
+        minuteValue: valorMinuto
     }
 
     var data;
     var perfilUser;
     var perfilIndicador = {
-        usuariosIndicados: 1,
-        indicados: {
+        indicatedUsers: 1,
+        indicated: {
             1: userEmail
         }
     }
@@ -646,7 +648,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
 
             // Cria perfil do usuário usando ID de cliente Woocommerce como Chave primária            
             let criaPerfilUser = perfilUser => {
-                if (!perfilUser.idCliente) {      // Não existem dados do perfil do usuário no sistema
+                if (!perfilUser.idClient) {      // Não existem dados do perfil do usuário no sistema
                     console.error(new Error(`criaPerfilUser - 1 - ${userEmail} - ${firstName} - Usuário sem perfil. Result: ${JSON.stringify(perfilUser)}.`))
                     reject(
                         response.json({
@@ -660,7 +662,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                             ]
                         })
                     )
-                } else if (perfilUser.idCliente) {
+                } else if (perfilUser.idClient) {
                     console.log(`criaPerfilUser - 1 - ${userEmail} - ${firstName} - Usuário com perfil.`)
                     dbRef.update(perfilUsuario).then(() => {
                         console.log(`criaPerfilUser - 2 - ${userEmail} - ${firstName} - Perfil gravado com sucesso no DB.`)
@@ -702,7 +704,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                     criaIndicador()
                 } else if (data) {
                     console.log(`acaoIndicador - 1 - ${userEmail} - ${firstName} - Indicador existe no banco.`)
-                    var numIndicados = parseInt(data.usuariosIndicados) + 1
+                    var numIndicados = parseInt(data.indicatedUsers) + 1
                     atualizaIndicador(numIndicados)
                 }
             }
@@ -710,7 +712,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
             // Caso exista o perfil, atualiza o número de indicados
             let atualizaIndicador = numIndicados => {
                 dbRefIndicador.update({
-                    usuariosIndicados: numIndicados
+                    indicatedUsers: numIndicados
                 }).then(() => {
                     console.log(`atualizaIndicador - 1 - ${userEmail} - ${firstName} - Num de indicados atualizado.`)
                     return atualizaArrayIndicador(numIndicados)
@@ -722,7 +724,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
 
             // Caso exista, atualiza o array de indicados
             let atualizaArrayIndicador = numIndicados => {
-                dbRefIndicador.child(`/indicados/${numIndicados}`).set(userEmail).then(() =>{
+                dbRefIndicador.child(`/indicated/${numIndicados}`).set(userEmail).then(() =>{
                     console.log(`atualizaArrayIndicador - 1 - ${userEmail} - ${firstName} -  Usuário adicionado ao array.`);
                     return atualizaUserIndicador(numIndicados)
                 }).catch(error => {
@@ -731,7 +733,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                 });
             }
 
-            //Caso nnao exista, cria o perfil do indicador.
+            //Caso nao exista, cria o perfil do indicador.
             let criaIndicador = () => {
                 dbRefIndicador.set(perfilIndicador).then(() => {
                     console.log(`criaIndicador - 1 - ${userEmail} - ${firstName} - Indicador criado com sucesso.`)
@@ -745,7 +747,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
             // Atualiza o numero de indicados do perfil de User do indicador
             let atualizaUserIndicador = numIndicados => {
                 dbRefIndicadorUser.update({
-                    usuariosIndicados: numIndicados
+                    indicatedUsers: numIndicados
                 }).then(() => {
                     console.log(`atualizaUserIndicador - 1 - ${userEmail} - ${firstName} - Numero de indicados no perfil do User atualizados`)
                     return resolve(true)
@@ -771,15 +773,15 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                 "text": `Opa ${firstName}! Terminei de verificar seus dados com sucesso e já posso começar a te proteger. Antes que eu me esqueça, valor da sua protecão vai ser de R$${valorMinuto/1000} ou ${valorMinuto} créditos por minuto.`
                 },
                 {
-                    "text": `Seu saldo atual é de: ${perfilUser.saldoCreditos} Créditos, que é o equivalente a R$${perfilUser.saldoDinheiro}.`
+                    "text": `Seu saldo atual é de: ${perfilUser.switch} Créditos, que é o equivalente a R$${perfilUser.money}.`
                 }
             ],
             "set_attributes":
             {
                 "valorMinuto": valorMinuto,
-                "user-credit": perfilUser.saldoCreditos,
-                "user-money": perfilUser.saldoDinheiro,
-                "idCliente": perfilUser.idCliente
+                "user-credit": perfilUser.switch,
+                "user-money": perfilUser.money,
+                "idCliente": perfilUser.idClient
             },
             "redirect_to_blocks": [
                 "welcome"
@@ -975,9 +977,7 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
 
     const wooRequest= JSON.stringify(request.body)
     const wooRequestParsed = JSON.parse(wooRequest)
-    console.log('Resposta do request Parsed: ', wooRequestParsed);
     const lineItems = wooRequestParsed.line_items
-    console.log('Itens comprados pelo usuário: ', lineItems);
     const qtdItensCompra = lineItems.length;
     console.log('qtdItensCompra: ', qtdItensCompra);
     var valorCrédito = 0
@@ -991,7 +991,6 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
 
             } else {
                     console.log(` Produto que entra no crédito: ${JSON.stringify(value)}`);
-                    console.log(`Preco do produto:${JSON.parse(value.price)}`);
 
                 valorCrédito = JSON.parse(value.price) + valorCrédito
                 console.log('valorCrédito: ', valorCrédito);
@@ -1001,8 +1000,7 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
         console.log(`Valor total da compra para créditos: ${valorCrédito}`);
 
         const billing = wooRequestParsed.billing
-        const clienteId = wooRequestParsed.customer_id  
-        console.log('clienteId: ', clienteId);
+        const clientId = wooRequestParsed.customer_id  
         const firstName = billing.first_name
         console.log('firstName: ', firstName);
         const lastName = billing.last_name
@@ -1012,17 +1010,17 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
         var userDbId = crypto.createHash('md5').update(email).digest("hex");
         const perfilUser = {
             lastName: lastName,
-            recebeuPromocao: false,
-            saldoCreditos: (valorCrédito * 1000),
-            saldoDinheiro: valorCrédito,
+            indicationPromo: false,
+            switch: (valorCrédito * 1000),
+            money: valorCrédito,
             userEmail: email,
-            userName: firstName,
-            idCliente: clienteId,
-            usuariosIndicados: 0
+            firstName: firstName,
+            idClient: clientId,
+            indicatedUsers: 0
             }  
      
         // Referencia do Banco de dados
-        const dbRef = admin.database().ref('/users').child(userDbId);
+        const dbRef = admin.database().ref(`/clients/${userDbId}/`).child(`profile`);
 
         // Checar existência de usuário no banco de dados
         const criaPrePerfil = perfilUser => {
@@ -1046,19 +1044,19 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
                     if (!data) {
                         console.log(`acaoPerfil - 1 - ${email} - ${firstName} -  User não existe na base. ${JSON.stringify(data)}.`)
                         criaPerfilDb(perfilUser)
-                    } else if (data.idCliente) {
+                    } else if (data.idClient) {
                         // caso exista, atualiza o numero de indicadores e adiciona um elemento no array
                         console.log(`acaoPerfil - 1 - ${email} - ${firstName} -  User já existe na base. ${JSON.stringify(data)}`);
-                        console.log(`acaoPerfil - 2 - ${email} - ${firstName} -  Saldo de creditos: ${data.saldoCreditos}, Saldo dinheiro: ${data.saldoDinheiro}`);
-                        var saldoCreditos = parseFloat(data.saldoCreditos + (valorCrédito * 1000))
-                        var saldoDinheiro = parseFloat(data.saldoDinheiro) + valorCrédito
+                        console.log(`acaoPerfil - 2 - ${email} - ${firstName} -  Saldo de creditos: ${data.switch}, Saldo dinheiro: ${data.money}`);
+                        var saldoCreditos = parseFloat(data.switch + (valorCrédito * 1000))
+                        var saldoDinheiro = parseFloat(data.money) + valorCrédito
                         console.log('novo saldoDinheiro: ', saldoDinheiro);
                         console.log('novo saldoCreditos: ', saldoCreditos); 
                         atualizaSaldo(saldoCreditos, saldoDinheiro)  
                         
-                    } else if (!data.idCliente) {
+                    } else if (!data.idClient) {
                         console.log(`acaoPerfil - 1 - ${email} - ${firstName} -  User existe na base. Mas não tinha comprado ainda${JSON.stringify(data)}.`)
-                        perfilUser.usuariosIndicados = data.usuariosIndicados
+                        perfilUser.indicatedUsers = data.indicatedUsers
                         criaPerfilDb(perfilUser)
                     }
                 } 
@@ -1084,8 +1082,8 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
 
                     //Atualiza o numero de indicados (indicadores)
                     dbRef.update({
-                        saldoCreditos: saldoCreditos,
-                        saldoDinheiro: saldoDinheiro
+                        switch: saldoCreditos,
+                        money: saldoDinheiro
                     }).then(() =>{
                         console.log(`2 - atualizaSaldo - ${email} - ${firstName} -  Saldo User atualizado com sucesso.`);
                         return resolve(true);
@@ -1111,20 +1109,24 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
         response.json(false)
     }
 
-
 })
 
 exports.getrequest = functions.https.onRequest((request, response) => {
-    const userEmail = (request.query["email_address"]).toLowerCase()
+    var _ = require('lodash')
+    var timezone = request.query["timezone"]
+    timezoneDiff = timezone * 1000 * 3600
+    var inicioProtecao = Date.now();
+    console.log('inicioProtecao: ', inicioProtecao);
+    inicioProtecao += timezoneDiff 
+    console.log('inicioProtecao: ', inicioProtecao);
+    var date = new Date(inicioProtecao)
+    console.log(`${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
 
-    var hashString = crypto.createHash('md5').update(userEmail).digest("hex");
-
-
-    console.log(hashString)
+    
     response.json({
         "messages": [
             {
-                "text": `String em hash: ${hashString}`
+                "text": `nice`
             }
         ]
     })
@@ -1133,7 +1135,7 @@ exports.getrequest = functions.https.onRequest((request, response) => {
 exports.carStatus = functions.https.onRequest((request, response) =>{
     console.log(`${JSON.stringify(request.query)}`);
     console.log(`${JSON.stringify(request.body)}`);
-    console.log(`${JSON.stringify(request)}`);
+    console.log(`${(request)}`);
 })
 
 const calculaGasto = (carValue, response) =>{
