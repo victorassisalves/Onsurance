@@ -32,6 +32,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
     const userCredit = parseFloat(request.query["user-credit"])
     const userMoney = parseFloat(request.query["user-money"])
     const timezone = request.query["timezone"]
+    const carPlate = (request.query["car-plate"]).toLowerCase()
 
     // Dados de tempo
     const timeStart = request.query["timeStart"];
@@ -43,8 +44,10 @@ exports.protecao = functions.https.onRequest((request, response) => {
 
     // Referencia do Banco de dados
     var userDbId = crypto.createHash('md5').update(userEmail).digest("hex");
+    var vehicleDbId = crypto.createHash('md5').update(carPlate).digest("hex");
     const dbRefProfile = admin.database().ref(`/clients/${userDbId}/`).child('profile');
-    const dbRefLogUso = admin.database().ref(`/clients/${userDbId}/`).child('logUse');
+    const vehicleDbRefProfile = admin.database().ref(`/clients/${userDbId}/vehicles/${vehicleDbId}/`).child('profile');
+    const dbRefLogUso = admin.database().ref(`/clients/${userDbId}/vehicles/${vehicleDbId}/`).child('logUse');
 
 
     var numeroAtivacoes = parseInt(numAtivacao);
@@ -98,7 +101,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
     const pegarData = (date) => {
         console.log(`getDate - 1 - ${userEmail} - ${firstName} - Pegar o dia da semana`);
         data = new Date(date);
-        
+    
         // Transforma o dia da semana em palavra
         switch (data.getDay()) {
             case 0:
@@ -150,23 +153,43 @@ exports.protecao = functions.https.onRequest((request, response) => {
                 inicioProtecao: `${inicioProtecao} - ${diaSemana} - ${data.getDate()}/${data.getMonth()+1}/${data.getFullYear()} - ${data.getHours()}:${data.getMinutes()}:${data.getSeconds()}`,
                 saldoInicial: userCredit,
             };
-            let atualizaStatus = () =>{
-                dbRefProfile.update({
-                    qtdAtivacao: numeroAtivacoes,
-                    estadoProtecao: estadoProtecao,
+            let updateStatusVehicle = () =>{
+                vehicleDbRefProfile.update({
+                    activations: numeroAtivacoes,
+                    protectionStatus: estadoProtecao,
                 }).then(() => {
-                    console.log(`ligarProtecao - 2 - ${userEmail} - ${firstName} -  Status atualizado no banco.`)
-                    return atualizaLog()
+                    console.log(`updateStatusVehicle - 1 - ${userEmail} - ${firstName} - ${carPlate} - Status atualizado no banco.`)
+                    return getStatusUser()
                 }).catch(error => {
-                    console.error(new Error(`ligarProtecao - 2 - Erro ao atualizar usuário no banco ${error}`));
-                    numeroAtivacoes -= 1
-                    response.json(falhaLigar)
+                    console.error(new Error(`updateStatusVehicle - 1 - ${userEmail} - ${firstName} - ${carPlate} -  Erro ao atualizar usuário no banco ${error}`));
+                    reject(error)
+                })
+            }
+            let getStatusUser = () => {
+                dbRefProfile.once('value').then(snapshot => {
+                    var profile = snapshot.val()
+                    console.log(`getStatusUser - 1 - ${userEmail} - ${firstName} - USER recuperado no banco. ${JSON.stringify(profile)}`)
+                    return updateStatusUser(profile)
+                }).catch(error =>{
+                    console.error(new Error(`getStatusUser - 1 - Erro ao recuperar usuário no banco ${error}`));
+                    reject(error)
+                })
+            }
+            let updateStatusUser = (profile) =>{
+                dbRefProfile.update({
+                    qtdAtivacao: profile.qtdAtivacao + 1,
+                }).then(() => {
+                    console.log(`updateStatusUser - 1 - ${userEmail} - ${firstName} -  Status USER atualizado no banco.`)
+                    return logUseUpdate()
+                }).catch(error => {
+                    console.error(new Error(`updateStatusUser - 1 - Erro ao atualizar usuário no banco ${error}`));
+                    reject(error)
                 })
             }
 
-            let atualizaLog = () => {
+            let logUseUpdate = () => {
                 dbRefLogUso.child(`${numeroAtivacoes}`).update(logUso).then( () => {
-                    console.log(`ligarProtecao - 3 - ${userEmail} - ${firstName} -  Log de uso atualizado no banco.`);
+                    console.log(`logUseUpdate - 1 - ${userEmail} - ${firstName} - ${carPlate} -  Log de uso atualizado no banco.`);
                     console.log("*** Protecão completamente ligada no servidor. ***")
                     sucessoLigar = { 
                         "messages": [
@@ -186,12 +209,11 @@ exports.protecao = functions.https.onRequest((request, response) => {
                     }
                     return resolve(sucessoLigar)
                 }).catch(error => {
-                    console.error(new Error(`ligarProtecao - 3 - ${userEmail} - ${firstName} -  Erro ao atualizar log de uso no banco. ${error}`));
-                    numeroAtivacoes -= 1                    
-                    response.json(falhaLigar)
+                    console.error(new Error(`logUseUpdate - 1 - ${userEmail} - ${firstName} -  Erro ao atualizar log de uso no banco. ${error}`));
+                    reject(error)
                 })
             }
-            atualizaStatus()
+            updateStatusVehicle()
         })
     }  
 
@@ -215,12 +237,26 @@ exports.protecao = functions.https.onRequest((request, response) => {
             var segundos = (tempoProtecao - (minTotais*60));    // TimeDiffSeconds - Tempo de uso da protecão em segundos dentro de 60Segundos
             var data
             
-            let pegarDadosDb = () => {
+            // Get vehicle Profile data on DB
+            let getVehicleData = () => {
+                // Recupera os dados no DB para garantir a confiabilidade
+                vehicleDbRefProfile.once('value').then(snapshot => {
+                    data = snapshot.val()
+                    console.error(new Error(`getVehicleData - 1 - ${userEmail} - ${firstName} -  Dados Recuperadosados. ${JSON.stringify(data)}`));                    
+                    var vehicleActivationTimes = data.qtdAtivacao
+                    return getUserData(vehicleActivationTimes)
+                }).catch(error => {
+                    console.error(new Error(`getVehicleData - 1 - ${userEmail} - ${firstName} -  Erro ao recuperar dados. ${error}`));
+                    reject(error)
+                })
+            }
+            
+            // get User Profile data on DB
+            let getUserData = vehicleActivationTimes => {
                 
                 // Recupera os dados no DB para garantir a confiabilidade
-                dbRefProfile.once('value').then(snapshot => {
+                vehicleDbRefProfile.once('value').then(snapshot => {
                     data = snapshot.val()  
-                    numeroAtivacoes = parseInt(data.qtdAtivacao)
                     // Calcula o valor conumido baseado no tempo de uso. 
                     if (segundos >= 30){
                         valorConsumido = (Math.ceil(tempoProtecao/60))*data.minuteValue;
@@ -265,27 +301,24 @@ exports.protecao = functions.https.onRequest((request, response) => {
                         tempoUso: `${dias} dias : ${horas} horas : ${minutos} minutos : ${segundos} segundos`,
                         saldoFinal: perfilUser.switch
                     }
-                    return atualizaPerfilUser(logUso, perfilUser, sucessoDesligar)
+                    return updateUserProfile(logUso, perfilUser, sucessoDesligar, vehicleActivationTimes)
 
                     }).catch(error =>{
                         console.error(new Error(`desligarProtecao - 3 - ${userEmail} - ${firstName} -  Erro ao recuperar dados. ${error}`));
                         reject(error)
-                        response.json(falhaDesligar)
                     });
             }
             
-
             // Atualiza no DB estado da protecão, Saldo em créditos e em dinheiro
-            let atualizaPerfilUser = (logUso, perfilUser, sucessoDesligar) => {
+            let updateUserProfile = (logUso, perfilUser, sucessoDesligar, vehicleActivationTimes) => {
                 
                 // Salva no banco de dados o resultado do desligamento e atualiza o banco de dados
                 dbRefProfile.update({
                     switch: perfilUser.switch,
                     money: parseFloat(perfilUser.money),
-                    estadoProtecao: estadoProtecao,
                 }).then(() =>{
                     console.log(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Consumo do desligamento salvo no banco.`);
-                    return atualizaLogUso(logUso, sucessoDesligar)
+                    return updateLogUse(logUso, sucessoDesligar, vehicleActivationTimes)
                 }).catch(error =>{
                     console.error(new Error(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Erro ao slavar dados de encerramento da protecão no banco de dados. ${error}`));
                     reject(error)
@@ -293,9 +326,9 @@ exports.protecao = functions.https.onRequest((request, response) => {
             }
 
             // Atualiza no DB o log de uso do desligamento
-            let atualizaLogUso = (logUso, sucessoDesligar) => {
+            let updateLogUse = (logUso, sucessoDesligar, vehicleActivationTimes) => {
                 // atualizar log de uso
-                dbRefLogUso.child(`${numeroAtivacoes}`).update(logUso).then(() =>{
+                dbRefLogUso.child(`${vehicleActivationTimes}`).update(logUso).then(() =>{
                     console.log(`desligarProtecao - 6 - ${userEmail} - ${firstName} -  Log de uso atualizado no banco.`);
                     return resolve(sucessoDesligar);
                 }).catch(error =>{
@@ -304,7 +337,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                 });
             }
 
-            pegarDadosDb()
+            getVehicleData()
         }) 
     }
 
@@ -561,15 +594,20 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
     const timezone = request.query["timezone"];
 
     // Dados do veículo
-    const carValue = request.query["car-value"];
+    const carValue = parseFloat(request.query["car-value"])
     const carModel = request.query["car-model"];
-    const carPlate = request.query["car-plate"];
+    // const carBrand = request.query["car-brand"]
+    const carPlate = (request.query["car-plate"]).toLowerCase()
 
     // Referencia do Banco de dados
     var userDbId = crypto.createHash('md5').update(userEmail).digest("hex");
+    var vehicleDbId = crypto.createHash('md5').update(carPlate).digest("hex");
     var indicadorDbId = crypto.createHash('md5').update(indicador).digest("hex");
+
     // caminho do DB para o perfil de usuário
     const dbRef = admin.database().ref(`/clients/${userDbId}/`).child(`profile`);
+    // Caminho do DB para o perfil do veículo
+    const vehicleDbRef = admin.database().ref(`/clients/${userDbId}/vehicles/${vehicleDbId}/`).child(`profile`);
     // Caminho do DB para o perfil de usuário do Indicador
     const dbRefIndicadorUser = admin.database().ref(`/clients/${indicadorDbId}/`).child(`profile`);
     // Caminho do DB para a Lista de Indicados do Indicador
@@ -607,14 +645,19 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
      var perfilUsuario = {
         messengerId: userId,
         lastName: lastName,
+        qtdAtivacao: 0,
+        indicator: indicador,
+        timezone: timezone,
+        vehicleInUse: carPlate
+    }
+
+    var vehicleProfile = {
         carModel: carModel,
         carPlate: carPlate,
         carValue: carValue,
-        qtdAtivacao: 0,
-        estadoProtecao: "OFF",
-        indicator: indicador,
-        timezone: timezone,
-        minuteValue: valorMinuto
+        minuteValue: valorMinuto,
+        activations: 0,
+        protectionStatus: "OFF"
     }
 
     var data;
@@ -646,6 +689,16 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                 })
             }
 
+            let createVehicleProfile = () => {
+                vehicleDbRef.update(vehicleProfile).then(() => {
+                    console.log(`createVehicleProfile - 1 - ${userEmail} - ${firstName} - ${carPlate} - Perfil de véiculo criado. ${vehicleProfile.toString()}`)
+                    return resolve(true)
+                }).catch(error => {
+                    console.error(new Error(`createVehicleProfile - 2 - ${userEmail} - ${firstName} - ${carPlate} - Falha ao criar perfil do veiculo. ${error}`))
+                    reject(error)
+                })
+            }
+
             // Cria perfil do usuário usando ID de cliente Woocommerce como Chave primária            
             let criaPerfilUser = perfilUser => {
                 if (!perfilUser.idClient) {      // Não existem dados do perfil do usuário no sistema
@@ -666,7 +719,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                     console.log(`criaPerfilUser - 1 - ${userEmail} - ${firstName} - Usuário com perfil.`)
                     dbRef.update(perfilUsuario).then(() => {
                         console.log(`criaPerfilUser - 2 - ${userEmail} - ${firstName} - Perfil gravado com sucesso no DB.`)
-                        return resolve(true)
+                        return createVehicleProfile()
                     }).catch(error => {
                         console.error(new Error(`gravaPerfilDb - 2 - ${userEmail} - ${firstName} - Falha ao criar perfil. ${error}`))
                         reject(error)
@@ -1133,9 +1186,8 @@ exports.getrequest = functions.https.onRequest((request, response) => {
 })
 
 exports.carStatus = functions.https.onRequest((request, response) =>{
-    console.log(`${JSON.stringify(request.query)}`);
     console.log(`${JSON.stringify(request.body)}`);
-    console.log(`${(request)}`);
+    return true
 })
 
 const calculaGasto = (carValue, response) =>{
