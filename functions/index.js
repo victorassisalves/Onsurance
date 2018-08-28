@@ -237,8 +237,12 @@ exports.protecao = functions.https.onRequest((request, response) => {
             console.log(`desligarProtecao - 1 - ${userEmail} - ${firstName} -  Desligando Protecão`);
             // Desliga a proteção, alterando o atributo status-protecao do chatfuel
             estadoProtecao = "OFF";
+            var horario = Date.now()
+            var timezoneDiff = timezone * 1000 * 3600
+            horario += timezoneDiff
+            var date = new Date(horario)
 
-            pegarData(Date.now())         // Pega os dados de data do uso da protecão 
+            pegarData(horario)         // Pega os dados de data do uso da protecão 
 
             // Pega o tempo do desligamento
             var finalProtecao = Date.now()/1000|0;              // TimeEnd - Timestamp do desligamento da protecão
@@ -303,10 +307,6 @@ exports.protecao = functions.https.onRequest((request, response) => {
                             ]
                     }
 
-                    var horario = Date.now()
-                    var timezoneDiff = timezone * 1000 * 3600
-                    horario += timezoneDiff
-                    var date = new Date(horario)
                     
                     // Objeto com dados do desligamento da proteção
                     var logUso = {
@@ -1187,7 +1187,7 @@ exports.getrequest = functions.https.onRequest((request, response) => {
 
 exports.carStatus = functions.https.onRequest((request, response) =>{
     console.log(`${JSON.stringify(request.body)}`);
-    return true
+    return response.json(200)
 })
 
 const calculaGasto = (carValue, response) =>{
