@@ -50,7 +50,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
     const dbRefLogUso = admin.database().ref(`/clients/${userDbId}/vehicles/${vehicleDbId}/`).child('logUse');
 
 
-    var numeroAtivacoes = parseInt(numAtivacao);
+    var numeroAtivacoes = parseInt(numAtivacao)
     var valorConsumido = 0;
 
     // Objeto de perfil do user
@@ -139,11 +139,9 @@ exports.protecao = functions.https.onRequest((request, response) => {
             // Gera timeStamp do inicio da protecão
             inicioProtecao = Date.now()/1000|0;
             estadoProtecao = "ON";
-            numeroAtivacoes += 1;
             var horario = Date.now()
             var timezoneDiff = timezone * 1000 * 3600
             horario += timezoneDiff;
-
 
             // Chama a função de pegar a data atual para salval no BD        
             pegarData(horario);
@@ -153,7 +151,21 @@ exports.protecao = functions.https.onRequest((request, response) => {
                 inicioProtecao: `${inicioProtecao} - ${diaSemana} - ${data.getDate()}/${data.getMonth()+1}/${data.getFullYear()} - ${data.getHours()}:${data.getMinutes()}:${data.getSeconds()}`,
                 saldoInicial: userCredit,
             };
-            let updateStatusVehicle = () =>{
+
+            // Get the activation number from the actual vehicle database
+            let getActivationNumber = () => {
+                vehicleDbRefProfile.once('value').then(snapshot => {
+                    let data = snapshot.val()
+                    console.log(`getActivationNumber - 1 - ${userEmail} - ${firstName} - ${carPlate} - Vehicle Profile recovered.`)
+                    numeroAtivacoes = data.activations +1
+                    return updateStatusVehicle(numeroAtivacoes)
+                }).catch(error => {
+                    console.error(new Error(`getActivationNumber - 1 - ${userEmail} - ${firstName} - ${carPlate} - Error when recovering profile. ${error}`))
+                    reject(error)
+                })
+            }
+            // Update activation number and protection status on actual vehicle database
+            let updateStatusVehicle = numeroAtivacoes =>{
                 vehicleDbRefProfile.update({
                     activations: numeroAtivacoes,
                     protectionStatus: estadoProtecao,
@@ -165,6 +177,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                     reject(error)
                 })
             }
+            // Get user total activations times from user profile database
             let getStatusUser = () => {
                 dbRefProfile.once('value').then(snapshot => {
                     var profile = snapshot.val()
@@ -175,6 +188,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                     reject(error)
                 })
             }
+            // Update user Total activation times from database
             let updateStatusUser = (profile) =>{
                 dbRefProfile.update({
                     qtdAtivacao: profile.qtdAtivacao + 1,
@@ -186,7 +200,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                     reject(error)
                 })
             }
-
+            // Update actual vehicle logUse of protection
             let logUseUpdate = () => {
                 dbRefLogUso.child(`${numeroAtivacoes}`).update(logUso).then( () => {
                     console.log(`logUseUpdate - 1 - ${userEmail} - ${firstName} - ${carPlate} -  Log de uso atualizado no banco.`);
@@ -213,7 +227,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                     reject(error)
                 })
             }
-            updateStatusVehicle()
+            getActivationNumber()
         })
     }  
 
@@ -242,11 +256,11 @@ exports.protecao = functions.https.onRequest((request, response) => {
                 // Recupera os dados no DB para garantir a confiabilidade
                 vehicleDbRefProfile.once('value').then(snapshot => {
                     data = snapshot.val()
-                    console.error(new Error(`getVehicleData - 1 - ${userEmail} - ${firstName} -  Dados Recuperadosados. ${JSON.stringify(data)}`));                    
-                    var vehicleActivationTimes = data.qtdAtivacao
+                    console.log(`getVehicleData - 1 - ${userEmail} - ${firstName} -  Dados Recuperadosados. ${JSON.stringify(data)}`)                    
+                    var vehicleActivationTimes = data.activations
                     return getUserData(vehicleActivationTimes)
                 }).catch(error => {
-                    console.error(new Error(`getVehicleData - 1 - ${userEmail} - ${firstName} -  Erro ao recuperar dados. ${error}`));
+                    console.error(new Error(`getVehicleData - 1 - ${userEmail} - ${firstName} -  Erro ao recuperar dados. ${error}`))
                     reject(error)
                 })
             }
@@ -255,7 +269,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
             let getUserData = vehicleActivationTimes => {
                 
                 // Recupera os dados no DB para garantir a confiabilidade
-                vehicleDbRefProfile.once('value').then(snapshot => {
+                dbRefProfile.once('value').then(snapshot => {
                     data = snapshot.val()  
                     // Calcula o valor conumido baseado no tempo de uso. 
                     if (segundos >= 30){
@@ -263,7 +277,10 @@ exports.protecao = functions.https.onRequest((request, response) => {
                     } else if (segundos < 30) {
                         valorConsumido = (Math.floor(tempoProtecao/60))*data.minuteValue;
                     }
-                    console.log(`pegarDadosDb - desligarProtecao - 3 - ${userEmail} - ${firstName} -  Dados recuperados do DB.`);
+                    console.log(`getUserData - 1 - ${userEmail} - ${firstName} -  Dados recuperados. ${JSON.stringify(data)}`);
+                    var result = (typeof data.switch === 'number')
+                    console.log(data.switch)
+                    console.log('resultado typeof: ', result)
 
                     perfilUser.switch = parseFloat(data.switch) - valorConsumido                          // 
                     perfilUser.money = parseFloat((data.money) - (valorConsumido/1000)).toFixed(4)
@@ -304,7 +321,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                     return updateUserProfile(logUso, perfilUser, sucessoDesligar, vehicleActivationTimes)
 
                     }).catch(error =>{
-                        console.error(new Error(`desligarProtecao - 3 - ${userEmail} - ${firstName} -  Erro ao recuperar dados. ${error}`));
+                        console.error(new Error(`getUserData - 1 - ${userEmail} - ${firstName} -  Erro ao recuperar dados. ${error}`));
                         reject(error)
                     });
             }
@@ -442,18 +459,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
             return response.json(result)
         }).catch(error => {
             console.error(new Error(`DesligarProtecão - 2 - ${userEmail} - ${firstName} -  Erro ao executar promise. Protecão não desligada ${error}`))
-            perfilUser.switch = parseFloat(data.switch + valorConsumido)                          // 
-            perfilUser.money = (data.money + (valorConsumido/1000)).toFixed(4)
-            dbRefProfile.update({
-                switch: perfilUser.switch,
-                money: parseFloat(perfilUser.money),
-                estadoProtecao: 'ON',
-            }).then(() =>{
-                console.log(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Consumo do desligamento salvo no banco. ${JSON.stringify(perfilUser)}`);
-                return response.json(falhaDesligar)
-            }).catch(error =>{
-                console.error(new Error(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Erro ao salvar dados de encerramento da protecão no banco de dados. ${error}`));
-            });
+            response.json(falhaDesligar)
         })
     } else if (numeroAtivacoes === 0) {
         console.log(`PrimeiraAtivação - 1 - ${userEmail} - ${firstName} -  Primeira ativacão.`);
