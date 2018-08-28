@@ -55,8 +55,8 @@ exports.protecao = functions.https.onRequest((request, response) => {
 
     // Objeto de perfil do user
     var perfilUser = {
-        switch: userCredit,
-        money: userMoney,
+        switch: 0,
+        money: 0,
     }
 
     // Recebe dia da semana e data completa
@@ -218,7 +218,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                                 "timeStart": inicioProtecao,
                             },
                         "redirect_to_blocks": [
-                            "Pós On"
+                            "Desligar"
                         ]
                     }
                     return resolve(sucessoLigar)
@@ -256,9 +256,10 @@ exports.protecao = functions.https.onRequest((request, response) => {
                 // Recupera os dados no DB para garantir a confiabilidade
                 vehicleDbRefProfile.once('value').then(snapshot => {
                     data = snapshot.val()
-                    console.log(`getVehicleData - 1 - ${userEmail} - ${firstName} -  Dados Recuperadosados. ${JSON.stringify(data)}`)                    
+                    console.log(`getVehicleData - 1 - ${userEmail} - ${firstName} -  Dados Recuperados. ${JSON.stringify(data)}`)                    
                     var vehicleActivationTimes = data.activations
-                    return getUserData(vehicleActivationTimes)
+                    let minuteValue = data.minuteValue
+                    return getUserData(vehicleActivationTimes, minuteValue)
                 }).catch(error => {
                     console.error(new Error(`getVehicleData - 1 - ${userEmail} - ${firstName} -  Erro ao recuperar dados. ${error}`))
                     reject(error)
@@ -266,23 +267,19 @@ exports.protecao = functions.https.onRequest((request, response) => {
             }
             
             // get User Profile data on DB
-            let getUserData = vehicleActivationTimes => {
+            let getUserData = (vehicleActivationTimes, minuteValue) => {
                 
                 // Recupera os dados no DB para garantir a confiabilidade
                 dbRefProfile.once('value').then(snapshot => {
                     data = snapshot.val()  
+
                     // Calcula o valor conumido baseado no tempo de uso. 
                     if (segundos >= 30){
-                        valorConsumido = (Math.ceil(tempoProtecao/60))*data.minuteValue;
+                        valorConsumido = (Math.ceil(tempoProtecao/60))*minuteValue
                     } else if (segundos < 30) {
-                        valorConsumido = (Math.floor(tempoProtecao/60))*data.minuteValue;
+                        valorConsumido = (Math.floor(tempoProtecao/60))*minuteValue
                     }
-                    console.log(`getUserData - 1 - ${userEmail} - ${firstName} -  Dados recuperados. ${JSON.stringify(data)}`);
-                    var result = (typeof data.switch === 'number')
-                    console.log(data.switch)
-                    console.log('resultado typeof: ', result)
-
-                    perfilUser.switch = parseFloat(data.switch) - valorConsumido                          // 
+                    perfilUser.switch = data.switch - valorConsumido
                     perfilUser.money = parseFloat((data.money) - (valorConsumido/1000)).toFixed(4)
                     var sucessoDesligar = {
                         "messages": [
@@ -332,12 +329,12 @@ exports.protecao = functions.https.onRequest((request, response) => {
                 // Salva no banco de dados o resultado do desligamento e atualiza o banco de dados
                 dbRefProfile.update({
                     switch: perfilUser.switch,
-                    money: parseFloat(perfilUser.money),
+                    money: perfilUser.money,
                 }).then(() =>{
-                    console.log(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Consumo do desligamento salvo no banco.`);
+                    console.log(`updateUserProfile - 1 - ${userEmail} - ${firstName} -  Consumo do desligamento salvo no banco.`);
                     return updateLogUse(logUso, sucessoDesligar, vehicleActivationTimes)
                 }).catch(error =>{
-                    console.error(new Error(`desligarProtecao - 4 - ${userEmail} - ${firstName} -  Erro ao slavar dados de encerramento da protecão no banco de dados. ${error}`));
+                    console.error(new Error(`updateUserProfile - 1 - ${userEmail} - ${firstName} -  Erro ao salvar dados de encerramento da protecão no banco de dados. ${error}`));
                     reject(error)
                 });
             }
@@ -346,10 +343,10 @@ exports.protecao = functions.https.onRequest((request, response) => {
             let updateLogUse = (logUso, sucessoDesligar, vehicleActivationTimes) => {
                 // atualizar log de uso
                 dbRefLogUso.child(`${vehicleActivationTimes}`).update(logUso).then(() =>{
-                    console.log(`desligarProtecao - 6 - ${userEmail} - ${firstName} -  Log de uso atualizado no banco.`);
+                    console.log(`updateLogUse - 1 - ${userEmail} - ${firstName} -  Log de uso atualizado no banco.`);
                     return resolve(sucessoDesligar);
                 }).catch(error =>{
-                    console.error(new Error(`desligarProtecao - 6 - ${userEmail} - ${firstName} -  Erro ao atualizar log de uso. ${error}`));
+                    console.error(new Error(`updateLogUse - 1 - ${userEmail} - ${firstName} -  Erro ao atualizar log de uso. ${error}`));
                     reject(error)
                 });
             }
@@ -361,17 +358,15 @@ exports.protecao = functions.https.onRequest((request, response) => {
     // Checa numero de indicações do usuário que está ligando a protecão e premia
     const verificaIndicacao = () => {
         return new Promise((resolve, reject) => {
-            console.log(`verificaIndicacao - 1 - ${userEmail} - ${firstName} -  Verificando indicacões.`);
-            
             var data;
             let verificaUserIndicacao = () => {
                     // recupera dados do usuário no Banco de dados
                     dbRefProfile.once('value').then(snapshot => {
                         data = snapshot.val();
-                        console.log(`verificaIndicacao - 2 - ${userEmail} - ${firstName} -  Dados do Usuário recuperado: ${data.indicatedUsers} indicados. recebeu promocão: ${data.indicationPromo}`);
+                        console.log(`verificaUserIndicacao - 1 - ${userEmail} - ${firstName} -  Dados do Usuário recuperado: ${data.indicatedUsers} indicados. recebeu promocão: ${data.indicationPromo}`);
                         return executaPremiacao(data)
                     }).catch(error => {
-                        console.error(new Error(`verificaIndicacao - 2 - ${userEmail} - ${firstName} -  Erro ao recuperar usuário na base de dados. ${error}`))
+                        console.error(new Error(`verificaUserIndicacao - 1 - ${userEmail} - ${firstName} -  Erro ao recuperar usuário na base de dados. ${error}`))
                         numeroAtivacoes -= 1                        
                         reject(response.json(falhaLigar))
                     })
@@ -381,7 +376,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                 // checa se número de indicados atingiu mais de 10 pela primeira vez
                 // Se o usuário atingiu os requisitos necessários para receber o prênmio
                 if (parseInt(result.indicatedUsers) >= 10 && result.indicationPromo === false) {
-                    console.log(`executaVerificaUserIndicacao - 2 - ligarProtecão - ${userEmail} - ${firstName} -  Usuário vai receber prêmio por indicacão.`);
+                    console.log(`executaPremiacao - 1 - ${userEmail} - ${firstName} -  Usuário vai receber prêmio por indicacão.`);
                     var creditoPlus = result.switch + 1000000
                     var saldoPlus = (parseFloat(result.money) + 1000).toFixed(4)
 
@@ -389,9 +384,8 @@ exports.protecao = functions.https.onRequest((request, response) => {
 
                 // Caso usuário não tenha atingido os requisitos para receber prêmio
                 } else if (result.indicatedUsers < 10 || result.indicationPromo === true){
-                    console.log(`executaVerificaUserIndicacao - 2 - ligarProtecão - ${userEmail} - ${firstName} -  Não tem requisitos para receber promocão: ${result.indicatedUsers} indicados, recebeu promo: ${result.indicationPromo}`);
-                    receberPremio = false
-                    resolve(receberPremio)
+                    console.log(`executaPremiacao - 1 - ${userEmail} - ${firstName} -  Não tem requisitos para receber promocão.`);
+                    resolve(true)
                 }
             }
 
@@ -402,7 +396,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                     money: saldoPlus,
                     indicationPromo: true
                     }).then(() => {
-                        console.log(`executaVerificaUserIndicacao - 3 - ligaProtecão - ${userEmail} - ${firstName} -  Crédito, saldo e status da promocão atualizados no banco.`);
+                        console.log(`adicionaPromocao - 1 - ligaProtecão - ${userEmail} - ${firstName} -  Crédito, saldo e status da promocão atualizados no banco.`);
                         receberPremio = true
                         console.log("*** Verificacão do indicador feita completamente no servidor. ***")
                         console.log("*** Retorno Imediato Messenger User recebendo promocão indicacão ***")
@@ -424,7 +418,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                             })
                         )
                     }).catch(error => {
-                        console.error(new Error(`executaVerificaUserIndicacao - 3 - ${userEmail} - ${firstName} -  Erro ao atualizar ganho de prêmio no banco. ${error}`))
+                        console.error(new Error(`adicionaPromocao - 1 - ${userEmail} - ${firstName} -  Erro ao atualizar ganho de prêmio no banco. ${error}`))
                         console.error(new Error(error))
                         numeroAtivacoes -= 1
                         reject(response.json(falhaLigar))
@@ -447,7 +441,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
             console.log("*** Retorno Imediato Messenger ***")
             return response.json(sucessoLigar)
         }).catch(error =>{
-            console.error(new Error(`executaLigarProtecao - ligarProtecao - 2 - ${userEmail} - ${firstName} -  Erro ao executar promises. Protecão não Ligada ${error}`))
+            console.error(new Error(`ligarProtecao - 2 - ${userEmail} - ${firstName} -  Erro ao executar promises. Protecão não Ligada ${error}`))
             numeroAtivacoes -= 1
             response.json(falhaLigar)
         })
