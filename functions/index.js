@@ -1030,7 +1030,9 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
 
     const wooRequest= JSON.stringify(request.body)
     const wooRequestParsed = JSON.parse(wooRequest)
+    console.log('wooRequestParsed: ', wooRequestParsed);
     const lineItems = wooRequestParsed.line_items
+    console.log('lineItems: ', lineItems);
     const qtdItensCompra = lineItems.length;
     console.log('qtdItensCompra: ', qtdItensCompra);
     var valorCrédito = 0
@@ -1045,7 +1047,7 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
             } else {
                     console.log(` Produto que entra no crédito: ${JSON.stringify(value)}`);
 
-                valorCrédito = JSON.parse(value.price) + valorCrédito
+                valorCrédito = JSON.parse(parseFloat(value.total)) + valorCrédito
                 console.log('valorCrédito: ', valorCrédito);
             }
         }
