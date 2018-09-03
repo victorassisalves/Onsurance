@@ -30,7 +30,6 @@ exports.protecao = functions.https.onRequest((request, response) => {
     const firstName = request.query["first name"];
     const userEmail = (request.query["email_address"]).toLowerCase()
     const userCredit = parseFloat(request.query["user-credit"])
-    const userMoney = parseFloat(request.query["user-money"])
     const timezone = request.query["timezone"]
     const carPlate = (request.query["car-plate"]).toLowerCase()
 
@@ -45,8 +44,17 @@ exports.protecao = functions.https.onRequest((request, response) => {
     // Referencia do Banco de dados
     var userDbId = crypto.createHash('md5').update(userEmail).digest("hex");
     var vehicleDbId = crypto.createHash('md5').update(carPlate).digest("hex");
+    // User profile
     const dbRefProfile = admin.database().ref(`/clients/${userDbId}/`).child('profile');
+    // User Wallet
+    const dbRefWallet = admin.database().ref(`/clients/${userDbId}/`).child('profile/wallet');
+    // User Activations 
+    const dbRefActivations = admin.database().ref(`/clients/${userDbId}/`).child('profile/activations');
+    // Vehicle Profile
     const vehicleDbRefProfile = admin.database().ref(`/clients/${userDbId}/vehicles/${vehicleDbId}/`).child('profile');
+    // Vehicle Activations
+    const vehicleDbRefActivations = admin.database().ref(`/clients/${userDbId}/vehicles/${vehicleDbId}/`).child('profile/activations');
+    // Vehicle Use Log
     const dbRefLogUso = admin.database().ref(`/clients/${userDbId}/vehicles/${vehicleDbId}/`).child('logUse');
 
 
@@ -99,7 +107,6 @@ exports.protecao = functions.https.onRequest((request, response) => {
 
     // Pega a data com dia da semana para colocar no banco de dados
     const pegarData = (date) => {
-        console.log(`getDate - 1 - ${userEmail} - ${firstName} - Pegar o dia da semana`);
         data = new Date(date);
     
         // Transforma o dia da semana em palavra
@@ -150,14 +157,16 @@ exports.protecao = functions.https.onRequest((request, response) => {
             var logUso = {
                 inicioProtecao: `${inicioProtecao} - ${diaSemana} - ${data.getDate()}/${data.getMonth()+1}/${data.getFullYear()} - ${data.getHours()}:${data.getMinutes()}:${data.getSeconds()}`,
                 saldoInicial: userCredit,
+                user: userEmail
             };
 
             // Get the activation number from the actual vehicle database
             let getActivationNumber = () => {
-                vehicleDbRefProfile.once('value').then(snapshot => {
+                vehicleDbRefActivations.once('value').then(snapshot => {
                     let data = snapshot.val()
+                    console.log('data: ', data);
                     console.log(`getActivationNumber - 1 - ${userEmail} - ${firstName} - ${carPlate} - Vehicle Profile recovered.`)
-                    numeroAtivacoes = data.activations +1
+                    numeroAtivacoes = data +1
                     return updateStatusVehicle(numeroAtivacoes)
                 }).catch(error => {
                     console.error(new Error(`getActivationNumber - 1 - ${userEmail} - ${firstName} - ${carPlate} - Error when recovering profile. ${error}`))
@@ -170,41 +179,41 @@ exports.protecao = functions.https.onRequest((request, response) => {
                     activations: numeroAtivacoes,
                     protectionStatus: estadoProtecao,
                 }).then(() => {
-                    console.log(`updateStatusVehicle - 1 - ${userEmail} - ${firstName} - ${carPlate} - Status atualizado no banco.`)
+                    console.log(`updateStatusVehicle - 1 - ${userEmail} - ${firstName} - ${carPlate} - Vehicle Status updated.`)
                     return getStatusUser()
                 }).catch(error => {
-                    console.error(new Error(`updateStatusVehicle - 1 - ${userEmail} - ${firstName} - ${carPlate} -  Erro ao atualizar usuário no banco ${error}`));
+                    console.error(new Error(`updateStatusVehicle - 1 - ${userEmail} - ${firstName} - ${carPlate} -  Error updating Vehicle Status. ${error}`));
                     reject(error)
                 })
             }
             // Get user total activations times from user profile database
             let getStatusUser = () => {
-                dbRefProfile.once('value').then(snapshot => {
+                dbRefActivations.once('value').then(snapshot => {
                     var profile = snapshot.val()
-                    console.log(`getStatusUser - 1 - ${userEmail} - ${firstName} - USER recuperado no banco. ${JSON.stringify(profile)}`)
+                    console.log(`getStatusUser - 1 - ${userEmail} - ${firstName} - USER Activations Recovered. ${JSON.stringify(profile)}`)
                     return updateStatusUser(profile)
                 }).catch(error =>{
-                    console.error(new Error(`getStatusUser - 1 - Erro ao recuperar usuário no banco ${error}`));
+                    console.error(new Error(`getStatusUser - 1 - Error recovering User ${error}`));
                     reject(error)
                 })
             }
             // Update user Total activation times from database
             let updateStatusUser = (profile) =>{
                 dbRefProfile.update({
-                    qtdAtivacao: profile.qtdAtivacao + 1,
+                    activations: profile + 1,
                 }).then(() => {
-                    console.log(`updateStatusUser - 1 - ${userEmail} - ${firstName} -  Status USER atualizado no banco.`)
+                    console.log(`updateStatusUser - 1 - ${userEmail} - ${firstName} - USER Activations updated.`)
                     return logUseUpdate()
                 }).catch(error => {
-                    console.error(new Error(`updateStatusUser - 1 - Erro ao atualizar usuário no banco ${error}`));
+                    console.error(new Error(`updateStatusUser - 1 - Error updating activations. ${error}`));
                     reject(error)
                 })
             }
             // Update actual vehicle logUse of protection
             let logUseUpdate = () => {
                 dbRefLogUso.child(`${numeroAtivacoes}`).update(logUso).then( () => {
-                    console.log(`logUseUpdate - 1 - ${userEmail} - ${firstName} - ${carPlate} -  Log de uso atualizado no banco.`);
-                    console.log("*** Protecão completamente ligada no servidor. ***")
+                    console.log(`logUseUpdate - 1 - ${userEmail} - ${firstName} - ${carPlate} -  Use Log Updated.`);
+                    console.log("*** Protection Activated ***")
                     sucessoLigar = { 
                         "messages": [
                             {
@@ -234,7 +243,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
     // Funcão para desativar a protecão
     const desligarProtecao = () => {
         return new Promise((resolve, reject) => {
-            console.log(`desligarProtecao - 1 - ${userEmail} - ${firstName} -  Desligando Protecão`);
+            console.log(`desligarProtecao - 1 - ${userEmail} - ${firstName} -  Protection OFF`);
             // Desliga a proteção, alterando o atributo status-protecao do chatfuel
             estadoProtecao = "OFF";
             var horario = Date.now()
@@ -260,7 +269,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                 // Recupera os dados no DB para garantir a confiabilidade
                 vehicleDbRefProfile.once('value').then(snapshot => {
                     data = snapshot.val()
-                    console.log(`getVehicleData - 1 - ${userEmail} - ${firstName} -  Dados Recuperados. ${JSON.stringify(data)}`)                    
+                    console.log(`getVehicleData - 1 - ${userEmail} - ${firstName} - Data Recovered. ${JSON.stringify(data)}`)                    
                     var vehicleActivationTimes = data.activations
                     let minuteValue = data.minuteValue
                     return getUserData(vehicleActivationTimes, minuteValue)
@@ -274,7 +283,8 @@ exports.protecao = functions.https.onRequest((request, response) => {
             let getUserData = (vehicleActivationTimes, minuteValue) => {
                 
                 // Recupera os dados no DB para garantir a confiabilidade
-                dbRefProfile.once('value').then(snapshot => {
+                // Get user profile wallet
+                dbRefWallet.once('value').then(snapshot => {
                     data = snapshot.val()  
 
                     // Calcula o valor conumido baseado no tempo de uso. 
@@ -303,11 +313,10 @@ exports.protecao = functions.https.onRequest((request, response) => {
                                 "segundos": segundos
                             },
                             "redirect_to_blocks": [
-                                "Pós Off"
+                                "Pos Off"
                             ]
                     }
 
-                    
                     // Objeto com dados do desligamento da proteção
                     var logUso = {
                         finalProtecao: `${finalProtecao} - ${diaSemana} - ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
@@ -327,14 +336,14 @@ exports.protecao = functions.https.onRequest((request, response) => {
             let updateUserProfile = (logUso, perfilUser, sucessoDesligar, vehicleActivationTimes) => {
                 
                 // Salva no banco de dados o resultado do desligamento e atualiza o banco de dados
-                dbRefProfile.update({
+                dbRefWallet.update({
                     switch: perfilUser.switch,
-                    money: perfilUser.money,
+                    money: parseFloat(perfilUser.money)
                 }).then(() =>{
-                    console.log(`updateUserProfile - 1 - ${userEmail} - ${firstName} -  Consumo do desligamento salvo no banco.`);
+                    console.log(`updateUserProfile ${userEmail} - ${firstName} -  Consumo do desligamento salvo no banco.`);
                     return updateLogUse(logUso, sucessoDesligar, vehicleActivationTimes)
                 }).catch(error =>{
-                    console.error(new Error(`updateUserProfile - 1 - ${userEmail} - ${firstName} -  Erro ao salvar dados de encerramento da protecão no banco de dados. ${error}`));
+                    console.error(new Error(`updateUserProfile ${userEmail} - ${firstName} -  Erro ao salvar dados de encerramento da protecão no banco de dados. ${error}`));
                     reject(error)
                 });
             }
@@ -343,10 +352,10 @@ exports.protecao = functions.https.onRequest((request, response) => {
             let updateLogUse = (logUso, sucessoDesligar, vehicleActivationTimes) => {
                 // atualizar log de uso
                 dbRefLogUso.child(`${vehicleActivationTimes}`).update(logUso).then(() =>{
-                    console.log(`updateLogUse - 1 - ${userEmail} - ${firstName} -  Log de uso atualizado no banco.`);
+                    console.log(`updateLogUse - 1 - ${userEmail} - ${firstName} -  UseLog updated.`);
                     return resolve(sucessoDesligar);
                 }).catch(error =>{
-                    console.error(new Error(`updateLogUse - 1 - ${userEmail} - ${firstName} -  Erro ao atualizar log de uso. ${error}`));
+                    console.error(new Error(`updateLogUse - 1 - ${userEmail} - ${firstName} -  Error updating UseLog. ${error}`));
                     reject(error)
                 });
             }
@@ -358,10 +367,12 @@ exports.protecao = functions.https.onRequest((request, response) => {
     // Checa numero de indicações do usuário que está ligando a protecão e premia
     const verificaIndicacao = () => {
         return new Promise((resolve, reject) => {
+        const dbRefIndication = admin.database().ref(`/clients/${userDbId}/`).child('profile/indication');
+
             var data;
             let verificaUserIndicacao = () => {
                     // recupera dados do usuário no Banco de dados
-                    dbRefProfile.once('value').then(snapshot => {
+                    dbRefIndication.once('value').then(snapshot => {
                         data = snapshot.val();
                         console.log(`verificaUserIndicacao - 1 - ${userEmail} - ${firstName} -  Dados do Usuário recuperado: ${data.indicatedUsers} indicados. recebeu promocão: ${data.indicationPromo}`);
                         return executaPremiacao(data)
@@ -392,9 +403,13 @@ exports.protecao = functions.https.onRequest((request, response) => {
             let adicionaPromocao = (creditoPlus, saldoPlus, result) => {
                 // Atualiza dados do usuário no banco de dados
                 dbRefProfile.update({
-                    switch: creditoPlus,
-                    money: saldoPlus,
-                    indicationPromo: true
+                    wallet: {
+                        switch: creditoPlus,
+                        money: saldoPlus,
+                    },
+                    indication: {
+                        indicationPromo: true
+                    }
                     }).then(() => {
                         console.log(`adicionaPromocao - 1 - ligaProtecão - ${userEmail} - ${firstName} -  Crédito, saldo e status da promocão atualizados no banco.`);
                         receberPremio = true
@@ -406,7 +421,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
                             "set_attributes":
                                 {
                                     "status-protecao": "ON",
-                                    "numAtivacao": result.qtdAtivacao,
+                                    "numAtivacao": result.activations,
                                     "timeStart": inicioProtecao,
                                     "user-credit": creditoPlus,
                                     "user-money": saldoPlus,
@@ -449,17 +464,17 @@ exports.protecao = functions.https.onRequest((request, response) => {
     } else if (estadoProtecao === "ON" && numeroAtivacoes >= 1) {
 
         desligarProtecao().then(result =>{
-            console.log("*** Retorno Imediato Messenger ***")
+            console.log("*** Returning to Messenger ***")
             return response.json(result)
         }).catch(error => {
-            console.error(new Error(`DesligarProtecão - 2 - ${userEmail} - ${firstName} -  Erro ao executar promise. Protecão não desligada ${error}`))
+            console.error(new Error(`DesligarProtecão - 2 - ${userEmail} - ${firstName} -  Erro ao executar promise. Protecão não desligada. ${error}`))
             response.json(falhaDesligar)
         })
     } else if (numeroAtivacoes === 0) {
         console.log(`PrimeiraAtivação - 1 - ${userEmail} - ${firstName} -  Primeira ativacão.`);
         
         ligarProtecao().then((result) => {
-            console.log("*** Retorno Imediato ***")
+            console.log("*** Returning to Messenger ***")
             return response.json({
                 "messages": [
                     {
@@ -583,7 +598,7 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
 
 // Criacão de perfil do usuário antes da primeira ativacão
 exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
-    console.log(`${request.query["first name"]} - ${request.query["messenger user id"]} - 1 - Cria perfil completo do user:   ${JSON.stringify(request.query)}`);
+    console.log(`${request.query["first name"]} - ${request.query["messenger user id"]} Create User Profile:   ${JSON.stringify(request.query)}`);
 
     // dados do usuário
     const userId = request.query["messenger user id"];
@@ -609,14 +624,12 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
     // Caminho do DB para o perfil do veículo
     const vehicleDbRef = admin.database().ref(`/clients/${userDbId}/vehicles/${vehicleDbId}/`).child(`profile`);
     // Caminho do DB para o perfil de usuário do Indicador
-    const dbRefIndicadorUser = admin.database().ref(`/clients/${indicadorDbId}/`).child(`profile`);
+    const dbRefIndicadorUser = admin.database().ref(`/clients/${indicadorDbId}/`).child(`profile/indication`);
     // Caminho do DB para a Lista de Indicados do Indicador
     const dbRefIndicador = admin.database().ref(`/clients/${indicadorDbId}/`).child(`indication`);
     
 
-    var checaValor = carValue.toString();
-
-    
+    var checaValor = carValue.toString()
 
     // Checa se valor informado é válido
     if (checaValor.includes(".") || checaValor.includes(",")) {
@@ -645,7 +658,7 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
      var perfilUsuario = {
         messengerId: userId,
         lastName: lastName,
-        qtdAtivacao: 0,
+        activations: 0,
         indicator: indicador,
         timezone: timezone,
         vehicleInUse: carPlate
@@ -826,14 +839,14 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
                 "text": `Opa ${firstName}! Terminei de verificar seus dados com sucesso e já posso começar a te proteger. Antes que eu me esqueça, valor da sua protecão vai ser de R$${valorMinuto/1000} ou ${valorMinuto} créditos por minuto.`
                 },
                 {
-                    "text": `Seu saldo atual é de: ${perfilUser.switch} Créditos, que é o equivalente a R$${perfilUser.money}.`
+                    "text": `Seu saldo atual é de: ${perfilUser.wallet.switch} Créditos, que é o equivalente a R$${perfilUser.wallet.money}.`
                 }
             ],
             "set_attributes":
             {
                 "valorMinuto": valorMinuto,
-                "user-credit": perfilUser.switch,
-                "user-money": perfilUser.money,
+                "user-credit": perfilUser.wallet.switch,
+                "user-money": perfilUser.wallet.money,
                 "idCliente": perfilUser.idClient
             },
             "redirect_to_blocks": [
@@ -1064,14 +1077,18 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
         console.log('email: ', email);
         var userDbId = crypto.createHash('md5').update(email).digest("hex");
         const perfilUser = {
-            lastName: lastName,
-            indicationPromo: false,
-            switch: (valorCrédito * 1000),
-            money: valorCrédito,
-            userEmail: email,
-            firstName: firstName,
-            idClient: clientId,
-            indicatedUsers: 0
+                lastName: lastName,
+                wallet: {
+                    switch: (valorCrédito * 1000),
+                    money: valorCrédito,
+                },
+                userEmail: email,
+                firstName: firstName,
+                idClient: clientId,
+                indication: {
+                    indicatedUsers: 0,
+                    indicationPromo: false
+                }
             }  
      
         // Referencia do Banco de dados
@@ -1111,7 +1128,7 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
                         
                     } else if (!data.idClient) {
                         console.log(`acaoPerfil - 1 - ${email} - ${firstName} -  User existe na base. Mas não tinha comprado ainda${JSON.stringify(data)}.`)
-                        perfilUser.indicatedUsers = data.indicatedUsers
+                        perfilUser.indication.indicatedUsers = data.indication.indicatedUsers
                         criaPerfilDb(perfilUser)
                     }
                 } 
@@ -1137,8 +1154,10 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
 
                     //Atualiza o numero de indicados (indicadores)
                     dbRef.update({
-                        switch: saldoCreditos,
-                        money: saldoDinheiro
+                        wallet: {
+                            switch: saldoCreditos,
+                            money: saldoDinheiro
+                        }
                     }).then(() =>{
                         console.log(`2 - atualizaSaldo - ${email} - ${firstName} -  Saldo User atualizado com sucesso.`);
                         return resolve(true);
