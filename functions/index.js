@@ -450,8 +450,11 @@ exports.protecao = functions.https.onRequest((request, response) => {
 
         // Liga a protecão, verifica a quantidade de indicacões e retorna para o chat
         ligarProtecao().then(result => { 
-                // Liga a protecão no banco de dados, atualiza o log de uso.
-            return verificaIndicacao()   // Verifica se user tem requisitos para receber premio por indicacão e premia
+            // Liga a protecão no banco de dados, atualiza o log de uso.
+            if (numeroAtivacoes % 3 ===0 ) {
+                return verificaIndicacao()   // Verifica se user tem requisitos para receber premio por indicacão e premia
+            }
+            return true;
         }).then(() => {
             console.log("*** Retorno Imediato Messenger ***")
             return response.json(sucessoLigar)
@@ -527,26 +530,25 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
     console.log('valorSemSeguro: ', valorSemSeguro);
     console.log('valorSeguro: ', valorSeguro);
 
-
-    var checaValor = carValue.toString();
-
-    // Checa se valor informado é válido
-    if (checaValor.includes(".") || checaValor.includes(",")) {
-        console.log(`2 - ${userEmail} - ${firstName} -  usuário informou valor no modelo errado! ${carValue}`);
+    calcMin.calculaGasto(carValue).then(result => {
+        console.log('valorMinuto: ', valorMinuto);
+        valorMinuto = result;
+        console.log('valorMinuto: ', valorMinuto);
+        return valorMinuto; 
+    }).catch(error => {
+        console.error(new Error(`${JSON.stringify(error.description)}, CarValue: ${carValue}.`))
         response.json({
-            "set_attributes":
-            {
-                "valorCorreto-sim": false,
-            },
             "messages": [
                 {
-                    "text": `O formato digitado está incorreto, por favor digite sem utilizar pontos ou vírgulas. Ex: "55000".`,
+                    "text": `${error.textCot}`,
                 }
-            ]    
-        });
-    }
-    
-    var valorMinuto = calculaGasto(carValue, response);
+            ],
+            "redirect_to_blocks": [
+                `Simulação de uso`
+            ]
+        })
+    })
+
     console.log(`2.5 - ${userEmail} - ${firstName} -  valor do minuto pos funcão, ${valorMinuto}`);
     console.log(`3 - ${userEmail} - ${firstName} -  Valor do Carro :  ${carValue}`);
     
@@ -598,6 +600,7 @@ exports.botSimulacao = functions.https.onRequest((request, response) => {
 
 // Criacão de perfil do usuário antes da primeira ativacão
 exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
+    const calcMin = require('./calMin.js')
     console.log(`${request.query["first name"]} - ${request.query["messenger user id"]} Create User Profile:   ${JSON.stringify(request.query)}`);
 
     // dados do usuário
@@ -628,31 +631,25 @@ exports.criaPerfilCompleto = functions.https.onRequest((request, response) => {
     // Caminho do DB para a Lista de Indicados do Indicador
     const dbRefIndicador = admin.database().ref(`/clients/${indicadorDbId}/`).child(`indication`);
     
-
-    var checaValor = carValue.toString()
-
-    // Checa se valor informado é válido
-    if (checaValor.includes(".") || checaValor.includes(",")) {
-        console.log(`2 - ${userEmail} - ${firstName} -  usuário informou valor no modelo errado! ${carValue}`);
-        console.error(new Error(`2 - ${userEmail} - ${firstName} -  usuário informou valor no formato errado! ${carValue}`));
+    console.log(`2 - ${userEmail} - ${firstName} - Calcula minuto da protecão.`);
+    calcMin.calculaGasto(carValue).then(result => {
+        console.log('valorMinuto: ', valorMinuto);
+        valorMinuto = result;
+        console.log('valorMinuto: ', valorMinuto);
+        return valorMinuto; 
+    }).catch(error => {
+        console.error(new Error(`${JSON.stringify(error.description)}, CarValue: ${carValue}.`))
         response.json({
-            "set_attributes":
-            {
-                "valorCorreto-sim": false,
-            },
             "messages": [
                 {
-                    "text": `O valor do veículo foi digitado no formato errado, por favor NÃO utilize pontos ou vírgulas. Ex: "55000".`,
+                    "text": `${error.text}`,
                 }
             ],
             "redirect_to_blocks": [
-                "Erro no preco do veiculo"
+                `${error.block}`
             ]
-        });
-    }
-
-    console.log(`2 - ${userEmail} - ${firstName} - Calcula minuto da protecão.`);
-    var valorMinuto = calculaGasto(carValue, response);
+        })
+    })
 
      // Objeto de perfil do user
      var perfilUsuario = {
@@ -909,26 +906,40 @@ exports.simLigaDesliga = functions.https.onRequest((request, response) =>{
         if (numAtivacao === 0){ // Primeira Ativacão
         console.log(`ligarProtecao - 1 - ${userEmail} - ${firstName} -  primeira ativacão`);
 
-            var valorMinutoSim = calculaGasto(carValue, response)
-
-            response.json({
-                "messages": [
+            calcMin.calculaGasto(carValue).then(result => {
+                return response.json({
+                    "messages": [
+                        {
+                            "text": `Parabéns pela primeira ativação de sua proteção simulada. O custo da sua proteção é de ${result} créditos por minuto. Baseado nesse valor, você tem aproximadamente ${(10000/result).toFixed(0)} minutos para simular a proteção do seu veículo. Aproveite bastante.`
+                        }
+                    ],
+                    "set_attributes":
                     {
-                        "text": `Parabéns pela primeira ativação de sua proteção simulada. O custo da sua proteção é de ${valorMinutoSim} créditos por minuto. Baseado nesse valor, você tem aproximadamente ${(10000/valorMinutoSim).toFixed(0)} minutos para simular a proteção do seu veículo. Aproveite bastante.`
-                    }
-                ],
-                "set_attributes":
-                {
-                    "status-protecao-sim": estadoProtecao,
-                    "numAtivacao-sim": numeroAtivacoes,
-                    "timeStart-sim": inicioProtecao,
-                    "primeira-ativacao": inicioProtecao,
-                    "valorMinuto-sim": valorMinutoSim
-                },
-                "redirect_to_blocks": [
-                    "Mensagem de boas vindas primeira proteção Simulação"
-                ]
-            });
+                        "status-protecao-sim": estadoProtecao,
+                        "numAtivacao-sim": numeroAtivacoes,
+                        "timeStart-sim": inicioProtecao,
+                        "primeira-ativacao": inicioProtecao,
+                        "valorMinuto-sim": result
+                    },
+                    "redirect_to_blocks": [
+                        "Mensagem de boas vindas primeira proteção Simulação"
+                    ]
+                })
+            }).catch(error => {
+                console.error(new Error(`${JSON.stringify(error.description)}, CarValue: ${carValue}.`))
+                response.json({
+                    "messages": [
+                        {
+                            "text": `${error.textSim}`,
+                        }
+                    ],
+                    "redirect_to_blocks": [
+                        `valor incorreto veiculo sim`
+                    ]
+                })
+            })
+
+            
         } else if (numAtivacao >= 1 && userCredit >= 100 ) {  // pode usar a Proteção
 
 
@@ -1187,108 +1198,33 @@ exports.wooWebhook = functions.https.onRequest((request, response) =>{
 
 exports.getrequest = functions.https.onRequest((request, response) => {
     var _ = require('lodash')
-    var timezone = request.query["timezone"]
-    timezoneDiff = timezone * 1000 * 3600
-    var inicioProtecao = Date.now();
-    console.log('inicioProtecao: ', inicioProtecao);
-    inicioProtecao += timezoneDiff 
-    console.log('inicioProtecao: ', inicioProtecao);
-    var date = new Date(inicioProtecao)
-    console.log(`${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
-
-    
-    response.json({
-        "messages": [
-            {
-                "text": `nice`
-            }
-        ]
+    var carValue = request.query["car-value"]
+    var myModule = require('./calMin.js')
+    myModule.calculaGasto(carValue).then(result =>{
+        return response.json({
+            "messages": [
+                {
+                    "text": `Seu minuto é: ${result}`
+                }
+            ]
+        })
+    }).catch(error => {
+        console.error(new Error(`${JSON.stringify(error.description)}, CarValue: ${carValue}.`))
+        response.json({
+            "messages": [
+                {
+                    "text": `${error.text}`,
+                }
+            ],
+            "redirect_to_blocks": [
+                `${error.block}`
+            ]
+        })
     })
+    
 })
 
 exports.carStatus = functions.https.onRequest((request, response) =>{
     console.log(`${JSON.stringify(request.body)}`);
     return response.json(200)
 })
-
-const calculaGasto = (carValue, response) =>{
-
-    console.log('iniciando funcão de calcular valor do min');
-    
-    var valorVeiculo = carValue;
-
-    console.log(`Valor do Carro :  ${carValue}`);
-    
-        if (valorVeiculo <= 30000) {
-            valorMinuto = 4;
-        }
-        if (valorVeiculo > 30000 && valorVeiculo <= 40000) {
-            valorMinuto = 5.5;
-        }
-        if (valorVeiculo > 40000 && valorVeiculo <= 50000) {
-            valorMinuto = 7;
-        }
-        if (valorVeiculo > 50000 && valorVeiculo <= 60000) {
-            valorMinuto = 8.5;
-        }
-        if (valorVeiculo > 60000 && valorVeiculo <= 70000) {
-            valorMinuto = 10;
-        }
-        if (valorVeiculo > 70000 && valorVeiculo <= 80000) {
-            valorMinuto = 13;
-        }
-        if (valorVeiculo > 80000 && valorVeiculo <= 90000) {
-            valorMinuto = 14;
-        }
-        if (valorVeiculo > 90000 && valorVeiculo <= 100000) {
-            valorMinuto = 15;
-        }
-        if (valorVeiculo > 100000 && valorVeiculo <= 110000) {
-            valorMinuto = 16;
-        }
-        if (valorVeiculo > 110000 && valorVeiculo <= 120000) {
-            valorMinuto = 17;
-        }
-        if (valorVeiculo > 120000 && valorVeiculo <= 130000) {
-            valorMinuto = 18;
-        }
-        if (valorVeiculo > 130000 && valorVeiculo <= 140000) {
-            valorMinuto = 19;
-        }
-        if (valorVeiculo > 140000 && valorVeiculo <= 150000) {
-            valorMinuto = 20;
-        }
-        if (valorVeiculo > 150000 && valorVeiculo <= 160000) {
-            valorMinuto = 21;
-        }
-        if (valorVeiculo > 160000 && valorVeiculo <= 170000) {
-            valorMinuto = 22;
-        }
-        if (valorVeiculo > 170000 && valorVeiculo <= 180000) {
-            valorMinuto = 23;
-        }
-        if (valorVeiculo > 180000 && valorVeiculo <= 190000) {
-            valorMinuto = 24;
-        }
-        if (valorVeiculo > 190000 && valorVeiculo <= 200000) {
-            valorMinuto = 25;
-        }
-        if (valorVeiculo > 200000){
-            valorMinuto = 25;
-            response.json({
-                "messages": [
-                    {
-                        "text": "Para veículos acima de duzentos mil estamos fazendo uma lista de espera. Vou te colocar em contato com nossos especialistas para que eles possam te explicar melhor a situação."
-                    }
-                ],
-                "redirect_to_blocks": [
-                    "Human interaction"
-                ]
-            })
-        }
-
-
-        console.log("valor do minuto", valorMinuto);
-        return valorMinuto;
-
-}
