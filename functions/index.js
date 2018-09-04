@@ -451,7 +451,7 @@ exports.protecao = functions.https.onRequest((request, response) => {
         // Liga a protecão, verifica a quantidade de indicacões e retorna para o chat
         ligarProtecao().then(result => { 
             // Liga a protecão no banco de dados, atualiza o log de uso.
-            if (numeroAtivacoes % 3 ===0 ) {
+            if (numeroAtivacoes % 4 ===0 ) {
                 return verificaIndicacao()   // Verifica se user tem requisitos para receber premio por indicacão e premia
             }
             return true;
