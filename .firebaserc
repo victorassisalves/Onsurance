@@ -1,7 +1,6 @@
 {
   "projects": {
-    "default": "onsuranceme-co",
-    "Onsurance": "onsuranceme-co",
-    "Onsurance Homologação": "onsurance-homologacao"
+    "Onsurance Homologação": "onsurance-homologacao",
+    "Onsurance": "onsuranceme-co"
   }
 }
