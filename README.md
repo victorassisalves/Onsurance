@@ -3,7 +3,7 @@
 ### Deployment of Onsurance code in Homolog enviroment ###
 
 * This Code is for homologation enviroment only. Test all you want before commiting to Production.
-* Version - 0.7.1
+* Version - 1.0.60
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ### How do I get set up? ###

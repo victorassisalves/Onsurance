@@ -3,13 +3,13 @@
     "allowJs": true,
     "lib": ["es6"],
     "module": "commonjs",
-    "noImplicitReturns": true,
+    "noImplicitReturns": false,
     "outDir": "lib",
     "sourceMap": true,
     "target": "es6"
   },
   "compileOnSave": true,
   "include": [
-    "src", "src/admin", "src/moobi", "src/onsurance"
+    "src", "src/config", "src/moobi", "src/onsurance"
   ]
 }

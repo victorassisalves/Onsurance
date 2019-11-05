@@ -1,15 +1,9 @@
 # Folders #
 ###########
 functions/node_modules/
-<<<<<<< HEAD
-functions/src/admin/
-functions/lib/admin/
-<<<<<<< HEAD
-=======
->>>>>>> origin/master
-functions/src/admin/
-functions/lib/admin/
-
+node_modules
+lib/report
+src/report
 # Compiled source #
 ###################
 *.com

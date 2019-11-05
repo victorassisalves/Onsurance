@@ -1,5 +1,5 @@
 let log = () => {
-    const production = true;
+    const production = false;
     let log;
     if (!production) {
         log = console.log;

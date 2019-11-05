@@ -1,7 +1,26 @@
 {
-  "database": {
-    "rules": "database.rules.json"
-  },
+  "database": [
+    {
+      "target": "onsurance-customers", 
+      "rules": "database.rules.json"
+    },
+    {
+      "target": "onsurance-items", 
+      "rules": "database.rules.json"
+    },
+    {
+      "target": "lavo", 
+      "rules": "database.rules.json"
+    }
+    // {
+    //   "target": "onsurance-pro-customers", 
+    //   "rules": "database.rules.json"
+    // },
+    // {
+    //   "target": "onsurance-pro-items", 
+    //   "rules": "database.rules.json"
+    // }
+  ],
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
@@ -15,8 +34,25 @@
   "hosting": {
     "public": "public",
     "rewrites": [ {
-      "source": "/onsuranceQuotation", "function": "onsuranceQuotation"
-    } ],
+      "source": "/onsuranceOn", 
+      "function": "lavoOn"
+    },
+    {
+      "source": "/onsuranceOff", 
+      "function": "lavoOff"
+    },
+    {
+      "source": "/ignition", 
+      "function": "ignition"
+    },
+    {
+      "source": "/geofence", 
+      "function": "geofence"
+    },
+    {
+      "source": "/quotation", 
+      "function": "quotation"
+    }],
     "ignore": [
       "firebase.json",
       "**/.*",
