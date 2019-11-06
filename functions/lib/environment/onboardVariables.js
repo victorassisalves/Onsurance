@@ -91,4 +91,27 @@ exports.getOnboardVariables = (request, response) => __awaiter(this, void 0, voi
         response.status(412).send(error);
     }
 });
+exports.tireOnboardVariables = (request, response) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const variables = request.body;
+        switch (parseFloat(variables.qtd.toString())) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                break;
+            default:
+                throw {
+                    errorType: "Invalid tire number",
+                    message: `${variables.qtd} is not a valid number of tires. Please select a valid number`
+                };
+        }
+    }
+    catch (error) {
+    }
+});
 //# sourceMappingURL=onboardVariables.js.map

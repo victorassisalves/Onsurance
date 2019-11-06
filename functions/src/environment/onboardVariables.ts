@@ -1,3 +1,5 @@
+import { TiresDB } from "../database/tires.module";
+
 export const getOnboardVariables = async (request, response) => {
     const requestBody = request.body
     try {
@@ -77,5 +79,30 @@ export const getOnboardVariables = async (request, response) => {
 
     } catch (error) {
         response.status(412).send(error);
+    }
+};
+
+export const tireOnboardVariables = async (request, response) => {
+    try {
+        const variables: TiresDB = request.body;
+        switch (parseFloat(variables.qtd.toString())) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                break;
+            default:
+                throw {
+                    errorType: "Invalid tire number",
+                    message: `${variables.qtd} is not a valid number of tires. Please select a valid number`
+                };
+                
+        }
+    } catch (error) {
+        
     }
 };

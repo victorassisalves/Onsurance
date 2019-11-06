@@ -1,5 +1,5 @@
 export interface TireProfile {
-    id: string;
+    id?: string;
     model: string;
     brand: string;
     width: number | string;
@@ -22,12 +22,12 @@ export interface TireProfile {
 export interface TiresDB {
 
     qtd: number,
-    totalValue: number,
-    minuteValueBase: number,
-    minuteValue: number;
+    totalValue?: number,
+    minuteValueBase?: number,
+    minuteValue?: number;
     tires: {
-        [`tireProfile.id`]: TireProfile
-    }
+        [`id`]: TireProfile
+    };
 
     
 }

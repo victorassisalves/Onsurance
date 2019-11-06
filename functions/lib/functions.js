@@ -480,12 +480,6 @@ exports.report = functions.https.onRequest((request, response) => __awaiter(this
         response.send("Erro na função");
     });
 }));
-exports.form = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
-    console.log(request.body);
-    response.json({
-        minuteValue: 123456
-    });
-}));
 // -------------- ONSURANCE PNEUS ---------------
 const pneus = express();
 // Automatically allow cross-origin requests
@@ -497,9 +491,6 @@ var authMiddleware = function (req, res, next) {
 // Add middleware to authenticate requests
 pneus.use(authMiddleware);
 // build multiple CRUD interfaces:
-/**
- *
- */
 pneus.post('/pneus', (req, res) => __awaiter(this, void 0, void 0, function* () {
     const tire = yield require("./model/calcMin");
     try {
@@ -511,7 +502,7 @@ pneus.post('/pneus', (req, res) => __awaiter(this, void 0, void 0, function* () 
         res.send(error);
     }
 }));
-pneus.get('/pneus', (req, res) => __awaiter(this, void 0, void 0, function* () {
+pneus.get('/cotacaoPneus', (req, res) => __awaiter(this, void 0, void 0, function* () {
     const tire = yield require("./model/calcMin");
     console.log(`TCL: req.query`, req.query);
     try {
@@ -528,4 +519,57 @@ pneus.delete('/pneus', (req, res) => res.send(`Delete request`));
 pneus.get('/', (req, res) => res.send(`Get request all`));
 // Expose Express API as a single Cloud Function:
 exports.expressTest = functions.https.onRequest(pneus);
+const woo = express();
+// Automatically allow cross-origin requests
+woo.use(cors({ origin: true }));
+// Add middleware to authenticate requests
+// woo.use(authMiddleware);
+woo.post('/order', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    console.log(`TCL: req query`, req.query);
+    console.log(`TCL: req body`, req.body);
+    const wooRequest = yield require("./test/woocommerce.test");
+    try {
+        const orderId = req.query.orderId;
+        const result = yield wooRequest.updateOrder(orderId, req.query.status);
+        console.log(`TCL: result`, JSON.stringify(result));
+        res.send(result);
+    }
+    catch (error) {
+        console.error(new Error(JSON.stringify(error)));
+        const nodemailer = require("nodemailer");
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.zoho.com',
+            port: 465,
+            secure: true,
+            auth: {
+                user: 'victor.assis@onsurance.me',
+                pass: '*ScC49KEYeh4'
+            }
+        });
+        const mailOptions = (error) => {
+            return {
+                from: 'victor.assis@onsurance.me',
+                to: 'victor.assis@onsurance.me',
+                subject: 'Firebase - Pagseguro Error WooTest!!!',
+                text: `Erro ao ativar webhook do pagseguro. 
+                        Body: ${JSON.stringify(req.body)}. 
+                        Query: ${JSON.stringify(req.query)}.
+                        Error: ${JSON.stringify(error)}.`
+            };
+        };
+        transporter.sendMail(mailOptions(error), function (error, info) {
+            if (error) {
+                console.error(new Error(JSON.stringify(error)));
+            }
+            else {
+                console.log('Email sent: ' + info.response);
+            }
+            ;
+        });
+        res.send(error);
+    }
+    ;
+}));
+// Expose Express API as a single Cloud Function:
+exports.wooTest = functions.https.onRequest(woo);
 //# sourceMappingURL=functions.js.map
