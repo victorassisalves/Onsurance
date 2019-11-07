@@ -1,7 +1,7 @@
 export const registerBillingVariables = async(request, response) =>{
     const userEmail = (request.body["userEmail"]).toLowerCase();
     const plan = request.body["plan"]
-    const itemId = request.body["itemId"]
+    const itemId = request.body["itemId"].toLowerCase()
     const validateVariables = [userEmail, plan, itemId];
     await validateVariables.forEach(element =>{
         if(element === null || undefined) {

@@ -11,7 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerBillingVariables = (request, response) => __awaiter(this, void 0, void 0, function* () {
     const userEmail = (request.body["userEmail"]).toLowerCase();
     const plan = request.body["plan"];
-    const itemId = request.body["itemId"];
+    const itemId = request.body["itemId"].toLowerCase();
     const validateVariables = [userEmail, plan, itemId];
     yield validateVariables.forEach(element => {
         if (element === null || undefined) {

@@ -529,8 +529,32 @@ woo.post('/order', (req, res) => __awaiter(this, void 0, void 0, function* () {
     console.log(`TCL: req body`, req.body);
     const wooRequest = yield require("./test/woocommerce.test");
     try {
-        const orderId = req.query.orderId;
-        const result = yield wooRequest.updateOrder(orderId, req.query.status);
+        const orderId = req.body.Referencia;
+        const statusBase = (req.body.StatusTransacao).toLowerCase();
+        let status;
+        switch (statusBase) {
+            case "completo":
+                status = "completed";
+                break;
+            case "em análise":
+                status = "processing";
+                break;
+            case "aprovado":
+                status = "on-hold";
+                break;
+            case "cancelado":
+                status = "cancelled";
+                break;
+            case "aguardando":
+                status = "pending";
+                break;
+            default:
+                throw {
+                    errorType: "Status ainda não analisado pelo time.",
+                    message: `Analisar o status ${statusBase}. Adcionar ao endpoint.`
+                };
+        }
+        const result = yield wooRequest.updateOrder(orderId, status);
         console.log(`TCL: result`, JSON.stringify(result));
         res.send(result);
     }
