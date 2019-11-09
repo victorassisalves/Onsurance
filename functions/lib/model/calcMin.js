@@ -67,11 +67,12 @@ exports.getVehicleMinuteValue = (userInput) => {
                         return vehicleValue;
                     case "taxi":
                     case "app":
+                    case "utility":
                         return vehicleValue + 10000;
                     default:
                         throw {
                             errorType: "Invalid usage type.",
-                            message: `"${usageType}" is not a valid usage type. Please select a valid one: app, taxi, passeio.`
+                            message: `"${usageType}" is not a valid usage type. Please select a valid one: app, taxi, passeio ou utility.`
                         };
                 }
             };
@@ -264,7 +265,7 @@ exports.getVehicleMinuteValue = (userInput) => {
                 }
                 catch (error) {
                     console.error(new Error(`Error in execute calculations. Check: ${JSON.stringify(error)}`));
-                    return reject(error);
+                    reject(error);
                 }
                 ;
             });
@@ -272,7 +273,7 @@ exports.getVehicleMinuteValue = (userInput) => {
         }
         catch (error) {
             console.error(new Error(`Error in quotation. Check: ${JSON.stringify(error)}`));
-            return reject(error);
+            reject(error);
         }
     });
 };

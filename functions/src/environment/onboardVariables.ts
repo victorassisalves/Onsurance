@@ -85,6 +85,7 @@ export const getOnboardVariables = async (request, response) => {
 export const tireOnboardVariables = async (request, response) => {
     try {
         const variables: TiresDB = request.body;
+        // Check number of tires
         switch (parseFloat(variables.qtd.toString())) {
             case 1:
             case 2:
@@ -99,9 +100,9 @@ export const tireOnboardVariables = async (request, response) => {
                 throw {
                     errorType: "Invalid tire number",
                     message: `${variables.qtd} is not a valid number of tires. Please select a valid number`
-                };
-                
-        }
+                };  
+        };
+        
     } catch (error) {
         
     }

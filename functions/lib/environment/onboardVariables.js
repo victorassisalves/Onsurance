@@ -94,6 +94,7 @@ exports.getOnboardVariables = (request, response) => __awaiter(this, void 0, voi
 exports.tireOnboardVariables = (request, response) => __awaiter(this, void 0, void 0, function* () {
     try {
         const variables = request.body;
+        // Check number of tires
         switch (parseFloat(variables.qtd.toString())) {
             case 1:
             case 2:
@@ -110,6 +111,7 @@ exports.tireOnboardVariables = (request, response) => __awaiter(this, void 0, vo
                     message: `${variables.qtd} is not a valid number of tires. Please select a valid number`
                 };
         }
+        ;
     }
     catch (error) {
     }

@@ -69,7 +69,12 @@ exports.clientOnboard = (variables) => __awaiter(this, void 0, void 0, function*
                         thirdPartyCoverage: (variables.itemProfile.thirdPartyCoverage).toString()
                     };
                     console.log(`TCL: clientOnboard -> userInput`, userInput);
-                    itemMinuteValue = yield calcMin_1.getVehicleMinuteValue(userInput);
+                    yield calcMin_1.getVehicleMinuteValue(userInput).then(result => {
+                        itemMinuteValue = result;
+                    }).catch(error => {
+                        console.error(`error in calc minute value promise.`);
+                        throw error;
+                    });
                 }
                 ;
                 console.log("TCL: clientOnboard -> itemMinuteValue", itemMinuteValue);
@@ -138,7 +143,7 @@ exports.clientOnboard = (variables) => __awaiter(this, void 0, void 0, function*
                     reject(error);
                 reject({
                     status: 500,
-                    text: `Unknown error. check what happened. ${error}`
+                    text: `Unknown error. check what happened. ${JSON.stringify(error)}`
                 });
             }
             ;
