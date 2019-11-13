@@ -184,7 +184,7 @@ export const clientOnboard = async (variables: VariablesInterface) => {
             const getFullUserProfile = await userMethods.getDatabaseInfo(userDbPath)
             console.log("TCL: doBackup -> getFullUserProfile", getFullUserProfile)
             // ERROR check
-            await checkUserProfile(getFullUserProfile, variables.userProfile)
+            checkUserProfile(getFullUserProfile, variables.userProfile)
             
             const getFullItem = await itemMethods.getDatabaseInfo(itemDbPath)
             console.log("TCL: doBackup -> getFullItem", getFullItem)
@@ -194,7 +194,7 @@ export const clientOnboard = async (variables: VariablesInterface) => {
                 itemInUse: variables.itemProfile.plate
             }
             // ERROR check for item profile that already exists
-            await checkItemProfileAlreadyExists(getFullItem, variablesResponse)
+            checkItemProfileAlreadyExists(getFullItem, variablesResponse)
 
             const backup = {
                 userMethods: userMethods,

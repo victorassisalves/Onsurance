@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -11,12 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = require("../database/database");
 const woocommerce_1 = require("../environment/woocommerce");
 const databaseMethods_1 = require("../model/databaseMethods");
-exports.woocommercePurchase = (request) => __awaiter(this, void 0, void 0, function* () {
-    return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+exports.woocommercePurchase = (request) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         // Get woocommerce set of variables.
         const variables = yield woocommerce_1.getVariables(request);
         // make backup in case something goes wrong anywhere
-        const doBackup = () => __awaiter(this, void 0, void 0, function* () {
+        const doBackup = () => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 // Get Methods for backup in case something goes wrong
                 const dbMethods = yield databaseMethods_1.databaseMethods();
@@ -81,7 +82,7 @@ exports.woocommercePurchase = (request) => __awaiter(this, void 0, void 0, funct
                 };
                 const purchaseData = yield getPurchase();
                 // Function to push the purchase information to purchaseHistory DB Path
-                const setPurchaseHistoryInfo = () => __awaiter(this, void 0, void 0, function* () {
+                const setPurchaseHistoryInfo = () => __awaiter(void 0, void 0, void 0, function* () {
                     // purchase history info
                     const purchaseHistory = {
                         totalFunds: purchaseData.totalFunds,

@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -136,7 +137,7 @@ exports.activationSuccessful = variables => {
     };
     return activationSuccessful;
 };
-exports.firstActivation = (variables) => __awaiter(this, void 0, void 0, function* () {
+exports.firstActivation = (variables) => __awaiter(void 0, void 0, void 0, function* () {
     const firstActivation = {
         "messages": [
             {
@@ -715,7 +716,7 @@ exports.alreadyHaveIndicator = variables => {
         CHANGE ITEM IN PROFILE MESSENGER
 
 */
-exports.changeItem = (variables) => __awaiter(this, void 0, void 0, function* () {
+exports.changeItem = (variables) => __awaiter(void 0, void 0, void 0, function* () {
     let replies = [];
     yield variables.vehiclePlates.forEach(element => {
         const reply = {
@@ -887,7 +888,7 @@ exports.onlyOneItemInProfile = variables => {
     VARIABLES
 */
 // Variables for protection endpoint
-exports.getProtectionVariables = (request, response) => __awaiter(this, void 0, void 0, function* () {
+exports.getProtectionVariables = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(request.body);
         const allPolicies = [];
@@ -943,7 +944,7 @@ exports.getProtectionVariables = (request, response) => __awaiter(this, void 0, 
         });
     }
 });
-exports.giveAccessVariables = (request, response) => __awaiter(this, void 0, void 0, function* () {
+exports.giveAccessVariables = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(request.body);
         const accessVariables = {
@@ -1007,7 +1008,7 @@ exports.giveAccessVariables = (request, response) => __awaiter(this, void 0, voi
         }
     }
 });
-exports.firstAccessVariables = (request, response) => __awaiter(this, void 0, void 0, function* () {
+exports.firstAccessVariables = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(request.body);
         const accessVariables = {
@@ -1074,7 +1075,7 @@ exports.firstAccessVariables = (request, response) => __awaiter(this, void 0, vo
         }
     }
 });
-exports.indicationVariables = (request, response) => __awaiter(this, void 0, void 0, function* () {
+exports.indicationVariables = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(request.body);
         const indicationVariables = {
@@ -1127,7 +1128,7 @@ exports.indicationVariables = (request, response) => __awaiter(this, void 0, voi
     }
     ;
 });
-exports.saveIndicatorVariables = (request, response) => __awaiter(this, void 0, void 0, function* () {
+exports.saveIndicatorVariables = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(request.body);
         const indicationVariables = {
@@ -1169,7 +1170,7 @@ exports.saveIndicatorVariables = (request, response) => __awaiter(this, void 0, 
     }
     ;
 });
-exports.changeItemVariables = (req, res) => __awaiter(this, void 0, void 0, function* () {
+exports.changeItemVariables = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const changeItem = {
             userEmail: req.body[`userEmail`].toLowerCase(),
@@ -1192,7 +1193,7 @@ exports.changeItemVariables = (req, res) => __awaiter(this, void 0, void 0, func
     }
     ;
 });
-exports.getItemInfoVariables = (req, res) => __awaiter(this, void 0, void 0, function* () {
+exports.getItemInfoVariables = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const getItemInfo = {
             userEmail: req.body[`userEmail`].toLowerCase(),

@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -11,10 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = require("../database/database");
 const databaseMethods_1 = require("../model/databaseMethods");
 exports.registerBilling = (variables) => {
-    return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         const dbMethods = yield databaseMethods_1.databaseMethods();
         console.log("TCL: registerBilling -> variables", variables);
-        const registerObd = (backup) => __awaiter(this, void 0, void 0, function* () {
+        const registerObd = (backup) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 // Save item billing profile on Database
                 let result = yield dbMethods.updateDatabaseInfo(backup.database.userDbRef.child(`billing/${backup.itemId}`), {
@@ -62,7 +63,7 @@ exports.registerBilling = (variables) => {
                     switch: newWallet.switch
                 });
                 console.log("TCL: registerBilling -> Discount Result", result);
-                const sendMessage = (newWallet, messengerId, discountValue) => __awaiter(this, void 0, void 0, function* () {
+                const sendMessage = (newWallet, messengerId, discountValue) => __awaiter(void 0, void 0, void 0, function* () {
                     console.log(`TCL: Into sendMessage`);
                     // const urlHomolog = `https://api.chatfuel.com/bots/5d1513f28955f00001fadda7/users/${messengerId}/send`
                     // const homologToken = 'qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74'
@@ -136,7 +137,7 @@ exports.registerBilling = (variables) => {
             }
             ;
         });
-        const doBackup = () => __awaiter(this, void 0, void 0, function* () {
+        const doBackup = () => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const today = new Date();
                 let billingPeriod = 0;
@@ -238,9 +239,9 @@ exports.registerBilling = (variables) => {
     }));
 };
 exports.executeBilling = () => {
-    return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         const dbMethods = yield databaseMethods_1.databaseMethods();
-        const doBackup = () => __awaiter(this, void 0, void 0, function* () {
+        const doBackup = () => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const today = new Date();
                 const billingPeriod = today.getDate();
@@ -264,7 +265,7 @@ exports.executeBilling = () => {
                         status: 202,
                         text: `No info on profiles to bill.`
                     };
-                yield profilesToBill.forEach((element) => __awaiter(this, void 0, void 0, function* () {
+                yield profilesToBill.forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
                     console.log("TCL: doBackup -> element", element);
                     const billingProfile = yield dailyBilling[element];
                     console.log("TCL: doBackup -> billingProfile", billingProfile);
@@ -275,7 +276,7 @@ exports.executeBilling = () => {
                         };
                     }
                     ;
-                    const billProfile = () => __awaiter(this, void 0, void 0, function* () {
+                    const billProfile = () => __awaiter(void 0, void 0, void 0, function* () {
                         const discountValueBase = 39.9;
                         const activePlans = billingProfile.activePlans;
                         const billingTimesBase = billingProfile.billingTimes;
@@ -298,7 +299,7 @@ exports.executeBilling = () => {
                             billingTimes: billingTimes,
                         });
                         console.log("TCL: billProfile -> Update billing database - billing Times", result);
-                        const sendMessage = () => __awaiter(this, void 0, void 0, function* () {
+                        const sendMessage = () => __awaiter(void 0, void 0, void 0, function* () {
                             console.log(`TCL: Into sendMessage`);
                             // const urlHomolog = `https://api.chatfuel.com/bots/5d1513f28955f00001fadda7/users/${messengerId}/send`
                             // const homologToken = 'qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74'

@@ -2,10 +2,11 @@
 // request.query comes from get
 // request.body comes from post
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -102,7 +103,7 @@ exports.activationSuccessful = variables => {
     };
     return activationSuccessful;
 };
-exports.firstActivation = (variables) => __awaiter(this, void 0, void 0, function* () {
+exports.firstActivation = (variables) => __awaiter(void 0, void 0, void 0, function* () {
     const firstActivation = {
         "messages": [
             {
@@ -681,7 +682,7 @@ exports.alreadyHaveIndicator = variables => {
         CHANGE ITEM IN PROFILE MESSENGER
 
 */
-exports.changeItem = (variables) => __awaiter(this, void 0, void 0, function* () {
+exports.changeItem = (variables) => __awaiter(void 0, void 0, void 0, function* () {
     let replies = [];
     yield variables.vehiclePlates.forEach(element => {
         const reply = {

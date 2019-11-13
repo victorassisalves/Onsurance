@@ -10,6 +10,6 @@
   },
   "compileOnSave": true,
   "include": [
-    "src", "src/config", "src/moobi", "src/onsurance"
+    "src", "src/config", "src/lavo", "src/onsurance"
   ]
 }

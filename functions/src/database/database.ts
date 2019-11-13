@@ -1,5 +1,5 @@
 
-import {admin, getSecretCustomer} from "../config/admin"
+import {admin} from "../config/admin"
 const crypto = require("crypto")
 
 const customers = admin.customers;
@@ -81,41 +81,3 @@ export const billingDatabase = (billingPeriod, userEmail) => {
     return dbrefs
 };
 
-// exports.updateDatabase = (userEmail, vehiclePlate, oldId, crypto) => {
-    
-//     const lowerEmail = userEmail.toString().toLowerCase()
-//     const lowerPlate = vehiclePlate.toString().toLowerCase()
-//     const admin = database.admin
-
-//     const secrets = database.secrets
-
-//     const newUserDbId = crypto.createHmac('sha256', secrets.userSecret).update(lowerEmail).digest('hex')
-//     const newVehicleDbId = crypto.createHmac('sha256', secrets.vehicleSecret).update(lowerPlate).digest('hex')
-
-//     const dbrefs = {
-//         // caminho do DB para o perfil de usuário
-//         userDbRef:admin.database().ref(`/customers/profiles/${newUserDbId}/`),
-//         // Caminho do DB para o perfil do veículo        
-//         vehicleDbRef:admin.database().ref(`/items/vehicles/${newVehicleDbId}/`),  
-//         // caminho do DB para o perfil de usuário
-//         oldUserDbRef:admin.database().ref(`/customers/profiles/${oldId}/personal`),
-//         // Caminho do DB para o perfil do veículo        
-//         oldVehicleDbRef:admin.database().ref(`/items/vehicles/${oldId}/`),
-//         // report
-//         report:admin.database().ref(`/report/`),
-//     }
-//     return dbrefs
-// }
-
-// module.exports.getDatabaseForReport = () => {
-//     const admin = database.admin
-//     const dbrefs = {
-//         // caminho do DB para o perfil de usuário
-//         userDbRef:admin.database().ref(`/customers/profiles/`),
-//         // Caminho do DB para o perfil do veículo        
-//         vehicleDbRef:admin.database().ref(`/items/vehicles/`),
-//         // report
-//         report:admin.database().ref(`/report/`),  
-//     }
-//     return dbrefs
-// }

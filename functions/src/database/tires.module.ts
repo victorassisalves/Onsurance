@@ -12,7 +12,7 @@ export interface TireProfile {
     speedIndex: number | string;
     loadIndex: number | string;
     rim: string | number;
-}
+};
 
 /**
  * @interface TiresDB
@@ -25,12 +25,12 @@ export interface TiresDB {
     totalValue?: number,
     minuteValueBase?: number,
     minuteValue?: number;
+    vehicleId: string;
     tires: {
         [`id`]: TireProfile
     };
-
     
-}
+};
 
 export interface VehicleProfile {
     tiresData: TiresDB;

@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -12,7 +13,7 @@ const axios_1 = require("axios");
 const nodemailer_1 = require("nodemailer");
 const failSafe = 3;
 let count = 0;
-exports.sendQuotationZoho = (quotationInfo) => __awaiter(this, void 0, void 0, function* () {
+exports.sendQuotationZoho = (quotationInfo) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield axios_1.default({
             method: 'post',
@@ -54,7 +55,7 @@ exports.sendQuotationZoho = (quotationInfo) => __awaiter(this, void 0, void 0, f
     }
     ;
 });
-exports.sendWoocommerceZoho = (woocommerceInfo) => __awaiter(this, void 0, void 0, function* () {
+exports.sendWoocommerceZoho = (woocommerceInfo) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield axios_1.default({
             method: 'post',

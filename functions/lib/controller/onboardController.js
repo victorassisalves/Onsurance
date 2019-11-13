@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -12,9 +13,9 @@ const database_1 = require("../database/database");
 const databaseMethods_1 = require("../model/databaseMethods");
 const calcMin_1 = require("../model/calcMin");
 const errors_1 = require("../model/errors");
-exports.clientOnboard = (variables) => __awaiter(this, void 0, void 0, function* () {
-    return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-        const doOnboard = (backup) => __awaiter(this, void 0, void 0, function* () {
+exports.clientOnboard = (variables) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        const doOnboard = (backup) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 /*
                     TODO:  Get/Set data in ZOHO CRM API

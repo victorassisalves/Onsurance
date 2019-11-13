@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -12,11 +13,11 @@ const databaseMethods_1 = require("../model/databaseMethods");
 const database_1 = require("../database/database");
 const crypto = require("crypto");
 exports.systemUpgrade = () => {
-    return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         const dbMethods = yield databaseMethods_1.databaseMethods();
         const newCustomersDbPath = yield database_1.customersDbRoot();
         const newItemsDbPath = yield database_1.itemsDbRoot();
-        const upgrade = (backupData) => __awaiter(this, void 0, void 0, function* () {
+        const upgrade = (backupData) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const oldDbPath = yield database_1.updateDatabase();
                 const userProfiles = yield dbMethods.getDatabaseInfo(oldDbPath.child("customers/profiles"));
@@ -25,7 +26,7 @@ exports.systemUpgrade = () => {
                 console.log("TCL: systemUpgrade -> arrayKeysUser lenght", arrayKeysUser.length);
                 const arrayKeysVehicle = Object.keys(itemProfiles);
                 console.log("TCL: systemUpgrade -> arrayKeysVehicle lenght", arrayKeysVehicle.length);
-                yield arrayKeysUser.forEach((element) => __awaiter(this, void 0, void 0, function* () {
+                yield arrayKeysUser.forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
                     console.log("TCL: element", element);
                     const oldUserProfile = userProfiles[element];
                     console.log("TCL: systemUpgrade -> oldUserProfile", oldUserProfile);
@@ -112,7 +113,7 @@ exports.systemUpgrade = () => {
                 }));
                 const newUserProfiles = yield dbMethods.getDatabaseInfo(newCustomersDbPath.child("/profiles"));
                 console.log("TCL: upgrade -> newUserProfiles", Object.keys(newUserProfiles).length);
-                yield arrayKeysVehicle.forEach((element) => __awaiter(this, void 0, void 0, function* () {
+                yield arrayKeysVehicle.forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
                     const oldItemProfile = itemProfiles[element];
                     console.log("TCL: systemUpgrade -> oldItemProfile", oldItemProfile.profile);
                     let vehiclePlate = 'abc';
@@ -231,7 +232,7 @@ exports.systemUpgrade = () => {
                 reject(error);
             }
         });
-        const backup = () => __awaiter(this, void 0, void 0, function* () {
+        const backup = () => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const newUserProfiles = yield dbMethods.getDatabaseInfo(newCustomersDbPath.child("/profiles"));
                 const newItemsProfiles = yield dbMethods.getDatabaseInfo(newItemsDbPath.child("/vehicle/car"));
