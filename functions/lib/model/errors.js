@@ -1,16 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @description This function checks if user profile is null or undefined
+ * @param {Object} userProfile Id the profile we get from database
+ * @param {Object} variables Contains the userEmail to send in response
+ */
 exports.checkUserProfile = (userProfile, variables) => {
     // Error check for owner account NOT exist
-    if (userProfile === null || userProfile === undefined)
-        throw {
-            status: 404,
-            text: `User Profile for ${variables.userEmail} don't exist.`,
-            callback: 'noUserProfile',
-            variables: {
-                userEmail: variables.userEmail
-            }
-        };
+    switch (userProfile) {
+        case null:
+        case undefined:
+            throw {
+                status: 404,
+                text: `User Profile for ${variables.userEmail} don't exist.`,
+                callback: 'noUserProfile',
+                variables: {
+                    userEmail: variables.userEmail
+                }
+            };
+        default:
+            break;
+    }
+    ;
 };
 exports.checkUserEmail = (userProfile, variables) => {
     // Error check for owner account NOT exist
@@ -225,5 +236,25 @@ exports.checkItemList = (userItemsList) => {
             callback: 'noOnboard',
             variables: {}
         };
+};
+/**
+ * @description This function check any variable. If it is undefined or null throws a error, if is not, returns the variable
+ * @param variable Is the variable you want to check for undefined or null
+ * @returns {variable}
+ * ```
+ * return variable;
+ * ```
+ */
+exports.checkRequestVariables = (variable) => {
+    switch (variable) {
+        case null:
+        case undefined:
+            throw {
+                errorType: "Variable is null or undefined",
+                message: "Variable can't be null or undefined. Check the request and try again."
+            };
+        default:
+            return variable;
+    }
 };
 //# sourceMappingURL=errors.js.map

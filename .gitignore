@@ -2,8 +2,10 @@
 ###########
 functions/node_modules/
 node_modules
-lib/report
+functions/lib/
 src/report
+lib
+
 # Compiled source #
 ###################
 *.com

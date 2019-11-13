@@ -192,7 +192,8 @@ export const clientOnboard = async (variables: VariablesInterface) => {
             const variablesResponse = {
                 userEmail: variables.userProfile.userEmail,
                 itemInUse: variables.itemProfile.plate
-            }
+            };
+            
             // ERROR check for item profile that already exists
             checkItemProfileAlreadyExists(getFullItem, variablesResponse)
 
@@ -214,3 +215,4 @@ export const clientOnboard = async (variables: VariablesInterface) => {
 
     });   
 };
+

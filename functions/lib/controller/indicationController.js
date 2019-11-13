@@ -1,10 +1,9 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -14,8 +13,8 @@ const databaseMethods_1 = require("../model/databaseMethods");
 const errors_1 = require("../model/errors");
 const messenger_1 = require("../environment/messenger");
 exports.saveIndication = variables => {
-    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        const indication = (backup) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+        const indication = (backup) => __awaiter(this, void 0, void 0, function* () {
             try {
                 /*
                     TODO:
@@ -58,7 +57,7 @@ exports.saveIndication = variables => {
                 }
             }
         });
-        const doBackup = () => __awaiter(void 0, void 0, void 0, function* () {
+        const doBackup = () => __awaiter(this, void 0, void 0, function* () {
             try {
                 const dbMethods = yield databaseMethods_1.databaseMethods();
                 //INDICATOR
@@ -95,8 +94,8 @@ exports.saveIndication = variables => {
     }));
 };
 exports.saveMessenger = variables => {
-    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        const saveIndicatorProfile = (backup) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+        const saveIndicatorProfile = (backup) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const indicatorProfile = backup.indicatorProfile;
                 const dbMethods = yield databaseMethods_1.databaseMethods();
@@ -151,7 +150,7 @@ exports.saveMessenger = variables => {
             }
             ;
         });
-        const backup = () => __awaiter(void 0, void 0, void 0, function* () {
+        const backup = () => __awaiter(this, void 0, void 0, function* () {
             try {
                 const dbMethods = yield databaseMethods_1.databaseMethods();
                 const indicatorDbPath = database_1.indicationDbRefRoot(variables.userEmail);

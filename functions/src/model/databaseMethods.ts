@@ -107,22 +107,24 @@ export const getDatabaseInfo = (dbPath) => {
  * @param dbPath Path to database where you want to set
  * @param content What you want to set on dbPath
  */
-export const setDatabaseInfo = (dbPath, content) => {
-    return dbPath.set(content).then(() => {
+export const setDatabaseInfo = async (dbPath, content) => {
+    try {
+        await dbPath.set(content);
         console.log("TCL: setDatabaseInfo -> Content set")
         return {
             status: 202,
             text: `Content set on database!`
         };
-    }).catch((error) => {
+    } catch (error) {
         console.error(new Error(`Error setting content on database. - ${error}.`));
         throw {
             status: 500, // internal server error
+            error: JSON.stringify(error),
             text: `Error setting content on database.`,
             callback: "serverError",
             variables: {}
         };
-    });
+    };
 };
 
 /**

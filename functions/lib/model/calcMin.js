@@ -1,10 +1,9 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -190,7 +189,7 @@ exports.getVehicleMinuteValue = (userInput) => {
              *
              * Then we execute te functions
              */
-            const executeCalculations = (vehicleType) => __awaiter(void 0, void 0, void 0, function* () {
+            const executeCalculations = (vehicleType) => __awaiter(this, void 0, void 0, function* () {
                 try {
                     console.log("TCL: executeCalculations -> Typo de veículo:", vehicleType);
                     switch (vehicleType) {
@@ -282,22 +281,41 @@ exports.getVehicleMinuteValue = (userInput) => {
  *
  * @param tireInfo Is the onformation about all the tires in system to calculate minute value
  * @param tireInfo.totalValue must already contain the total tire values to execute the function
+ * @returns {Object}
+ * ```
+ * return {
+ * minuteValue: parseFloat((minuteValueBase * multiplier).toFixed(5)),
+ * minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
+ * };
+ * ```
  */
 exports.getTireMinuteValue = (tireInfo) => {
     try {
         const calcMinute = (minuteValueBase) => {
             switch (parseFloat(tireInfo.qtd.toString())) {
                 case 1: {
-                    return parseFloat((minuteValueBase * 0.4).toFixed(5));
+                    return {
+                        minuteValue: parseFloat((minuteValueBase * 0.4).toFixed(5)),
+                        minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
+                    };
                 }
                 case 2: {
-                    return parseFloat((minuteValueBase * 0.65).toFixed(5));
+                    return {
+                        minuteValue: parseFloat((minuteValueBase * 0.65).toFixed(5)),
+                        minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
+                    };
                 }
                 case 3: {
-                    return parseFloat((minuteValueBase * 0.85).toFixed(5));
+                    return {
+                        minuteValue: parseFloat((minuteValueBase * 0.85).toFixed(5)),
+                        minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
+                    };
                 }
                 case 4: {
-                    return parseFloat((minuteValueBase).toFixed(5));
+                    return {
+                        minuteValue: parseFloat((minuteValueBase).toFixed(5)),
+                        minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
+                    };
                 }
                 default:
                     throw {

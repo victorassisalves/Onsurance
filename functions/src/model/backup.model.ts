@@ -9,9 +9,9 @@ export const restoreData = async (path, data) => {
     try {
         const backup = await setDatabaseInfo(path, data);
         console.log(`TCL: restoreData -> backup`, JSON.stringify(backup));
-        return backup;
+        return "Data restored!";
     } catch (error) {
-        console.log(`TCL: restoreData -> error`, JSON.stringify(error));
+        console.error(new Error(`TCL: restoreData -> error: ${JSON.stringify(error)}`));
         throw error;
     }
 };

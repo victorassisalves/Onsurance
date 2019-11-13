@@ -588,7 +588,7 @@ const pneus = express();
 pneus.use(cors({ origin: true }));
 
 var authMiddleware = function (req, res, next) {
-    console.log('LOGGED NEWWWW')
+    console.log('Middleware Log!')
     next()
   }
 
@@ -596,12 +596,16 @@ var authMiddleware = function (req, res, next) {
 pneus.use(authMiddleware);
 
 // build multiple CRUD interfaces:
-pneus.post('/pneus', async (req, res) => {
-    const tire = await require("./model/calcMin");
+pneus.post('/onboard', async (req, res) => {
+    const tireOnboard = await require("./model/tires.model");
     try {
-        const minuteValue = await tire.getTireMinuteValue(req.body)
-        console.log(`TCL: minuteValue`, minuteValue)
-        res.status(200).send({minuteValue: minuteValue});
+        tireOnboard.tireOnboard(req.body).then(result => {
+            console.log(`TCL: result`, JSON.stringify(result));
+            res.status(200).send(result);
+        }).catch((err) => {
+            if (err.status) res.status(err.status).send(err.text);
+            res.send({error: err})
+        });
         
     } catch (error) {
         res.send(error);
@@ -627,7 +631,7 @@ pneus.delete('/pneus', (req, res) => res.send(`Delete request`));
 pneus.get('/', (req, res) => res.send(`Get request all`));
 
 // Expose Express API as a single Cloud Function:
-exports.expressTest = functions.https.onRequest(pneus);
+exports.tire = functions.https.onRequest(pneus);
 
 
 

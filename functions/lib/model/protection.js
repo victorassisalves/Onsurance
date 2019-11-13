@@ -1,10 +1,9 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -12,7 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const deep_object_diff_1 = require("deep-object-diff");
 const polices_1 = require("./polices");
 const database_1 = require("../database/database");
-exports.protectionMethods = (protectionData, variables) => __awaiter(void 0, void 0, void 0, function* () {
+exports.protectionMethods = (protectionData, variables) => __awaiter(this, void 0, void 0, function* () {
     const _ = require('lodash');
     const userDbPath = protectionData.userDbPath;
     const userDbMethods = protectionData.dbMethods;
@@ -46,7 +45,7 @@ exports.protectionMethods = (protectionData, variables) => __awaiter(void 0, voi
     const protectionOff = turnOff.join(', ');
     // console.log("TCL: protectionMethods -> turnOff", turnOff)
     // console.log("TCL: protectionMethods -> _.isEmpty(turnOff)", _.isEmpty(turnOff))
-    const initiateNewProtection = () => __awaiter(void 0, void 0, void 0, function* () {
+    const initiateNewProtection = () => __awaiter(this, void 0, void 0, function* () {
         const timezoneDiff = variables.timezone * 1000 * 3600;
         const logUse = {
             closed: false,
@@ -134,7 +133,7 @@ exports.protectionMethods = (protectionData, variables) => __awaiter(void 0, voi
         }
         ;
     });
-    const closeProtection = () => __awaiter(void 0, void 0, void 0, function* () {
+    const closeProtection = () => __awaiter(this, void 0, void 0, function* () {
         console.log("TCL: Protection is ON");
         const timezoneDiff = variables.timezone * 1000 * 3600;
         // Pega o tempo do desligamento

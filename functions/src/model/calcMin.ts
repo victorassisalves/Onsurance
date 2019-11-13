@@ -335,22 +335,41 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
  * 
  * @param tireInfo Is the onformation about all the tires in system to calculate minute value
  * @param tireInfo.totalValue must already contain the total tire values to execute the function
+ * @returns {Object}
+ * ```
+ * return {
+ * minuteValue: parseFloat((minuteValueBase * multiplier).toFixed(5)),
+ * minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
+ * };
+ * ```
  */
-export const getTireMinuteValue = (tireInfo: TireCalcMinute): number => {
+export const getTireMinuteValue = (tireInfo: TireCalcMinute) => {
     try {
         const calcMinute = (minuteValueBase) => {
             switch (parseFloat(tireInfo.qtd.toString())) {
                 case 1: {
-                    return parseFloat((minuteValueBase*0.4).toFixed(5));
+                    return {
+                        minuteValue: parseFloat((minuteValueBase*0.4).toFixed(5)),
+                        minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
+                    };
                 }
                 case 2: {
-                    return parseFloat((minuteValueBase*0.65).toFixed(5));
+                    return {
+                        minuteValue: parseFloat((minuteValueBase*0.65).toFixed(5)),
+                        minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
+                    };
                 }
                 case 3: {
-                    return parseFloat((minuteValueBase*0.85).toFixed(5));
+                    return {
+                        minuteValue: parseFloat((minuteValueBase*0.85).toFixed(5)),
+                        minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
+                    };
                 }
                 case 4: {
-                    return parseFloat((minuteValueBase).toFixed(5));
+                    return {
+                        minuteValue: parseFloat((minuteValueBase).toFixed(5)),
+                        minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
+                    };
                 }
                 default:
                     throw {

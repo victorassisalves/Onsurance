@@ -1,10 +1,9 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -59,7 +58,7 @@ const calcProtection_1 = require("./calcProtection");
                  
          */
 exports.onsuranceOff = (variables) => {
-    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         try {
             const timeEnd = (Date.now()) / 1000 | 0;
             const newDate = new Date();
@@ -136,7 +135,7 @@ exports.onsuranceOff = (variables) => {
             console.log("TCL: onsuranceOff -> reportBackup", reportBackup);
             const protectionData = yield calcProtection_1.calc(timeStart, timeEnd);
             console.log("TCL: onsuranceOff -> protectionData", protectionData);
-            const updateClient = () => __awaiter(void 0, void 0, void 0, function* () {
+            const updateClient = () => __awaiter(this, void 0, void 0, function* () {
                 try {
                     return yield databaseMethods_1.databaseMethods().updateDatabaseInfo(clientProfileDb, {
                         washedTimes: clientProfileBackup.washedTimes + 1,
@@ -162,7 +161,7 @@ exports.onsuranceOff = (variables) => {
                 ;
             });
             let counter = 0;
-            const updateItem = () => __awaiter(void 0, void 0, void 0, function* () {
+            const updateItem = () => __awaiter(this, void 0, void 0, function* () {
                 try {
                     yield databaseMethods_1.databaseMethods().updateDatabaseInfo(itemProfileDb, {
                         washedTimes: itemProfileBackup.washedTimes + 1,
@@ -179,7 +178,7 @@ exports.onsuranceOff = (variables) => {
                         reportBackup.protectedMinutes + protectionData.totalMinutes;
                         reportBackup.protectionTimes++;
                         return reportBackup;
-                    }, (error, committed, snapshot) => __awaiter(void 0, void 0, void 0, function* () {
+                    }, (error, committed, snapshot) => __awaiter(this, void 0, void 0, function* () {
                         if (error && counter < 4) {
                             counter += 1;
                             yield updateItem();
@@ -209,7 +208,7 @@ exports.onsuranceOff = (variables) => {
                             reportBackupMonth.protectionTimes++;
                             return reportBackupMonth;
                         }
-                    }, (error, committed, snapshot) => __awaiter(void 0, void 0, void 0, function* () {
+                    }, (error, committed, snapshot) => __awaiter(this, void 0, void 0, function* () {
                         if (error && counter < 4) {
                             counter += 1;
                             yield updateItem();
@@ -256,7 +255,7 @@ exports.onsuranceOff = (variables) => {
                 }
                 ;
             });
-            const updateWasher = () => __awaiter(void 0, void 0, void 0, function* () {
+            const updateWasher = () => __awaiter(this, void 0, void 0, function* () {
                 try {
                     // update washer profile
                     yield databaseMethods_1.databaseMethods().updateDatabaseInfo(washerProfileDb, {
@@ -293,7 +292,7 @@ exports.onsuranceOff = (variables) => {
                     ;
                 }
             });
-            const turnProtectionOff = () => __awaiter(void 0, void 0, void 0, function* () {
+            const turnProtectionOff = () => __awaiter(this, void 0, void 0, function* () {
                 try {
                     yield updateClient();
                     yield updateWasher();

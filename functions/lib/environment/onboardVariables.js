@@ -1,15 +1,15 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOnboardVariables = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+const errors_1 = require("../model/errors");
+exports.getOnboardVariables = (request, response) => __awaiter(this, void 0, void 0, function* () {
     const requestBody = request.body;
     try {
         const onboardVariables = yield {
@@ -92,9 +92,15 @@ exports.getOnboardVariables = (request, response) => __awaiter(void 0, void 0, v
         response.status(412).send(error);
     }
 });
-exports.tireOnboardVariables = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.tireOnboardVariables = (variables) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const variables = request.body;
+        const treatedVariebles = {
+            totalValue: errors_1.checkRequestVariables(parseFloat(variables.totalValue)),
+            qtd: errors_1.checkRequestVariables(parseFloat(variables.qtd)),
+            userEmail: errors_1.checkRequestVariables(variables.userEmail),
+            tireId: errors_1.checkRequestVariables(variables.tireId),
+            plate: errors_1.checkRequestVariables(variables.plate),
+        };
         // Check number of tires
         switch (parseFloat(variables.qtd.toString())) {
             case 1:
@@ -113,8 +119,10 @@ exports.tireOnboardVariables = (request, response) => __awaiter(void 0, void 0, 
                 };
         }
         ;
+        return treatedVariebles;
     }
     catch (error) {
+        throw error;
     }
 });
 //# sourceMappingURL=onboardVariables.js.map

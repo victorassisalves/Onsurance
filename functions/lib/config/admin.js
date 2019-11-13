@@ -33,9 +33,6 @@ exports.admin = (() => {
     const items = admin.initializeApp({
         databaseURL: 'https://onsurance-items.firebaseio.com/'
     }, 'items');
-    const main = {
-        databaseURL: "https://onsurance-new.firebaseio.com"
-    };
     const enviroments = {
         customers: admin.database(customers),
         items: admin.database(items),

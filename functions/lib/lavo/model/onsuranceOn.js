@@ -1,10 +1,9 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -15,7 +14,7 @@ let clientCount = 0;
 let washerCount = 0;
 let itemCount = 0;
 exports.onsuranceOn = (variables) => {
-    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         try {
             /*
                 TODO :
@@ -66,7 +65,7 @@ exports.onsuranceOn = (variables) => {
                 reportBackupMonth = reportBackupMonthBackup;
             }
             console.log("TCL: onsuranceOn -> reportBackup", reportBackup);
-            const createClient = (clientProfileDb) => __awaiter(void 0, void 0, void 0, function* () {
+            const createClient = (clientProfileDb) => __awaiter(this, void 0, void 0, function* () {
                 try {
                     const itemId = yield database_1.getItemId(variables.vehiclePlate);
                     const item = {
@@ -110,7 +109,7 @@ exports.onsuranceOn = (variables) => {
                     ;
                 }
             });
-            const createItem = (itemProfileDb) => __awaiter(void 0, void 0, void 0, function* () {
+            const createItem = (itemProfileDb) => __awaiter(this, void 0, void 0, function* () {
                 try {
                     yield databaseMethods_1.databaseMethods().setDatabaseInfo(itemProfileDb, {
                         // brand: variables.washerName,
@@ -148,7 +147,7 @@ exports.onsuranceOn = (variables) => {
                     ;
                 }
             });
-            const createWasher = (washerProfileDb) => __awaiter(void 0, void 0, void 0, function* () {
+            const createWasher = (washerProfileDb) => __awaiter(this, void 0, void 0, function* () {
                 try {
                     yield databaseMethods_1.databaseMethods().setDatabaseInfo(washerProfileDb, {
                         name: variables.washerName,
@@ -187,7 +186,7 @@ exports.onsuranceOn = (variables) => {
                     ;
                 }
             });
-            const checkClient = () => __awaiter(void 0, void 0, void 0, function* () {
+            const checkClient = () => __awaiter(this, void 0, void 0, function* () {
                 // check client profile
                 const clientProfileDb = yield database_1.clientProfileDbRef(variables.clientEmail);
                 const userExists = yield dbMethods.getDatabaseInfo(clientProfileDb.child(`/onboard`));
@@ -201,7 +200,7 @@ exports.onsuranceOn = (variables) => {
             });
             let result = yield checkClient();
             console.log("TCL: onsuranceOn -> checkClient result", JSON.stringify(result));
-            const checkWasher = () => __awaiter(void 0, void 0, void 0, function* () {
+            const checkWasher = () => __awaiter(this, void 0, void 0, function* () {
                 // check client profile
                 const washerProfileDb = yield database_1.washerProfileDbRef(variables.washerEmail);
                 const userExists = yield dbMethods.getDatabaseInfo(washerProfileDb.child(`/onboard`));
@@ -215,7 +214,7 @@ exports.onsuranceOn = (variables) => {
             });
             result = yield checkWasher();
             console.log("TCL: onsuranceOn -> checkWasher result:", JSON.stringify(result));
-            const checkItem = () => __awaiter(void 0, void 0, void 0, function* () {
+            const checkItem = () => __awaiter(this, void 0, void 0, function* () {
                 const itemProfileDb = yield database_1.itemProfileDbRef(variables.vehiclePlate);
                 const itemExists = yield dbMethods.getDatabaseInfo(itemProfileDb.child(`/onboard`));
                 console.log("TCL: checkItem -> itemExists", itemExists);
@@ -228,13 +227,13 @@ exports.onsuranceOn = (variables) => {
             });
             result = yield checkItem();
             console.log("TCL: onsuranceOn -> checkItem result", result);
-            const backupLogUse = () => __awaiter(void 0, void 0, void 0, function* () {
+            const backupLogUse = () => __awaiter(this, void 0, void 0, function* () {
                 try {
-                    const backupItemLogUse = () => __awaiter(void 0, void 0, void 0, function* () {
+                    const backupItemLogUse = () => __awaiter(this, void 0, void 0, function* () {
                         const logUseDbRef = yield database_1.itemLogUseDbRef(variables.vehiclePlate);
                         return yield dbMethods.getDatabaseInfo(logUseDbRef.limitToLast(1));
                     });
-                    const backupWasherLogUse = () => __awaiter(void 0, void 0, void 0, function* () {
+                    const backupWasherLogUse = () => __awaiter(this, void 0, void 0, function* () {
                         const logUseDbRef = database_1.washerLogUseDbRef(variables.washerEmail);
                         return yield dbMethods.getDatabaseInfo(logUseDbRef.limitToLast(1));
                     });
@@ -313,9 +312,9 @@ exports.onsuranceOn = (variables) => {
                 }
             });
             const backup = yield backupLogUse();
-            const createLogUSe = () => __awaiter(void 0, void 0, void 0, function* () {
+            const createLogUSe = () => __awaiter(this, void 0, void 0, function* () {
                 try {
-                    const createItemLogUse = () => __awaiter(void 0, void 0, void 0, function* () {
+                    const createItemLogUse = () => __awaiter(this, void 0, void 0, function* () {
                         const logUseDbRef = yield database_1.itemLogUseDbRef(variables.vehiclePlate);
                         const logUse = {
                             timeStart: timeStart,
@@ -329,7 +328,7 @@ exports.onsuranceOn = (variables) => {
                     const itemLogResult = yield createItemLogUse();
                     console.log("TCL: onsuranceOn -> createItemLogUse result", itemLogResult);
                     const logId = itemLogResult._id;
-                    const createWasherLogUse = () => __awaiter(void 0, void 0, void 0, function* () {
+                    const createWasherLogUse = () => __awaiter(this, void 0, void 0, function* () {
                         const logUseDbRef = yield database_1.washerLogUseDbRef(variables.washerEmail);
                         const logUse = {
                             timeStart: timeStart,

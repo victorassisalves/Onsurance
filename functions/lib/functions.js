@@ -1,10 +1,9 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -14,11 +13,11 @@ const quotation_1 = require("./model/quotation");
 const express = require('express');
 const cors = require('cors');
 // Woocommerce webhook request for clients purchases
-exports.woocommerceRequest = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.woocommerceRequest = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     console.log("TCL: -> Woocommerce Request Function. Start:");
     console.log("TCL: -> ", JSON.stringify(request.body));
     const getPurchase = yield require("./controller/woocommerceController");
-    getPurchase.woocommercePurchase(request).then((result) => __awaiter(void 0, void 0, void 0, function* () {
+    getPurchase.woocommercePurchase(request).then((result) => __awaiter(this, void 0, void 0, function* () {
         const zoho = yield require("./environment/zoho.flow");
         zoho.sendWoocommerceZoho(request.body);
         response.status(result.status).send(result.text);
@@ -26,7 +25,7 @@ exports.woocommerceRequest = functions.https.onRequest((request, response) => __
         response.status(error.status).send(error.text);
     });
 }));
-exports.onboardVehicles = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.onboardVehicles = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     try {
         console.log("TCL: Onboard Function. Start:");
         console.log("TCL: -> ", request.body);
@@ -47,7 +46,7 @@ exports.onboardVehicles = functions.https.onRequest((request, response) => __awa
         response.status(500).send(`Error on server. Check what happened.`);
     }
 }));
-exports.timezoneExperiment = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.timezoneExperiment = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     const timezone = request.body.timezone;
     console.log("TCL: timezone", timezone);
     const timezoneDiff = timezone * 1000 * 3600;
@@ -71,9 +70,9 @@ exports.timezoneExperiment = functions.https.onRequest((request, response) => __
         timeNoTimezone: timeNoTimezone
     });
 }));
-exports.quotation = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.quotation = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     const userInput = request.body;
-    yield quotation_1.newQuotation(userInput).then((result) => __awaiter(void 0, void 0, void 0, function* () {
+    yield quotation_1.newQuotation(userInput).then((result) => __awaiter(this, void 0, void 0, function* () {
         const zoho = yield require("./environment/zoho.flow");
         zoho.sendQuotationZoho(result.privateApi);
         response.send(result.publicApi);
@@ -87,15 +86,15 @@ exports.quotation = functions.https.onRequest((request, response) => __awaiter(v
 
 */
 // ON/OFF protection - OK
-exports.onsuranceProtectionMsg = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.onsuranceProtectionMsg = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     try {
         const activateOnsurance = yield require("./controller/protectionController");
         const messenger = yield require("./environment/messenger");
         const variables = yield messenger.getProtectionVariables(request, response);
-        activateOnsurance.onsuranceProtection(variables).then((result) => __awaiter(void 0, void 0, void 0, function* () {
+        activateOnsurance.onsuranceProtection(variables).then((result) => __awaiter(this, void 0, void 0, function* () {
             const getResponse = yield messenger[`${result.callback}`](result.variables);
             response.status(result.status).json(getResponse);
-        })).catch((error) => __awaiter(void 0, void 0, void 0, function* () {
+        })).catch((error) => __awaiter(this, void 0, void 0, function* () {
             console.error(`${JSON.stringify(error)}`);
             console.error(new Error(`Description: ${error.text}`));
             const getResponse = yield messenger[`${error.callback}`](error.variables);
@@ -119,19 +118,19 @@ exports.onsuranceProtectionMsg = functions.https.onRequest((request, response) =
     }
 }));
 // First access on protection - OK
-exports.clientFirstAccessMsg = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.clientFirstAccessMsg = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     try {
         console.log("TCL: clientFirstAccessMsg");
         const messenger = yield require('./environment/messenger');
         const variables = yield messenger.firstAccessVariables(request, response);
         console.log("TCL: variables", variables);
         const firstAccess = yield require('./controller/firstAccessController');
-        firstAccess.doFirstAccess(variables).then((result) => __awaiter(void 0, void 0, void 0, function* () {
+        firstAccess.doFirstAccess(variables).then((result) => __awaiter(this, void 0, void 0, function* () {
             console.log("TCL: result", result);
             const getResponse = yield messenger[`${result.callback}`](result.variables);
             console.log("TCL: getResponse", getResponse);
             response.json(getResponse);
-        })).catch((error) => __awaiter(void 0, void 0, void 0, function* () {
+        })).catch((error) => __awaiter(this, void 0, void 0, function* () {
             console.error(new Error(`Error in first access controller. ${error}.`));
             console.error(new Error(`Error Status: ${error.status}`));
             console.error(new Error(`Error Description: ${error.text}`));
@@ -156,17 +155,17 @@ exports.clientFirstAccessMsg = functions.https.onRequest((request, response) => 
     }
 }));
 // Change vehicle for utilization
-exports.changeVehicleMsg = functions.https.onRequest((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.changeVehicleMsg = functions.https.onRequest((req, res) => __awaiter(this, void 0, void 0, function* () {
     console.log("TCL: req body", req.body);
     const messenger = yield require("./environment/messenger");
     const variables = yield messenger.changeItemVariables(req, res);
     const changeItem = yield require("./controller/protectionController");
-    yield changeItem.changeVehicle(variables).then((result) => __awaiter(void 0, void 0, void 0, function* () {
+    yield changeItem.changeVehicle(variables).then((result) => __awaiter(this, void 0, void 0, function* () {
         console.log("TCL: result", result);
         const getResponse = yield messenger[`${result.callback}`](result.variables);
         console.log("TCL: getResponse", getResponse);
         res.status(200).json(getResponse);
-    })).catch((err) => __awaiter(void 0, void 0, void 0, function* () {
+    })).catch((err) => __awaiter(this, void 0, void 0, function* () {
         console.log("TCL: err", err);
         const getResponse = yield messenger[`${err.callback}`](err.variables);
         console.log("TCL: getResponse", getResponse);
@@ -174,12 +173,12 @@ exports.changeVehicleMsg = functions.https.onRequest((req, res) => __awaiter(voi
     }));
 }));
 // Change vehicle information on Messenger
-exports.changeVehicleInfoMsg = functions.https.onRequest((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.changeVehicleInfoMsg = functions.https.onRequest((req, res) => __awaiter(this, void 0, void 0, function* () {
     console.log("TCL: req body", req.body);
     const messenger = yield require("./environment/messenger");
     const variables = yield messenger.getItemInfoVariables(req, res);
     const getItem = yield require("./controller/protectionController");
-    yield getItem.getVehicleInfo(variables).then((result) => __awaiter(void 0, void 0, void 0, function* () {
+    yield getItem.getVehicleInfo(variables).then((result) => __awaiter(this, void 0, void 0, function* () {
         console.log("TCL: result", result);
         const getResponse = yield messenger[`${result.callback}`](result.variables);
         console.log("TCL: getResponse", getResponse);
@@ -190,19 +189,19 @@ exports.changeVehicleInfoMsg = functions.https.onRequest((req, res) => __awaiter
     });
 }));
 // Give item acces to a thirdParty driver - OK
-exports.giveItemAccessMsg = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.giveItemAccessMsg = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     try {
         console.log("TCL: delegateItemAccess");
         const messenger = yield require('./environment/messenger');
         const variables = yield messenger.giveAccessVariables(request, response);
         console.log("TCL: variables", variables);
         const giveAccess = yield require('./controller/giveAccessController');
-        giveAccess.giveAccessController(variables).then((result) => __awaiter(void 0, void 0, void 0, function* () {
+        giveAccess.giveAccessController(variables).then((result) => __awaiter(this, void 0, void 0, function* () {
             console.log("TCL: result", result);
             const getResponse = yield messenger[`${result.callback}`](result.variables);
             console.log("TCL: getResponse", getResponse);
             response.json(getResponse);
-        })).catch((error) => __awaiter(void 0, void 0, void 0, function* () {
+        })).catch((error) => __awaiter(this, void 0, void 0, function* () {
             console.error(new Error(`Error in giveAccessController. ${error}.`));
             console.error(new Error(`Error Status: ${error.status}`));
             console.error(new Error(`Error Description: ${error.text}`));
@@ -227,19 +226,19 @@ exports.giveItemAccessMsg = functions.https.onRequest((request, response) => __a
     }
 }));
 // Request to validade email input -
-exports.userIndicationMsg = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.userIndicationMsg = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     try {
         console.log("TCL: Check indication");
         const messenger = yield require('./environment/messenger');
         const variables = yield messenger.indicationVariables(request, response);
         console.log("TCL: variables", variables);
         const indication = yield require('./controller/indicationController');
-        indication.saveIndication(variables).then((result) => __awaiter(void 0, void 0, void 0, function* () {
+        indication.saveIndication(variables).then((result) => __awaiter(this, void 0, void 0, function* () {
             console.log("TCL: result", result);
             const getResponse = yield messenger[`${result.callback}`](result.variables);
             console.log("TCL: getResponse", getResponse);
             response.json(getResponse);
-        })).catch((error) => __awaiter(void 0, void 0, void 0, function* () {
+        })).catch((error) => __awaiter(this, void 0, void 0, function* () {
             console.error(new Error(error));
             const getResponse = yield messenger[`${error.callback}`](error.variables);
             console.log("TCL: getResponse", getResponse);
@@ -283,17 +282,17 @@ exports.userIndicationMsg = functions.https.onRequest((request, response) => __a
     }
 }));
 // Request to validade email input
-exports.passMessengerForIndicationMsg = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.passMessengerForIndicationMsg = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     try {
         console.log("TCL: passMessengerOnIndication");
         const messenger = yield require('./environment/messenger');
         const variables = yield messenger.saveIndicatorVariables(request, response);
         console.log("TCL: variables", variables);
         const indication = yield require('./controller/indicationController');
-        indication.saveMessenger(variables).then((result) => __awaiter(void 0, void 0, void 0, function* () {
+        indication.saveMessenger(variables).then((result) => __awaiter(this, void 0, void 0, function* () {
             console.log("TCL: result", result);
             response.status(200).send("");
-        })).catch((error) => __awaiter(void 0, void 0, void 0, function* () {
+        })).catch((error) => __awaiter(this, void 0, void 0, function* () {
             console.error(new Error(error));
             const getResponse = yield messenger[`${error.callback}`](error.variables);
             console.log("TCL: getResponse", getResponse);
@@ -366,7 +365,7 @@ exports.checkIndicationEmailMsg = functions.https.onRequest((request, response) 
 
 */
 // Change system version to 2.0 - 
-exports.systemUpgrade = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.systemUpgrade = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     try {
         const update = yield require("./environment/systemUpgrade");
         update.systemUpgrade().then((result) => {
@@ -387,7 +386,7 @@ exports.systemUpgrade = functions.https.onRequest((request, response) => __await
 
 */
 // Request from ignition status - Hardware
-exports.ignition = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.ignition = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     console.log("TCL: request.body", request.body);
     const variables = request.body;
     variables.email = request.body.clientId;
@@ -419,7 +418,7 @@ exports.geofence = functions.https.onRequest((request, response) => {
 
 */
 // Register obd and billing period on DB
-exports.registerObd = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.registerObd = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     try {
         console.log("TCL: -> ", JSON.stringify(request.body));
         const getBillingVariables = yield require('./environment/billing');
@@ -441,7 +440,7 @@ exports.registerObd = functions.https.onRequest((request, response) => __awaiter
     }
 }));
 // Do cron job to generate pay value
-exports.billingObd = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.billingObd = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     try {
         console.log("TCL: -> ", JSON.stringify(request.body));
         // get onboard controller
@@ -463,15 +462,15 @@ exports.billingObd = functions.https.onRequest((request, response) => __awaiter(
         LAVO ENDPOINTS
 
 */
-exports.lavoOn = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.lavoOn = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     const lavo = yield require("./lavo/lavo_functions");
     yield lavo.lavoOn(request, response);
 }));
-exports.lavoOff = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.lavoOff = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     const lavo = yield require("./lavo/lavo_functions");
     yield lavo.lavoOff(request, response);
 }));
-exports.report = functions.https.onRequest((request, response) => __awaiter(void 0, void 0, void 0, function* () {
+exports.report = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     const executeReport = yield require("./controller/reportController");
     yield executeReport.makeReport().then((result) => {
         console.log("TCL: result", result);
@@ -486,24 +485,29 @@ const pneus = express();
 // Automatically allow cross-origin requests
 pneus.use(cors({ origin: true }));
 var authMiddleware = function (req, res, next) {
-    console.log('LOGGED NEWWWW');
+    console.log('Middleware Log!');
     next();
 };
 // Add middleware to authenticate requests
 pneus.use(authMiddleware);
 // build multiple CRUD interfaces:
-pneus.post('/pneus', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const tire = yield require("./model/calcMin");
+pneus.post('/onboard', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    const tireOnboard = yield require("./model/tires.model");
     try {
-        const minuteValue = yield tire.getTireMinuteValue(req.body);
-        console.log(`TCL: minuteValue`, minuteValue);
-        res.status(200).send({ minuteValue: minuteValue });
+        tireOnboard.tireOnboard(req.body).then(result => {
+            console.log(`TCL: result`, JSON.stringify(result));
+            res.status(200).send(result);
+        }).catch((err) => {
+            if (err.status)
+                res.status(err.status).send(err.text);
+            res.send({ error: err });
+        });
     }
     catch (error) {
         res.send(error);
     }
 }));
-pneus.get('/cotacaoPneus', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+pneus.get('/cotacaoPneus', (req, res) => __awaiter(this, void 0, void 0, function* () {
     const tire = yield require("./model/calcMin");
     console.log(`TCL: req.query`, req.query);
     try {
@@ -519,13 +523,13 @@ pneus.put('/pneus', (req, res) => res.send(`Put request`));
 pneus.delete('/pneus', (req, res) => res.send(`Delete request`));
 pneus.get('/', (req, res) => res.send(`Get request all`));
 // Expose Express API as a single Cloud Function:
-exports.expressTest = functions.https.onRequest(pneus);
+exports.tire = functions.https.onRequest(pneus);
 const woo = express();
 // Automatically allow cross-origin requests
 woo.use(cors({ origin: true }));
 // Add middleware to authenticate requests
 // woo.use(authMiddleware);
-woo.post('/order', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+woo.post('/order', (req, res) => __awaiter(this, void 0, void 0, function* () {
     console.log(`TCL: req query`, req.query);
     console.log(`TCL: req body`, req.body);
     const wooRequest = yield require("./test/woocommerce.test");
