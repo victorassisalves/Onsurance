@@ -597,18 +597,15 @@ pneus.use(authMiddleware);
 
 // build multiple CRUD interfaces:
 pneus.post('/onboard', async (req, res) => {
-    const tireOnboard = await require("./model/tires.model");
+    const tire = await require("./controller/onboardController");
     try {
-        tireOnboard.tireOnboard(req.body).then(result => {
-            console.log(`TCL: result`, JSON.stringify(result));
-            res.status(200).send(result);
-        }).catch((err) => {
-            if (err.status) res.status(err.status).send(err.text);
-            res.send({error: err})
-        });
+        const result = await tire.tireOnboard(req.body)
+        console.log(`TCL: result`, JSON.stringify(result));
+        res.status(200).send(result);
         
-    } catch (error) {
-        res.send(error);
+    } catch (err) {
+        if (err.status) res.status(err.status).send(err.text);
+        res.send({error: err})
     }
 });
 

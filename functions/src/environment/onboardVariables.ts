@@ -1,5 +1,5 @@
-import { TiresDB } from "../database/tires.module";
-import { checkRequestVariables } from "../model/errors";
+import { TiresDB, TireProfile } from "../database/tires.module";
+import { checkRequestVariables, checkVehicleTireQtd } from "../model/errors";
 
 export const getOnboardVariables = async (request, response) => {
     const requestBody = request.body
@@ -85,34 +85,31 @@ export const getOnboardVariables = async (request, response) => {
 
 
 
-export const tireOnboardVariables = async (variables: any) => {
+interface tireOnboardVariablesInterface {
+    totalValue: string;
+    tireQtd: string;
+    userEmail: string;
+    tireId: string;
+    plate: string;
+    vehicleType: string;
+};
+/**
+ * 
+ * @param variables 
+ */
+export const tireOnboardVariables = async (variables: tireOnboardVariablesInterface) => {
     try {
         
-        const treatedVariebles = {
-            totalValue: checkRequestVariables(parseFloat(variables.totalValue)),
-            qtd: checkRequestVariables(parseFloat(variables.qtd)),
-            userEmail: checkRequestVariables(variables.userEmail),
-            tireId: checkRequestVariables(variables.tireId),
-            plate: checkRequestVariables(variables.plate),
-        }
-        // Check number of tires
-        switch (parseFloat(variables.qtd.toString())) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-                break;
-            default:
-                throw {
-                    errorType: "Invalid tire number",
-                    message: `${variables.qtd} is not a valid number of tires. Please select a valid number`
-                };  
+        const treatedVariables = {
+            totalValue: checkRequestVariables("totalValue", variables.totalValue, Number),
+            tireQtd: checkRequestVariables("tireQtd", variables.tireQtd, Number),
+            userEmail: checkRequestVariables("email", variables.userEmail, String),
+            tireId: checkRequestVariables("tireId", variables.tireId, String),
+            plate: checkRequestVariables("plate", variables.plate, String),
+            vehicleType: checkRequestVariables("vehicleType", variables.vehicleType, String),
         };
-        return treatedVariebles;
+        await checkVehicleTireQtd(treatedVariables.vehicleType, treatedVariables.tireQtd);
+        return treatedVariables;
         
     } catch (error) {
         throw error;

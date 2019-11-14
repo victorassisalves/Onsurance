@@ -242,23 +242,75 @@ export const checkItemList = (userItemsList) => {
 
 /**
  * @description This function check any variable. If it is undefined or null throws a error, if is not, returns the variable
- * @param variable Is the variable you want to check for undefined or null
+ * @param {string} varName Is the variable name to return error dubug
+ * @param {any} variable Is the variable you want to check for undefined or null
+ * @param {String | Number} variableType If variable is String or Number send this paramenter
  * @returns {variable}
  * ```
  * return variable;
  * ```
  */
-export const checkRequestVariables = (variable) => {
+export const checkRequestVariables = (varName, variable, variableType?) => {
+    console.log(`TCL: variable`, variable);
+
     switch (variable) {
         case null:
         case undefined:
             throw {
                 errorType: "Variable is null or undefined",
-                message: "Variable can't be null or undefined. Check the request and try again."
+                message: `Variable ${varName} can't be null or undefined. Check the request and try again.`
             };
         default:
+            if (variableType === String){
+                return variable.toLowerCase()
+            } else if (variableType === Number) {
+                return parseFloat(variable);
+            };
             return variable;
     }
 };
 
 
+
+/**
+ * @description This function checks if the vehicle type is valid and if the number of tires for that vehicle is also valid
+ * @param vehicleType Type of vehicle to check
+ * @param tireQtd Quantity of tires in the vehicle type
+ */
+export const checkVehicleTireQtd = async (vehicleType, tireQtd) => {
+    try {
+        switch (vehicleType) {
+            // case "caminhonete":
+            // case "vuc":
+            case "carro": {
+                if (tireQtd > 4) {
+                    throw {
+                        errorType: "Invalid tire number.",
+                        message: `A car can't have ${tireQtd} tires. Maximum of 4 tires`
+                    };
+                };
+                break;
+
+            }
+            case "moto":{
+                if (tireQtd > 2) {
+                    throw {
+                        errorType: "Invalid tire number.",
+                        message: `A motorcycle can't have ${tireQtd} tires. Maximum of 2 tires`
+                    };
+                };
+                break;
+
+            };
+
+            default:
+                throw {
+                    errorType: "Invalid vehicle type.",
+                    message: `${vehicleType} is a invalid vehicle type. Not fit for onboard.`
+                };
+        };
+    } catch (error) {
+        console.error(new Error(`Error checking vehicle type and tire qtd. Error: ${JSON.stringify(error)}.`));
+        throw error;
+    };
+};

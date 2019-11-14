@@ -346,7 +346,7 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
 export const getTireMinuteValue = (tireInfo: TireCalcMinute) => {
     try {
         const calcMinute = (minuteValueBase) => {
-            switch (parseFloat(tireInfo.qtd.toString())) {
+            switch (parseFloat(tireInfo.tireQtd.toString())) {
                 case 1: {
                     return {
                         minuteValue: parseFloat((minuteValueBase*0.4).toFixed(5)),
@@ -374,7 +374,7 @@ export const getTireMinuteValue = (tireInfo: TireCalcMinute) => {
                 default:
                     throw {
                         errorType: "Invalid number of tires",
-                        message: `${tireInfo.qtd} is an invalid number of tires. Please insert a valid number.`
+                        message: `${tireInfo.tireQtd} is an invalid number of tires. Please insert a valid number.`
                     };
                     
             };

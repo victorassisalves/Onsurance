@@ -1,7 +1,12 @@
-import {userProfileDbRefRoot, itemProfileDbRef, getItemId} from "../database/database"
-import { databaseMethods } from "../model/databaseMethods";
-import {getVehicleMinuteValue} from '../model/calcMin'
-import { checkUserProfile, checkItemProfileAlreadyExists } from "../model/errors";
+import { itemProfileDbRef} from "../database/database"
+import {getVehicleMinuteValue, getTireMinuteValue} from '../model/calcMin'
+import { checkUserProfile, checkItemProfileAlreadyExists, checkVehicleTireQtd } from "../model/errors";
+import { getDatabaseInfo, setDatabaseInfo, databaseMethods} from "../model/databaseMethods";
+import { getItemId, tiresInItemDbPath } from "../database/tire.database";
+import { userProfileDbRefRoot } from "../database/customer.database";
+import { restoreData } from "../model/backup.model";
+import { tireOnboardVariables } from "../environment/onboardVariables";
+
 
 interface VariablesInterface {
     userProfile: {
@@ -214,5 +219,137 @@ export const clientOnboard = async (variables: VariablesInterface) => {
         
 
     });   
+};
+
+
+
+
+
+export const tireOnboard = (variables) => {
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            const onboardVariables = await tireOnboardVariables(variables);
+            /**
+             * TODO: 
+             *  @todo 
+             * 
+            */
+
+            // ------------ DB PATHS --------
+
+
+            const userProfilePath = await userProfileDbRefRoot(onboardVariables.userEmail).child("personal");
+
+            const tireProfilePath = await tiresInItemDbPath(onboardVariables.vehicleType, onboardVariables.plate).child("profiles");
+            
+            const itemId = await getItemId(onboardVariables.plate);
+            const tiresInUserProfilePath = await userProfileDbRefRoot(onboardVariables.userEmail).child(`items/tires/${itemId}`);
+
+
+
+            // ------------ USER PROFILE -----
+            const userProfileBackup = await getDatabaseInfo(userProfilePath);
+            console.log(`TCL: tireOnboard -> userProfileBackup`, JSON.stringify(userProfileBackup));
+            checkUserProfile(userProfileBackup, onboardVariables);
+
+
+            // ------------ ITEM IN USER PROFILE ---
+            const tireInUserProfileBackup = await getDatabaseInfo(tiresInUserProfilePath);
+            console.log(`TCL: tireOnboard -> tireInUserProfileBackup`, JSON.stringify(tireInUserProfileBackup));
+
+
+            // ------------ ITEMS -----------
+            const tireProfileBackup = await getDatabaseInfo(tireProfilePath);
+            console.log(`TCL: tireOnboard -> tireProfileBackup`, JSON.stringify(tireProfileBackup));
+
+
+
+            // ------------ EXECUTE ONBOARD --------
+            
+            const onboard = async () => {
+                try {
+
+                    switch (tireProfileBackup) {
+                            /** Não existe perfil de pneus no DB
+                             * @path Items/tires/vehicleId/profile
+                             * 
+                            */
+                        case null:
+                        case undefined: {
+                            const minute = await getTireMinuteValue(onboardVariables);
+
+                            const tireProfile = {
+                                tireQtd: onboardVariables.tireQtd,
+                                vehicleId: onboardVariables.plate,
+                                minuteValue: minute.minuteValue,
+                                minuteValueBase: minute.minuteValueBase,
+                                totalValue: onboardVariables.totalValue,
+                                vehicleType: onboardVariables.vehicleType,
+                                tires: {
+                                    [`${onboardVariables.tireId}`]: {
+                                        price: onboardVariables.totalValue
+                                    }
+                                }
+                            };
+
+                            await setDatabaseInfo(tireProfilePath, tireProfile);
+                            return resolve({
+                                message: `Onboard made for item Tire ${onboardVariables.tireId}.`
+                            });
+                        };
+                        default: {
+                            switch (tireProfileBackup.tires[onboardVariables.tireId] ) {
+                                case null:
+                                case undefined:
+                                    /*  Tire isn't on db yet
+                                        Need to make onboard for tire in tire/vehicle profile
+                                    */
+                                    console.log(`TCL: tireProfileBackup[onboardVariables.tireId]`, tireProfileBackup[onboardVariables.tireId]); 
+
+                                    const newTireMinute = {
+                                        tireQtd: tireProfileBackup.tireQtd + onboardVariables.tireQtd,
+                                        totalValue: tireProfileBackup.totalValue + onboardVariables.totalValue
+                                    }
+                                    await checkVehicleTireQtd(onboardVariables.vehicleType, newTireMinute.tireQtd);
+                                    
+                                    console.log(`TCL: newTireMinute`, JSON.stringify(newTireMinute));
+                                    return resolve(newTireMinute)
+                                default: {
+                                    // Since no data was modified, no restoration is necessary
+                                    reject({
+                                        errorType: "Onboard Already made for this item.",
+                                        message: `Tire ${onboardVariables.tireId} is already on database.`
+                                    });
+                                };
+                            };
+
+                            // const data = {
+                            //     data1: tireProfileBackup,
+                            //     data2: tireInUserProfileBackup,
+                            //     data3: userProfileBackup
+                            // }
+                            // resolve(data);
+                        };
+                    };
+                } catch (error) {
+                    console.error(new Error(`Error in tire onboard. error: ${JSON.stringify(error)}`));
+                    const rollback = {
+                        tireProfile: await restoreData(tireProfilePath, tireProfileBackup),
+                        userProfile: await restoreData(userProfilePath, userProfileBackup),
+                    };
+                    reject({
+                        error: error,
+                        backup: rollback
+                    });
+                }  
+            };
+
+            await onboard();
+        } catch (error) {
+            console.error(new Error(`TCL: tireOnboard -> error: ${JSON.stringify(error)}`));
+            reject(error)
+        }
+    });
 };
 

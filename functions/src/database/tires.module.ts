@@ -40,6 +40,6 @@ export interface VehicleProfile {
 }
 
 export interface TireCalcMinute {
-    qtd: number;
+    tireQtd: number;
     totalValue: number;
 }

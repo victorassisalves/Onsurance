@@ -7,15 +7,15 @@ const items = admin.main;
 /**
  * @description This function returns the tire db path in itens database
  * @param itemId Is the vehicle plate, or item ID chose by the team
- * @param itemType Is the item type for reference (tire)
+ * @param vehicleType Is the vehicle type for reference (carro, moto... etc)
  * ``` 
- * return items.ref(`/${itemType}/${itemDbId}`);
+ * return items.ref(`/tires/${vehicleType}/${itemDbId}`);
  * ```
  */
-export const tiresInItemDbPath = (itemId: string) => {
+export const tiresInItemDbPath = (vehicleType: string, itemId: string) => {
     const itemDbId = crypto.createHash('md5').update(itemId).digest("hex");
     // const itemDbId = crypto.createHmac('sha256', getSecretCustomer.userSecret).update(itemId).digest('hex');
-    return items.ref(`/tires/${itemDbId}`);
+    return items.ref(`/tires/${vehicleType}/${itemDbId}`);
 };
 
 /**
