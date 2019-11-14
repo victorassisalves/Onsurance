@@ -1,14 +1,14 @@
 import { itemProfileDbRef} from "../database/database"
 import {getVehicleMinuteValue, getTireMinuteValue} from '../model/calcMin'
 import { checkUserProfile, checkItemProfileAlreadyExists, checkVehicleTireQtd } from "../model/errors";
-import { getDatabaseInfo, setDatabaseInfo, databaseMethods} from "../model/databaseMethods";
+import { getDatabaseInfo, setDatabaseInfo, databaseMethods, updateDatabaseInfo} from "../model/databaseMethods";
 import { getItemId, tiresInItemDbPath } from "../database/tire.database";
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { restoreData } from "../model/backup.model";
 import { tireOnboardVariables } from "../environment/onboardVariables";
 
 
-interface VariablesInterface {
+interface VehicleOnboardInterface {
     userProfile: {
         firstName: string
         lastName: string
@@ -34,7 +34,7 @@ interface VariablesInterface {
     }
 }
 
-export const clientOnboard = async (variables: VariablesInterface) => {
+export const clientOnboard = async (variables: VehicleOnboardInterface) => {
     return new Promise( async (resolve, reject) => {
 
         const doOnboard = async backup => {
@@ -224,7 +224,10 @@ export const clientOnboard = async (variables: VariablesInterface) => {
 
 
 
-
+/**
+ * 
+ * @param {Object} variables Variables for tire Onboard
+ */
 export const tireOnboard = (variables) => {
 
     return new Promise(async (resolve, reject) => {
@@ -241,7 +244,7 @@ export const tireOnboard = (variables) => {
 
             const userProfilePath = await userProfileDbRefRoot(onboardVariables.userEmail).child("personal");
 
-            const tireProfilePath = await tiresInItemDbPath(onboardVariables.vehicleType, onboardVariables.plate).child("profiles");
+            const tireProfilePath = await tiresInItemDbPath(onboardVariables.vehicleType, onboardVariables.plate).child("profile");
             
             const itemId = await getItemId(onboardVariables.plate);
             const tiresInUserProfilePath = await userProfileDbRefRoot(onboardVariables.userEmail).child(`items/tires/${itemId}`);
@@ -277,20 +280,26 @@ export const tireOnboard = (variables) => {
                             */
                         case null:
                         case undefined: {
-                            const minute = await getTireMinuteValue(onboardVariables);
+                            const minuteValue = await getTireMinuteValue(onboardVariables.totalValue, onboardVariables.vehicleType);
 
                             const tireProfile = {
-                                tireQtd: onboardVariables.tireQtd,
-                                vehicleId: onboardVariables.plate,
-                                minuteValue: minute.minuteValue,
-                                minuteValueBase: minute.minuteValueBase,
-                                totalValue: onboardVariables.totalValue,
-                                vehicleType: onboardVariables.vehicleType,
+                                protectionData: {
+                                    tireQtd: onboardVariables.tireQtd,
+                                    vehicleId: onboardVariables.plate,
+                                    minuteValue: minuteValue,
+                                    protectionTime: 0,
+                                    activationsCounter: {
+                                        accident: 0
+                                    },
+                                    protectionStatus: false,
+                                    totalValue: onboardVariables.totalValue,
+                                    vehicleType: onboardVariables.vehicleType,
+                                },
                                 tires: {
                                     [`${onboardVariables.tireId}`]: {
                                         price: onboardVariables.totalValue
                                     }
-                                }
+                                },
                             };
 
                             await setDatabaseInfo(tireProfilePath, tireProfile);
@@ -309,11 +318,16 @@ export const tireOnboard = (variables) => {
 
                                     const newTireMinute = {
                                         tireQtd: tireProfileBackup.tireQtd + onboardVariables.tireQtd,
-                                        totalValue: tireProfileBackup.totalValue + onboardVariables.totalValue
+                                        totalValue: tireProfileBackup.totalValue + onboardVariables.totalValue,
+                                        minuteValue: 0
                                     }
                                     await checkVehicleTireQtd(onboardVariables.vehicleType, newTireMinute.tireQtd);
                                     
                                     console.log(`TCL: newTireMinute`, JSON.stringify(newTireMinute));
+                                    
+                                    newTireMinute.minuteValue = await getTireMinuteValue(newTireMinute.totalValue, onboardVariables.vehicleType)
+                                    
+                                    await updateDatabaseInfo(tireProfilePath, newTireMinute);
                                     return resolve(newTireMinute)
                                 default: {
                                     // Since no data was modified, no restoration is necessary

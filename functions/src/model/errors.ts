@@ -270,7 +270,16 @@ export const checkRequestVariables = (varName, variable, variableType?) => {
     }
 };
 
-
+/**
+ * @description this function throws a error for invalid vehicle type
+ * @param vehicleType is the vehicle type that is invalid
+ */
+export const invalidVehicleType = (vehicleType) => {
+    throw {
+        errorType: "Invalid vehicle type.",
+        message: `${vehicleType} is a invalid type of vehicle.`
+    };
+};
 
 /**
  * @description This function checks if the vehicle type is valid and if the number of tires for that vehicle is also valid
@@ -304,13 +313,11 @@ export const checkVehicleTireQtd = async (vehicleType, tireQtd) => {
             };
 
             default:
-                throw {
-                    errorType: "Invalid vehicle type.",
-                    message: `${vehicleType} is a invalid vehicle type. Not fit for onboard.`
-                };
+                return invalidVehicleType(vehicleType);
         };
     } catch (error) {
         console.error(new Error(`Error checking vehicle type and tire qtd. Error: ${JSON.stringify(error)}.`));
         throw error;
     };
 };
+

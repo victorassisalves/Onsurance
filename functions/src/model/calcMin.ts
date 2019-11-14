@@ -1,4 +1,5 @@
 import { TireCalcMinute } from "../database/tires.module";
+import { invalidVehicleType } from "./errors";
 
 interface Vehicle {
     fipe: string;
@@ -333,8 +334,8 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
 
 /**
  * 
- * @param tireInfo Is the onformation about all the tires in system to calculate minute value
- * @param tireInfo.totalValue must already contain the total tire values to execute the function
+ * @param {string} vehicleType Is the vehicle type for separete calculations
+ * @param {number} tireTotalValue must already contain the total tire values to execute the function
  * @returns {Object}
  * ```
  * return {
@@ -343,53 +344,31 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
  * };
  * ```
  */
-export const getTireMinuteValue = (tireInfo: TireCalcMinute) => {
+export const getTireMinuteValue = async (tireTotalValue: number, vehicleType: string): Promise<number> => {
     try {
-        const calcMinute = (minuteValueBase) => {
-            switch (parseFloat(tireInfo.tireQtd.toString())) {
-                case 1: {
-                    return {
-                        minuteValue: parseFloat((minuteValueBase*0.4).toFixed(5)),
-                        minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
-                    };
+        switch (vehicleType) {
+            case "carro":{
+                if (tireTotalValue > 800) {
+                    const minuteValueBase = parseFloat((tireTotalValue/800000).toFixed(5));
+                    return minuteValueBase;
+                } else {
+                    const minuteValueBase = 0.001
+                    return minuteValueBase;
                 }
-                case 2: {
-                    return {
-                        minuteValue: parseFloat((minuteValueBase*0.65).toFixed(5)),
-                        minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
-                    };
-                }
-                case 3: {
-                    return {
-                        minuteValue: parseFloat((minuteValueBase*0.85).toFixed(5)),
-                        minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
-                    };
-                }
-                case 4: {
-                    return {
-                        minuteValue: parseFloat((minuteValueBase).toFixed(5)),
-                        minuteValueBase: parseFloat((minuteValueBase).toFixed(5))
-                    };
-                }
-                default:
-                    throw {
-                        errorType: "Invalid number of tires",
-                        message: `${tireInfo.tireQtd} is an invalid number of tires. Please insert a valid number.`
-                    };
-                    
-            };
+            }
+            case "moto": {
+                break;
+            }
+            case "caminhonete":
+            case "vuc":
+                
+                break;
+        
+            default:
+                invalidVehicleType(vehicleType);
         };
-        
-        if (tireInfo.totalValue > 800) {
-            const minuteValueBase = tireInfo.totalValue/800000;
-            return calcMinute(minuteValueBase);
-        } else {
-            const minuteValueBase = 0.001
-            return calcMinute(minuteValueBase);
-        }
     } catch (error) {
-        throw error;
-        
+        throw error;   
     }
     
   

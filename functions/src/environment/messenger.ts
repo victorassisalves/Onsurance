@@ -916,27 +916,13 @@ export const onlyOneItemInProfile = variables => {
         const onlyOneItemInProfileResponse = {
             "messages" :[
                 {
-                    "text" : `Opa!!! Só encontrei o veículo ${variables.vehiclePlate} em seu perfil.`
+                    "text" : `Opa!!! Encontrei o veículo ${variables.vehiclePlate} em seu perfil.`
                 },
                 {
-                    "text": `Pode continuar utilizando seu Onsurance normalmente.`
+                    "text": `Pode utilizar seu Onsurance normalmente.`
                 },
                 {
                     "text": `Caso tenha comprado o Onsurance pra outro veículo, entre em contato com nossos especialistas para resolver esse problema.`,
-                    "quick_replies": [
-                        {
-                            "title":"Função  ✅ON| ☑️OFF",
-                            "block_names": ["Ligar"]
-                        },
-                        {
-                            "title":"Falar com Especialista",
-                            "block_names": ["Human interaction"]
-                        },
-                        {
-                            "title":"Menu de Opções",
-                            "block_names": ["Menu de opções"]
-                        }
-                    ]
                 }
             ],
             "set_attributes": {
