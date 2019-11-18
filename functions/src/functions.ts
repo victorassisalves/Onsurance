@@ -605,7 +605,7 @@ pneus.post('/onboard', async (req, res) => {
         
     } catch (err) {
         if (err.status) res.status(err.status).send(err.text);
-        res.send({error: err})
+        res.send(err)
     }
 });
 

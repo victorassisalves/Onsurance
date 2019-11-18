@@ -275,7 +275,7 @@ export const checkRequestVariables = (varName, variable, variableType?) => {
  * @param vehicleType is the vehicle type that is invalid
  */
 export const invalidVehicleType = (vehicleType) => {
-    throw {
+    return {
         errorType: "Invalid vehicle type.",
         message: `${vehicleType} is a invalid type of vehicle.`
     };
@@ -291,7 +291,7 @@ export const checkVehicleTireQtd = async (vehicleType, tireQtd) => {
         switch (vehicleType) {
             // case "caminhonete":
             // case "vuc":
-            case "carro": {
+            case "carro":
                 if (tireQtd > 4) {
                     throw {
                         errorType: "Invalid tire number.",
@@ -299,9 +299,7 @@ export const checkVehicleTireQtd = async (vehicleType, tireQtd) => {
                     };
                 };
                 break;
-
-            }
-            case "moto":{
+            case "moto":
                 if (tireQtd > 2) {
                     throw {
                         errorType: "Invalid tire number.",
@@ -309,11 +307,8 @@ export const checkVehicleTireQtd = async (vehicleType, tireQtd) => {
                     };
                 };
                 break;
-
-            };
-
             default:
-                return invalidVehicleType(vehicleType);
+                throw invalidVehicleType(vehicleType);
         };
     } catch (error) {
         console.error(new Error(`Error checking vehicle type and tire qtd. Error: ${JSON.stringify(error)}.`));
