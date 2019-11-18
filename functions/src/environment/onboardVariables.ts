@@ -89,7 +89,7 @@ interface tireOnboardVariablesInterface {
     totalValue: string;
     tireQtd: string;
     userEmail: string;
-    tireId: string;
+    nfId: string;
     plate: string;
     vehicleType: string;
 };
@@ -104,9 +104,10 @@ export const tireOnboardVariables = async (variables: tireOnboardVariablesInterf
             totalValue: checkRequestVariables("totalValue", variables.totalValue, Number),
             tireQtd: checkRequestVariables("tireQtd", variables.tireQtd, Number),
             userEmail: checkRequestVariables("email", variables.userEmail, String),
-            tireId: checkRequestVariables("tireId", variables.tireId, String),
+            nfId: checkRequestVariables("nfId", variables.nfId, String),
             plate: checkRequestVariables("plate", variables.plate, String),
             vehicleType: checkRequestVariables("vehicleType", variables.vehicleType, String),
+            tiresData: {info: 'Tire info Object'}
         };
         await checkVehicleTireQtd(treatedVariables.vehicleType, treatedVariables.tireQtd);
         return treatedVariables;

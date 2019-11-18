@@ -102,6 +102,30 @@ export const getDatabaseInfo = (dbPath) => {
     });
 };
 
+
+/**
+* @description This function delete's the data on database path. 
+* @param dbPath Path to database data
+*/
+export const deleteDatabaseInfo = async (dbPath) => {
+    try {
+        await dbPath.remove();
+        console.log("TCL: deleteDatabaseInfo -> Content deleted")
+        return {
+            status: 202,
+            text: `Content set on database!`
+        };
+    } catch (error) {
+        console.error(new Error(`Error deleting database info. on path - ${error}.`));
+        throw {
+            status: 500, // internal server error
+            text: `Error deleting databse info on path.`,
+            callback: "serverError",
+            variables: {}
+        };
+    }
+};
+
 /**
  * @description This function set's the data on database path. 
  * @param dbPath Path to database where you want to set

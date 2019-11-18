@@ -2,7 +2,7 @@
 import {admin} from "../config/admin";
 const crypto = require("crypto");
 
-const items = admin.main;
+const items = admin.items;
 
 /**
  * @description This function returns the tire db path in itens database

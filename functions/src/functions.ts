@@ -474,14 +474,14 @@ exports.ignition = functions.https.onRequest(async (request, response) => {
     }
 });
 
-// Request from geofence status - Hardware
-exports.geofence = functions.https.onRequest((request, response) => {
+// // Request from geofence status - Hardware
+// exports.geofence = functions.https.onRequest((request, response) => {
     
-    console.log("TCL: request.headers", request.headers);
-    console.log("TCL: request.body", request.body);
+//     console.log("TCL: request.headers", request.headers);
+//     console.log("TCL: request.body", request.body);
 
-    response.status(200).send("OK");
-});
+//     response.status(200).send("OK");
+// });
 
 
 
@@ -552,15 +552,15 @@ exports.billingObd = functions.https.onRequest(async (request, response) =>{
 
 */
 
-exports.lavoOn = functions.https.onRequest(async (request, response) => {
-    const lavo = await require("./lavo/lavo_functions");
-    await lavo.lavoOn(request, response);
-});
+// exports.lavoOn = functions.https.onRequest(async (request, response) => {
+//     const lavo = await require("./lavo/lavo_functions");
+//     await lavo.lavoOn(request, response);
+// });
 
-exports.lavoOff = functions.https.onRequest(async (request, response) => {
-    const lavo = await require("./lavo/lavo_functions");
-    await lavo.lavoOff(request, response);
-});
+// exports.lavoOff = functions.https.onRequest(async (request, response) => {
+//     const lavo = await require("./lavo/lavo_functions");
+//     await lavo.lavoOff(request, response);
+// });
 
 
 exports.report = functions.https.onRequest(async (request, response) => {
@@ -582,10 +582,10 @@ exports.report = functions.https.onRequest(async (request, response) => {
 // -------------- ONSURANCE PNEUS ---------------
 
 
-const pneus = express();
+const onboard = express();
 
 // Automatically allow cross-origin requests
-pneus.use(cors({ origin: true }));
+onboard.use(cors({ origin: true }));
 
 var authMiddleware = function (req, res, next) {
     console.log('Middleware Log!')
@@ -593,10 +593,11 @@ var authMiddleware = function (req, res, next) {
   }
 
 // Add middleware to authenticate requests
-pneus.use(authMiddleware);
+onboard.use(authMiddleware);
 
 // build multiple CRUD interfaces:
-pneus.post('/onboard', async (req, res) => {
+onboard.post('/pneus', async (req, res) => {
+    console.log(`/pneus -> Tire Onboard.`)
     const tire = await require("./controller/onboardController");
     try {
         const result = await tire.tireOnboard(req.body)
@@ -609,107 +610,5 @@ pneus.post('/onboard', async (req, res) => {
     }
 });
 
-
-pneus.get('/cotacaoPneus', async (req, res) => {
-    const tire = await require("./model/calcMin");
-
-    console.log(`TCL: req.query`, req.query);
-    try {
-        const minuteValue = await tire.getTireMinuteValue(req.query)
-        console.log(`TCL: minuteValue`, minuteValue)
-        res.status(200).send({minuteValue: minuteValue});
-        
-    } catch (error) {
-        res.send(error);
-    }
-});
-pneus.put('/pneus', (req, res) => res.send(`Put request`));
-pneus.delete('/pneus', (req, res) => res.send(`Delete request`));
-pneus.get('/', (req, res) => res.send(`Get request all`));
-
 // Expose Express API as a single Cloud Function:
-exports.tire = functions.https.onRequest(pneus);
-
-
-
-const woo = express();
-
-// Automatically allow cross-origin requests
-woo.use(cors({ origin: true }));
-
-// Add middleware to authenticate requests
-// woo.use(authMiddleware);
-
-woo.post('/order', async (req, res) => {
-    console.log(`TCL: req query`, req.query);
-    console.log(`TCL: req body`, req.body);
-
-    const wooRequest = await require("./test/woocommerce.test");
-    try {
-
-        const orderId = req.body.Referencia;
-        const statusBase = (req.body.StatusTransacao).toLowerCase();
-        let status: string;
-        switch (statusBase) {
-            case "completo":
-                status = "completed";
-                break;
-            case "em análise":
-                status = "processing";
-                break;
-            case "aprovado":
-                status = "on-hold";
-                break;
-            case "cancelado":
-                status = "cancelled";
-                break;
-            case "aguardando":
-                status = "pending";
-                break;
-            default:
-                throw {
-                    errorType: "Status ainda não analisado pelo time.",
-                    message: `Analisar o status ${statusBase}. Adcionar ao endpoint.`
-                }   
-        }
-        const result = await wooRequest.updateOrder(orderId, status);
-        console.log(`TCL: result`, JSON.stringify(result))
-        res.send(result)
-    } catch (error) {
-        console.error(new Error(JSON.stringify(error)));
-
-        const nodemailer = require("nodemailer");
-
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.zoho.com',
-                port: 465,
-                secure: true,  //true for 465 port, false for other ports
-                auth: {
-                    user: 'victor.assis@onsurance.me',
-                    pass: '*ScC49KEYeh4'
-                }
-        });
-        const mailOptions = (error) => {
-            return {
-                from: 'victor.assis@onsurance.me',
-                to: 'victor.assis@onsurance.me',
-                subject: 'Firebase - Pagseguro Error WooTest!!!',
-                text: `Erro ao ativar webhook do pagseguro. 
-                        Body: ${JSON.stringify(req.body)}. 
-                        Query: ${JSON.stringify(req.query)}.
-                        Error: ${JSON.stringify(error)}.`
-            };
-        };
-        transporter.sendMail(mailOptions(error), function(error, info){
-          if (error) {
-            console.error(new Error(JSON.stringify(error)));
-          } else {
-            console.log('Email sent: ' + info.response);
-          };
-        });
-
-        res.send(error)
-    };
-});
-// Expose Express API as a single Cloud Function:
-exports.wooTest = functions.https.onRequest(woo);
+exports.onboard = functions.https.onRequest(onboard);

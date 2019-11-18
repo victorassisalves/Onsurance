@@ -242,7 +242,8 @@ export const tireOnboard = (variables) => {
             // ------------ DB PATHS --------
 
 
-            const userProfilePath = await userProfileDbRefRoot(onboardVariables.userEmail).child("personal");
+            const userProfilePath = await userProfileDbRefRoot(onboardVariables.userEmail);
+
 
             const tireProfilePath = await tiresInItemDbPath(onboardVariables.vehicleType, onboardVariables.plate).child("profile");
             
@@ -279,84 +280,125 @@ export const tireOnboard = (variables) => {
                             */
                         case null:
                         case undefined: {
+
+
                             const minuteValue = await getTireMinuteValue(onboardVariables.totalValue, onboardVariables.vehicleType);
+                            const protectionData = {
+                                tireQtd: onboardVariables.tireQtd,
+                                vehicleId: onboardVariables.plate,
+                                minuteValue: minuteValue,
+                                protectedMinutes: 0,
+                                activationsCounter: {
+                                    accident: 0
+                                },
+                                protectionStatus: false,
+                                totalValue: onboardVariables.totalValue,
+                                vehicleType: onboardVariables.vehicleType,
+                            };
 
                             const tireProfile = {
-                                protectionData: {
-                                    tireQtd: onboardVariables.tireQtd,
+                                nfId: onboardVariables.nfId,
+                                tireQtd: onboardVariables.tireQtd,
+                                totalValue: onboardVariables.totalValue,
+                                tireData: onboardVariables.tiresData
+                            };
+
+                            await setDatabaseInfo(tireProfilePath.child("protectionData"), protectionData);
+
+                            const pushResult = await pushDatabaseInfo(tireProfilePath.child("tires"), tireProfile);
+
+                            const itemId = getItemId(onboardVariables.plate);
+                            
+                            
+                            const itemInUserProfile = {
+
+                                [itemId]: {
                                     vehicleId: onboardVariables.plate,
-                                    minuteValue: minuteValue,
-                                    protectedMinutes: 0,
+                                    itemType: "tire",
                                     activationsCounter: {
                                         accident: 0
                                     },
-                                    protectionStatus: false,
-                                    totalValue: onboardVariables.totalValue,
+                                    owner: onboardVariables.userEmail,
                                     vehicleType: onboardVariables.vehicleType,
-                                },
-                                tires: {
-                                    [`${onboardVariables.tireId}`]: {
-                                        price: onboardVariables.totalValue
-                                    }
-                                },
+                                }
                             };
 
-                            await setDatabaseInfo(tireProfilePath, tireProfile.protectionData);
-                            const pushResult = await pushDatabaseInfo(tireProfilePath.child("tires"), tireProfile.tires[onboardVariables.tireId]);
-                            console.log(`TCL: pushResult`, pushResult);
+                            await updateDatabaseInfo(userProfilePath.child("items/tires"), itemInUserProfile);
+                            await updateDatabaseInfo(userProfilePath.child("personal"), {onboard: true});
+
+                            const result = {
+                                profile: itemInUserProfile,
+                                protectionData: protectionData,
+                                tires: {
+                                    [pushResult._id]: tireProfile
+                                }
+                            };
+
                             return resolve({
-                                message: `Onboard made for item Tire ${onboardVariables.tireId}.`,
-                                onboardInformation: tireProfile
+                                message: `Onboard made for item Tire with NF ${onboardVariables.nfId}.`,
+                                onboardInformation: result
                             });
                         };
                         default: {
 
-                            /*  Alreadu have tires on db. 
+                            /*  Already have tires on db. 
                                 Check if this specific tire (group) is on db
                             */
 
-                            const newTireProfile = {
-                                protectionData: {
-                                    tireQtd: tireProfileBackup.protectionData.tireQtd + onboardVariables.tireQtd,
-                                    totalValue: tireProfileBackup.protectionData.totalValue + onboardVariables.totalValue,
-                                    minuteValue: 0,
-                                },                                        
-                                tires: {
-                                    ...tireProfileBackup.tires,
-                                    [`${onboardVariables.tireId}`]: {
-                                        price: onboardVariables.totalValue
-                                    }
-                                }
+                           const minuteValue = await getTireMinuteValue(onboardVariables.totalValue, onboardVariables.vehicleType);
+
+                            const protectionData = {
+                                tireQtd: tireProfileBackup.protectionData.tireQtd + onboardVariables.tireQtd,
+                                totalValue: tireProfileBackup.protectionData.totalValue + onboardVariables.totalValue,
+                                minuteValue: minuteValue,
+                            };        
+                            
+                            const tireProfile = {
+                                nfId: onboardVariables.nfId,
+                                tireQtd: onboardVariables.tireQtd,
+                                totalValue: onboardVariables.totalValue,
+                                tireData: onboardVariables.tiresData
                             };
+
                             await (async function checkTireInProfile(){
-                                const tiresInProfile = Object.keys(tireProfileBackup.tires)
-
+                                const tiresInProfile = Object.keys(tireProfileBackup.tires);
+                                // iterate tires 
+                                tiresInProfile.forEach(tire => {
+                                    console.log(`TCL: tire`, tire);
+                                    switch (tireProfileBackup.tires[tire].nfId) {
+                                        case `${onboardVariables.nfId}`:{                                            
+                                            throw {
+                                                errorType: "Tires in NF already on profile",
+                                                message:  `Tires with NF ${onboardVariables.nfId} already on profile.`
+                                            };
+                                        };
+                                        default:
+                                            break;
+                                    }
+                                });
                             })();
-                            await checkVehicleTireQtd(onboardVariables.vehicleType, newTireProfile.protectionData.tireQtd);
+
+                            await checkVehicleTireQtd(onboardVariables.vehicleType, protectionData.tireQtd);
                             
-                            console.log(`TCL: newTireProfile`, JSON.stringify(newTireProfile));
+                            protectionData.minuteValue = await getTireMinuteValue(protectionData.totalValue, onboardVariables.vehicleType);
                             
-                            newTireProfile.protectionData.minuteValue = await getTireMinuteValue(newTireProfile.protectionData.totalValue, onboardVariables.vehicleType)
-                            
-                            await updateDatabaseInfo(tireProfilePath.child("protectionData"), newTireProfile.protectionData);
-                            const pushResult = await pushDatabaseInfo(tireProfilePath.child("tires"), newTireProfile.tires[onboardVariables.tireId]);
+                            await updateDatabaseInfo(tireProfilePath.child("protectionData"), protectionData);
+                            const pushResult = await pushDatabaseInfo(tireProfilePath.child("tires"), onboardVariables.tiresData);
                             console.log(`TCL: pushResult`, pushResult);
-                    
-                            return resolve(newTireProfile)
-                            // Since no data was modified, no restoration is necessary
-                            reject({
-                                errorType: "Onboard Already made for this item.",
-                                message: `Tire ${onboardVariables.tireId} is already on database.`
-                            });
-                                };
+
+                            const newTireProfile = {
+                                profile:{
+                                    protectionData: protectionData,
+                                    tires: {
+                                        ...tireProfileBackup.tires,
+                                        [pushResult._id]: tireProfile
+                                    }
+                                },
+
                             };
 
-                            // const data = {
-                            //     data1: tireProfileBackup,
-                            //     data2: tireInUserProfileBackup,
-                            //     data3: userProfileBackup
-                            // }
-                            // resolve(data);
+                            return resolve(newTireProfile);
+                            
                         };
                     };
                 } catch (error) {
