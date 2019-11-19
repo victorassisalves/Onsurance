@@ -117,9 +117,12 @@ export const checkUserWallet = (userProfile, variables) => {
     };
 };
 
-export const checkMessengerId = (messengerId, variables) => {
-    // console.log("TCL: checkMessengerId -> variables.messengerId", variables.messengerId)
-    // console.log("TCL: checkMessengerId -> messengerId", messengerId)
+/**
+ * @description Function to check of messenger Id on DB is equal to the one sent on request.
+ * @param {String} messengerId Variable we get from user profile on DB. 
+ * @param {Object} variables Variables from request. Need to have messenger id on request to compare 
+ */
+export const checkMessengerId = async (messengerId: string, variables: any) => {
     // tslint:disable-next-line: triple-equals
     if (variables.messengerId != messengerId && messengerId !== null) throw {
         status: 401, // Unauthorized

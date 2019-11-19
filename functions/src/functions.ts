@@ -1,5 +1,5 @@
 const functions = require('firebase-functions');
-import {newQuotation} from "./model/quotation"
+import {newQuotation} from "./model/quotation";
 
 const express = require('express');
 const cors = require('cors');
@@ -424,21 +424,21 @@ exports.checkIndicationEmailMsg = functions.https.onRequest((request, response) 
 
 */
 
-// Change system version to 2.0 - 
-exports.systemUpgrade = functions.https.onRequest(async(request, response) => {
-    try {
-        const update = await require("./environment/systemUpgrade");
-        update.systemUpgrade().then((result) => {
-            response.status(200).send(result)
-        }).catch((error) => {
-            console.log("TCL: error", error)
-            response.status(500).send(`Error on server. Check what happened.`)
-        });
-    } catch (error) {
-        console.log("TCL: error", error)
-        response.status(500).send(`Error on server. Check what happened.`)
-    }
-});
+// // Change system version to 2.0 - 
+// exports.systemUpgrade = functions.https.onRequest(async(request, response) => {
+//     try {
+//         const update = await require("./environment/systemUpgrade");
+//         update.systemUpgrade().then((result) => {
+//             response.status(200).send(result)
+//         }).catch((error) => {
+//             console.log("TCL: error", error)
+//             response.status(500).send(`Error on server. Check what happened.`)
+//         });
+//     } catch (error) {
+//         console.log("TCL: error", error)
+//         response.status(500).send(`Error on server. Check what happened.`)
+//     }
+// });
 
 
 
@@ -612,3 +612,10 @@ onboard.post('/pneus', async (req, res) => {
 
 // Expose Express API as a single Cloud Function:
 exports.onboard = functions.https.onRequest(onboard);
+
+
+
+
+import firstAccess = require("./routes/firstAccess.routes");
+exports.firstAccess = functions.https.onRequest(firstAccess);
+

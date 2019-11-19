@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@types/express": "^4.17.2",
     "cors": "^2.8.5",
     "exceljs": "^2.0.1",
     "express": "^4.17.1",

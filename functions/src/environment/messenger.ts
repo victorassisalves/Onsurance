@@ -1,5 +1,6 @@
 import { databaseMethods } from "../model/databaseMethods";
 import { userProfileDbRefPersonal } from "../database/database";
+import { checkRequestVariables } from "../model/errors";
 
 // request.query comes from get
 // request.body comes from post
@@ -299,7 +300,7 @@ export const alreadyDidFirstAccess = variables => {
                 "text": `Seu perfil já está apto para utilizar normalmente a proteção Onsurance.`
             },
             {
-                "text": `Caso haja algum problema, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso haja algum problema, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -1113,39 +1114,15 @@ export const giveAccessVariables = async (request, response) => {
 
 export const firstAccessVariables = async (request, response) => {
     try {
-        console.log(request.body);
+        console.log(request.query);
         
         const accessVariables = {
-            userEmail:(request.body["userEmail"]).toLowerCase(),
-            firstName:request.body["first name"],
-            lastName:request.body["last name"],
-            itemInUse: request.body["itemInUse"].toLowerCase(),
-            messengerId: request.body["messenger user id"],
+            userEmail:checkRequestVariables('UserEmail', request.query["userEmail"], String),
+            firstName:checkRequestVariables('First Name', request.query["first name"], String),
+            lastName:checkRequestVariables('Last Name', request.query["last name"], String),
+            itemInUse: checkRequestVariables('Item In Use', request.query["itemInUse"], String,),
+            messengerId: checkRequestVariables('Messenger Id', request.query["messenger user id"], String),
         }
-
-
-        // Checking messenger variable here because other requisitions may not have messenger (Onsurance app, zoho bot and so on...)
-        const userDbPath = await userProfileDbRefPersonal(accessVariables.userEmail)
-        const dbMethods = await databaseMethods();
-        const messengerId = await dbMethods.getDatabaseInfo(userDbPath.child(`messengerId`));
-        console.log("TCL: messengerId", messengerId)
-
-        // ERROR check for different messenger ID
-        // tslint:disable-next-line: triple-equals
-        if (accessVariables.messengerId != messengerId && messengerId !== null) throw {
-            status: 401, // Unauthorized
-            text: `User is using a different messenger account.`,
-            callback: userUsingDiffMessenger,
-            variables: {}
-        };
-
-        // tslint:disable-next-line: triple-equals
-        if (accessVariables.messengerId == messengerId) throw {
-            status: 409, // Conflict
-            text: `User already did first access.`,
-            callback: alreadyDidFirstAccess,
-            variables: {}
-        };
 
         return accessVariables
     } catch (error) {

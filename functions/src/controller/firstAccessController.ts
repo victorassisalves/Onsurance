@@ -16,7 +16,6 @@ export const doFirstAccess = variables => {
                 */
 
                 const profile = {
-                    firstName: variables.firstName,
                     lastName: variables.lastName, 
                     messengerId: variables.messengerId
                 };

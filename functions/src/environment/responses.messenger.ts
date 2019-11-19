@@ -1,12 +1,39 @@
-// request.query comes from get
-// request.body comes from post
+const activationFail = (protectionVariables) => {
+    const activationFail = {
+        "messages": [
+            {
+                "text": `Opa ${protectionVariables.firstName}. Não consegui ligar sua proteção. Vou trazer a função de Ligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
+            }
+        ],
+        "set_attributes":
+            {
+                "status-protecao": `OFF`,
+            },
+        "redirect_to_blocks": [
+            "Ligar"
+        ]
+    }
+    return activationFail
+}
 
-/*
-    RESPONSES
-    TODO:
-        create a chatfuel block for every response
-        Fix the quick replies 
-*/
+const deactivationFail = (protectionVariables, response) => {
+    const deactivationFail = {
+        "messages": [
+            {
+                "text": `Opa ${protectionVariables.firstName}. Não consegui desligar sua proteção. Vou trazer a função de Desligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
+            }
+        ],
+        "set_attributes":
+        {
+            "status-protecao": "ON",
+        },
+        "redirect_to_blocks": [
+            "Desligar"
+        ]
+    }
+    
+    response.json(deactivationFail)
+};
 
 export const singleDeactivation = variables => {
 
@@ -876,27 +903,13 @@ export const onlyOneItemInProfile = variables => {
         const onlyOneItemInProfileResponse = {
             "messages" :[
                 {
-                    "text" : `Opa!!! Só encontrei o veículo ${variables.vehiclePlate} em seu perfil.`
+                    "text" : `Opa!!! Encontrei o veículo ${variables.vehiclePlate} em seu perfil.`
                 },
                 {
-                    "text": `Pode continuar utilizando seu Onsurance normalmente.`
+                    "text": `Pode utilizar seu Onsurance normalmente.`
                 },
                 {
                     "text": `Caso tenha comprado o Onsurance pra outro veículo, entre em contato com nossos especialistas para resolver esse problema.`,
-                    "quick_replies": [
-                        {
-                            "title":"Função  ✅ON| ☑️OFF",
-                            "block_names": ["Ligar"]
-                        },
-                        {
-                            "title":"Falar com Especialista",
-                            "block_names": ["Human interaction"]
-                        },
-                        {
-                            "title":"Menu de Opções",
-                            "block_names": ["Menu de opções"]
-                        }
-                    ]
                 }
             ],
             "set_attributes": {
@@ -946,3 +959,5 @@ export const onlyOneItemInProfile = variables => {
     };
     
 };
+
+
