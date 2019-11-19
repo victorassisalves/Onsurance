@@ -71,7 +71,7 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
          * ```
          */
         const getFipeByUsage = (usageType: string, fipe: number) => {
-            let vehicleValue = fipe;
+            const vehicleValue = fipe;
 
             switch (usageType) {
                 case "passeio":
@@ -98,9 +98,9 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
             if (thirdPartyCoverage < 30) {
                 return minuteValue
             } else {
-                let multiplier = parseFloat(((thirdPartyCoverage - 30)/10).toFixed(0));
+                const multiplier = parseFloat(((thirdPartyCoverage - 30)/10).toFixed(0));
                 console.log(`TCL: calcThirdPartyCoverage -> multiplier`, multiplier)
-                let newMinuteValue = parseFloat((minuteValue + (multiplier*(minuteValue/18))).toFixed(5));
+                const newMinuteValue = parseFloat((minuteValue + (multiplier*(minuteValue/18))).toFixed(5));
                 console.log(`TCL: calcThirdPartyCoverage -> newMinuteValue`, newMinuteValue)
                 return newMinuteValue
             }

@@ -314,7 +314,7 @@ export const tireOnboard = (variables) => {
 
                                 [itemId]: {
                                     vehicleId: onboardVariables.plate,
-                                    itemType: "tire",
+                                    itemType: "tires",
                                     activationsCounter: {
                                         accident: 0
                                     },

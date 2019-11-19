@@ -1,5 +1,6 @@
-import { userProfileDbRefRoot, getItemId, itemProfileDbRef } from "../database/database";
-import { databaseMethods } from "../model/databaseMethods";
+import { getItemId, itemProfileDbRef } from "../database/database";
+import { userProfileDbRefRoot } from "../database/customer.database";
+import { databaseMethods, getDatabaseInfo } from "../model/databaseMethods";
 import { checkUserProfile, checkItemInUse, checkOnboard, checkClientId, checkUserWallet, checkItemProfile } from "../model/errors";
 
 
@@ -20,8 +21,9 @@ export const doFirstAccess = variables => {
                     messengerId: variables.messengerId
                 };
 
-                await backup.dbMethods.updateDatabaseInfo(backup.userDbPath.child('personal'), profile)
+                await backup.dbMethods.updateDatabaseInfo(backup.userDbPath.child('personal'), profile);
 
+                
                 resolve({
                     status: 200,
                     text: `User ${variables.userEmail} did the first access.`,
@@ -75,7 +77,7 @@ export const doFirstAccess = variables => {
                 console.log("TCL: doBackup -> itemProfile", itemProfile);
                 
                 // ERROR check for non existing ItemProfile
-                await checkItemProfile(itemProfile, variables)
+                await checkItemProfile(itemProfile, variables);
 
                 const backup = {
                     userProfile: userProfile,
@@ -98,4 +100,41 @@ export const doFirstAccess = variables => {
         await doBackup()
     });
     
+};
+
+
+export const getfirstAccess = async (variables) => {
+    try {
+        // DO BACKUP
+            const userDbPath = await userProfileDbRefRoot(variables.userEmail);
+            
+            /*
+                TODO:
+                    return to messenger for product access
+
+            */
+            
+            const userProfile = await getDatabaseInfo(userDbPath.child(`personal`));
+            const userItems = await getDatabaseInfo(userDbPath.child(`items`));
+            
+            // ERROR check for owner account NOT exist
+            checkUserProfile(userProfile, variables)
+
+            // ERROR check for onboard made
+            checkOnboard(userProfile, variables);
+
+            // ERROR check for client ID (Woocommerce)
+            checkClientId(userProfile, variables);
+
+            // ERROR check for wallet and wallet amount
+            checkUserWallet(userProfile, variables);
+            
+            return {
+                userProfile: userProfile,
+                userItems: userItems,
+            }
+    } catch (error) {
+        console.error(new Error(`Error in get first access. Error: ${JSON.stringify(error)}.`));
+        throw error;
+    }
 };

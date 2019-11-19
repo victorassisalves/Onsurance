@@ -61,7 +61,7 @@ export const checkOnboard = (userProfile, variables) => {
     // ERROR check for user onboard
     if (!userProfile.onboard) throw {
         status: 403, // forbidden
-        text: "Not User or no onboard made yet",
+        text: "Not onboard made yet",
         callback: 'noOnboard',
         variables: {
             userEmail: variables.userEmail,
@@ -132,7 +132,7 @@ export const checkMessengerId = async (messengerId: string, variables: any) => {
     };
 };
 
-export const checkItemProfile = (itemProfile, variables) => {
+export const checkItemProfile = async (itemProfile, variables) => {
     // ERROR check for non existing ItemProfile
     if (itemProfile === null || itemProfile === undefined) throw {
         status: 404, // Not found
@@ -254,14 +254,18 @@ export const checkItemList = (userItemsList) => {
  * ```
  */
 export const checkRequestVariables = (varName, variable, variableType?) => {
-    console.log(`TCL: variable`, variable);
-
     switch (variable) {
         case null:
         case undefined:
             throw {
                 errorType: "Variable is null or undefined",
                 message: `Variable ${varName} can't be null or undefined. Check the request and try again.`
+            };
+        case '':
+        case ' ':
+            throw {
+                errorType: "Variable is empty",
+                message: `Variable ${varName} can't be empty. Check the request and try again.`
             };
         default:
             if (variableType === String){

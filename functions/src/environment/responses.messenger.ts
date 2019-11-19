@@ -241,7 +241,7 @@ export const noOnboard = variables => {
                 "text": `Verifique se seus dados foram aprovados.`
             },
             {
-                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -252,7 +252,7 @@ export const noOnboard = variables => {
     return noOnboard
 };
 
-export const firstAccess = variables => {
+export const firstAccessResponse = variables => {
 
     const firstAccess = {
         "messages": [
@@ -286,7 +286,7 @@ export const alreadyDidFirstAccess = variables => {
                 "text": `Seu perfil já está apto para utilizar normalmente a proteção Onsurance.`
             },
             {
-                "text": `Caso haja algum problema, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso haja algum problema, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -308,7 +308,7 @@ export const noItemInUse = variables => {
                 "text": `Verifique se seus dados foram aprovados e seu veículo cadastrado. Caso não seja o dono do item, verifique se o acesso foi liberado para o seu perfil.`
             },
             {
-                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -330,7 +330,7 @@ export const noItemProfile = variables => {
                 "text": `Verifique se seus dados foram aprovados e seu veículo cadastrado.`
             },
             {
-                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -359,7 +359,7 @@ export const noItemAccess = variables => {
                 ]
             },
             {
-                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
     }
@@ -383,7 +383,7 @@ export const noOwnerCredit = variables => {
                 "text": `O proprietário do veículo não possui saldos suficiente.`
             },
             {
-                "text": `Caso já tenha efetuado a recarga, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso já tenha efetuado a recarga, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -405,7 +405,7 @@ export const noUserCredit = variables => {
                 "text": `Você não possui saldos suficiente. Seu saldo atual é: R$${variables.userCredit}`
             },
             {
-                "text": `Caso já tenha realizado a recarga, verifique se o pagamento já foi confirmado. Caso já tenha, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso já tenha realizado a recarga, verifique se o pagamento já foi confirmado. Caso já tenha, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -427,7 +427,7 @@ export const noWallet = variables => {
                 "text": `Você já realizou a compra dos créditos em nosso site?`
             },
             {
-                "text": `Caso já tenha realizado a compra, verifique se o pagamento já foi confirmado. Caso já tenha, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso já tenha realizado a compra, verifique se o pagamento já foi confirmado. Caso já tenha, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -449,7 +449,7 @@ export const noClientId = variables => {
                 "text": `Você já realizou a compra dos créditos em nosso site?`
             },
             {
-                "text": `Caso já tenha realizado a compra, verifique se o pagamento já foi confirmado. Caso já tenha, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso já tenha realizado a compra, verifique se o pagamento já foi confirmado. Caso já tenha, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -471,7 +471,7 @@ export const noItemToGiveAccess = variables => {
                 "text": `Verifique se seus dados foram aprovados e seu veículo cadastrado.`
             },
             {
-                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [

@@ -134,11 +134,11 @@ export const newQuotation = (userInput: quotationMock) => {
                     minuteValue: minuteValue
                 };
             } else {
-                let multiplier = parseFloat(((thirdPartyCoverage - 30)/10).toFixed(0));
+                const multiplier = parseFloat(((thirdPartyCoverage - 30)/10).toFixed(0));
                 console.log(`TCL: calcThirdPartyCoverage -> multiplier`, multiplier)
-                let newActivationCredit = parseFloat((activationCredit + (multiplier*28.5)).toFixed(2));
+                const newActivationCredit = parseFloat((activationCredit + (multiplier*28.5)).toFixed(2));
                 console.log(`TCL: calcThirdPartyCoverage -> newActivationCredit`, newActivationCredit)
-                let newMinuteValue = parseFloat((minuteValue + (multiplier*(minuteValue/18))).toFixed(5));
+                const newMinuteValue = parseFloat((minuteValue + (multiplier*(minuteValue/18))).toFixed(5));
                 console.log(`TCL: calcThirdPartyCoverage -> newMinuteValue`, newMinuteValue)
                 return {
                     activationCredit: newActivationCredit,

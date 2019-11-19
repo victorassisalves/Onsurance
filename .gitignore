@@ -36,6 +36,8 @@ report/
 ######################
 .DS_Store
 .DS_Store?
+.VSCodeCounter
+.vscode
 ._*
 .Spotlight-V100
 .Trashes

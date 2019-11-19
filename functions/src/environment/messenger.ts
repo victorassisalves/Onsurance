@@ -1114,13 +1114,10 @@ export const giveAccessVariables = async (request, response) => {
 
 export const firstAccessVariables = async (request, response) => {
     try {
-        console.log(request.query);
-        
         const accessVariables = {
             userEmail:checkRequestVariables('UserEmail', request.query["userEmail"], String),
-            firstName:checkRequestVariables('First Name', request.query["first name"], String),
-            lastName:checkRequestVariables('Last Name', request.query["last name"], String),
-            itemInUse: checkRequestVariables('Item In Use', request.query["itemInUse"], String,),
+            firstName:checkRequestVariables('First Name', request.query["first name"]),
+            lastName:checkRequestVariables('Last Name', request.query["last name"]),
             messengerId: checkRequestVariables('Messenger Id', request.query["messenger user id"], String),
         }
 
@@ -1130,33 +1127,18 @@ export const firstAccessVariables = async (request, response) => {
             TODO: Set response to messenger standards
         */
 
-        if(error.status) {
-            console.error(new Error(`Error status: ${error.status}`));
-            console.error(new Error(`Error description: ${error.text}`));
-            console.log("TCL: error[`callback`]()", error[`callback`]())
-            const callback = error.callback
-            console.log("TCL: callback", callback())
-            response.json(callback(error.variables))
-        } else {
-            /*
+        console.error(new Error(`Error to get variables for user ${request.query["email_address"]}. Error: ${error}.`));
 
-                TODO:
-                    get the right block of messenger
-
-            */
-            console.error(new Error(`Error to get variables for user ${request.body["email_address"]}. Error: ${error}.`));
-
-            response.json({
-                "messages": [
-                    {
-                        "text": "Erro com varáveis. Verifique se os dados enviados estão corretos e tente novamente."
-                    },
-                ],
-                "redirect_to_blocks": [
-                    `Informar Dados`
-                ]
-            });
-        }
+        response.json({
+            "messages": [
+                {
+                    "text": "Erro com varáveis. Verifique se os dados enviados estão corretos e tente novamente."
+                },
+            ],
+            "redirect_to_blocks": [
+                `Informar Dados`
+            ]
+        });
     }
 };
 

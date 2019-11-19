@@ -581,40 +581,13 @@ exports.report = functions.https.onRequest(async (request, response) => {
 
 // -------------- ONSURANCE PNEUS ---------------
 
-
-const onboard = express();
-
-// Automatically allow cross-origin requests
-onboard.use(cors({ origin: true }));
-
-var authMiddleware = function (req, res, next) {
-    console.log('Middleware Log!')
-    next()
-  }
-
-// Add middleware to authenticate requests
-onboard.use(authMiddleware);
-
-// build multiple CRUD interfaces:
-onboard.post('/pneus', async (req, res) => {
-    console.log(`/pneus -> Tire Onboard.`)
-    const tire = await require("./controller/onboardController");
-    try {
-        const result = await tire.tireOnboard(req.body)
-        console.log(`TCL: result`, JSON.stringify(result));
-        res.status(200).send(result);
-        
-    } catch (err) {
-        if (err.status) res.status(err.status).send(err.text);
-        res.send(err)
-    }
-});
-
-// Expose Express API as a single Cloud Function:
+// Expose Express API ONBOARD as single Cloud Function for all Onboard Operations:
+import onboard = require("./routes/onboard.routes");
 exports.onboard = functions.https.onRequest(onboard);
 
 
 
+// -------------- FIRST ACCESS ---------------
 
 import firstAccess = require("./routes/firstAccess.routes");
 exports.firstAccess = functions.https.onRequest(firstAccess);
