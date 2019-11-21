@@ -1,19 +1,20 @@
+
 /**
  * @description This function checks if user profile is null or undefined
- * @param {Object} userProfile Id the profile we get from database
- * @param {Object} variables Contains the userEmail to send in response 
+ * @param {Object} userProfile Is the profile we get from database
+ * @param {string} userEmail Is the userEmail to send in response 
  */
-export const checkUserProfile = (userProfile, variables) => {
+export const checkUserProfile = (userProfile, userEmail) => {
     // Error check for owner account NOT exist
     switch (userProfile) {
         case null:
         case undefined:
             throw {
                 status: 404, // Not Found
-                text: `User Profile for ${variables.userEmail} don't exist.`,
+                text: `User Profile for ${userEmail} don't exist.`,
                 callback: 'noUserProfile',
                 variables: {
-                    userEmail: variables.userEmail
+                    userEmail: userEmail
                 }
             };
         default:
@@ -57,15 +58,28 @@ export const checkItemInUse = (itemInUse, variables) => {
     };
 };
 
-export const checkOnboard = (userProfile, variables) => {
+
+/**
+ * @description This function check to see if the user onboard was already made
+ * @param {Object} userProfile Is the user profile info we got from db
+ * @param {String} userEmail Is the user email we get from endpoint request
+ */
+export const checkOnboard = (userProfile, userEmail: string) => {
     // ERROR check for user onboard
-    if (!userProfile.onboard) throw {
-        status: 403, // forbidden
-        text: "Not onboard made yet",
-        callback: 'noOnboard',
-        variables: {
-            userEmail: variables.userEmail,
-        }
+    switch (userProfile.onboard) {
+        case null:
+        case undefined:
+        case false:
+            throw {
+                status: 403, // forbidden
+                text: "Not onboard made yet",
+                callback: 'noOnboard',
+                variables: {
+                    userEmail: userEmail,
+                }
+            };
+        default:
+            break;
     };
 };
 

@@ -1,4 +1,6 @@
 import { userProfileDbRefRoot } from "../database/customer.database";
+import { getDatabaseInfo } from "../model/databaseMethods";
+import { checkUserProfile, checkOnboard } from "../model/errors";
 
 interface GetItems {
 
@@ -21,7 +23,13 @@ export const getItemList = async (variables) => {
          *      
          */
 
-        // const userDbPath = await userProfileDbRefRoot(variables.userEmail);
+        const userDbPath = await userProfileDbRefRoot(variables.userEmail);
+
+        const userProfile = await getDatabaseInfo(userDbPath.child("personal"));
+
+        checkUserProfile(userProfile, variables.userEmail);
+        checkOnboard(userProfile, variables.userEmail);
+
         return variables;
     } catch (error) {
         throw error;
