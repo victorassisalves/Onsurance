@@ -347,7 +347,7 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
 export const getTireMinuteValue = async (tireTotalValue: number, vehicleType: string): Promise<number> => {
     try {
         switch (vehicleType) {
-            case "carro":{
+            case "car":{
                 if (tireTotalValue > 800) {
                     const minuteValueBase = parseFloat((tireTotalValue/800000).toFixed(5));
                     return minuteValueBase;

@@ -6,7 +6,7 @@ export const sendQuotationZoho = async (quotationInfo) => {
     try {
         await axios({
             method: 'post',
-            url: 'https://flow.zoho.com/669168319/flow/webhook/incoming?zapikey=1001.64a7a6217ff72a8a25f58b1c5cd50365.6b2cf58950359f9bc3d903498fc91ab2&isdebug=false',
+            url: 'https://flow.zoho.com/669296146/flow/webhook/incoming?zapikey=1001.5079b46a98bc8b658c116b1d7e75ad17.ab2e0b3eb57aa7d17d8bdce45ea6f647&isdebug=false',
             data: {
                 ...quotationInfo
             }

@@ -264,15 +264,17 @@ export const firstAccessResponse = variables => {
             },
         ],
         "set_attributes": {
-            "car-model": variables.itemModel,
-            "car-brand": variables.itemBrand,
+            // "car-model": variables.itemModel,
+            // "car-brand": variables.itemBrand,
+            "tireAccess": variables.tireAccess,
+            "pronAccess": variables.pronAccess,
         },
         "redirect_to_blocks": [
             `welcome`
         ]
-    }
+    };
     
-    return firstAccess
+    return firstAccess;
 };
 
 export const alreadyDidFirstAccess = variables => {

@@ -15,12 +15,11 @@ firstAccess.use(cors({ origin: true }));
 firstAccess.get(`/messenger`, async (request, response) => {
     try {
         const variables = await firstAccessVariables(request, response);
-        console.log("/messenger - First Access.");
+        console.log(request.path)
 
         // Checking messenger variable here because other requisitions may not have messenger (Onsurance app, zoho bot and so on...)
         const userDbPath = await userProfileDbRefRoot(variables.userEmail);
         const messengerId = await getDatabaseInfo(userDbPath.child(`personal/messengerId`));
-        console.log("TCL: messengerId from DB", messengerId);
 
         // ERROR check for different messenger ID
         await checkMessengerId(messengerId, variables);
@@ -39,22 +38,19 @@ firstAccess.get(`/messenger`, async (request, response) => {
             messengerId: variables.messengerId
         };
 
+        // await updateDatabaseInfo(userDbPath.child('personal'), profile);
 
+        const send = {
+            variables: {
+                tireAccess: result.access.tireAccess,
+                pronAccess: result.access.pronAccess,
+                userEmail: variables.userEmail,
+            }
+        };
 
-        await updateDatabaseInfo(userDbPath.child('personal'), profile);
+        const messengerResp = firstAccessResponse(send.variables);
+        response.json(messengerResp);  
 
-        
-        // const send = {
-        //     status: 200,
-        //     text: `User ${variables.userEmail} did the first access.`,
-        //     callback: firstAccessResponse,
-        //     variables: {
-        //         userEmail: variables.userEmail,
-        //         itemModel: result.itemsInProfile.model,
-        //         itemBrand: result.itemsInProfile.brand,
-        //     }
-        // };
-        response.send(result);  
     } catch (error) {
         const resp = require('../environment/responses.messenger');
         if (error.status) response.status(error.status).send(resp[error.callback](error.variables));

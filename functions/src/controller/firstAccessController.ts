@@ -128,10 +128,41 @@ export const getfirstAccess = async (variables) => {
 
             // ERROR check for wallet and wallet amount
             checkUserWallet(userProfile, variables);
+
+            const checkAccessToProducts = async () => {
+                // First we need to check vehicles PRON
+                const result = {
+                    pronAccess: false,
+                    tireAccess: false,
+                };
+
+                const items = Object.keys(userItems);
+                items.forEach(item => {
+                    // Inside tires in items 
+                    if (item === "tires") {
+                        switch (userItems.tires) {
+                            case null:
+                            case undefined:
+                                break
+                            default:
+                                result.tireAccess = true;
+                                break;
+                        };
+                    };
+                    if (userItems[item].type === "vehicle") {
+                        result.pronAccess = true;
+                    };
+                });
+
+                return result;
+            };
+
+            const access = await checkAccessToProducts();
             
             return {
                 userProfile: userProfile,
                 userItems: userItems,
+                access: access,
             }
     } catch (error) {
         console.error(new Error(`Error in get first access. Error: ${JSON.stringify(error)}.`));
