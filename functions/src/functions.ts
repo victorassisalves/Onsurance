@@ -592,3 +592,11 @@ exports.onboard = functions.https.onRequest(onboard);
 import firstAccess = require("./routes/firstAccess.routes");
 exports.firstAccess = functions.https.onRequest(firstAccess);
 
+
+// -------------- GET ITEMS ------------------
+
+
+// -------------- FIRST ACCESS ---------------
+
+import items = require("./routes/items.routes");
+exports.items = functions.https.onRequest(items);

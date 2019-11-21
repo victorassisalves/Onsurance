@@ -1242,11 +1242,9 @@ export const saveIndicatorVariables = async (request, response) => {
 export const changeItemVariables = async (req, res) => {
     try {
         const changeItem = {
-            userEmail: req.body[`userEmail`].toLowerCase(),
-            messengerId: req.body[`messenger user id`]
+            userEmail: checkRequestVariables('userEmail', req.query[`userEmail`], String),
+            messengerId: checkRequestVariables("messenger user id", req.query[`messenger user id`], String)
         };
-
-        
         return changeItem;
     } catch (error) {
         console.error(new Error(`Error to get variables for user ${req.body["userEmail"]}. Error: ${error}.`));

@@ -34,12 +34,12 @@
   "hosting": {
     "public": "public",
     "rewrites": [ {
-      "source": "/onsuranceOn", 
-      "function": "lavoOn"
+      "source": "/onboard", 
+      "function": "onboard"
     },
     {
-      "source": "/onsuranceOff", 
-      "function": "lavoOff"
+      "source": "/firstAccess", 
+      "function": "firstAccess"
     },
     {
       "source": "/ignition", 

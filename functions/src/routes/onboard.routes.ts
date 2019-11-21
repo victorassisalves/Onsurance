@@ -1,5 +1,6 @@
 import * as express from "express";
 import * as cors from "cors";
+import { tireOnboard } from "../controller/onboardController";
 
 const onboard = express();
 
@@ -17,9 +18,8 @@ onboard.use(authMiddleware);
 // build multiple CRUD interfaces:
 onboard.post('/pneus', async (req, res) => {
     console.log(`/pneus -> Tire Onboard.`)
-    const tire = await require("../controller/onboardController");
     try {
-        const result = await tire.tireOnboard(req.body)
+        const result = await tireOnboard(req.body);
         console.log(`TCL: result`, JSON.stringify(result));
         res.status(200).send(result);
         

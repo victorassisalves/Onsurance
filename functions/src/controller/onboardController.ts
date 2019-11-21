@@ -64,12 +64,9 @@ export const clientOnboard = async (variables: VehicleOnboardInterface) => {
                 // checks if already did onboard
                 if (getProfile.onboard) {
                     const itemsArrays = Object.keys(backup.fullUserProfile.items)
-                    console.log("TCL: clientOnboard -> itemsArrays", itemsArrays)
                     // check if user already did onboard for that item
                     // Run array to get elements
                     itemsArrays.map(element => {
-                        console.log(backup.fullUserProfile.items[element])
-                        console.log("TCL: clientOnboard -> item", backup.fullUserProfile.items[element])
                         if (backup.fullUserProfile.items[element].itemId === variables.itemProfile.plate) throw {
                                 status: 403, //forbidden
                                 text: `Error doing onboard for ${variables.userProfile.userEmail}. Error: User already did onboard for item with id ${variables.itemProfile.plate}.`
@@ -94,7 +91,6 @@ export const clientOnboard = async (variables: VehicleOnboardInterface) => {
                         factory: variables.itemProfile.factory.toLowerCase(),
                         thirdPartyCoverage: (variables.itemProfile.thirdPartyCoverage).toString()
                     }
-                    console.log(`TCL: clientOnboard -> userInput`, userInput)
                     await getVehicleMinuteValue(userInput).then(result => {
                         itemMinuteValue = result;
                     }).catch(error => {
@@ -383,7 +379,7 @@ export const tireOnboard = (variables) => {
                             protectionData.minuteValue = await getTireMinuteValue(protectionData.totalValue, onboardVariables.vehicleType);
                             
                             await updateDatabaseInfo(tireProfilePath.child("protectionData"), protectionData);
-                            const pushResult = await pushDatabaseInfo(tireProfilePath.child("tires"), onboardVariables.tiresData);
+                            const pushResult = await pushDatabaseInfo(tireProfilePath.child("tires"), tireProfile);
                             console.log(`TCL: pushResult`, pushResult);
 
                             const newTireProfile = {

@@ -298,7 +298,7 @@ export const checkVehicleTireQtd = async (vehicleType, tireQtd) => {
         switch (vehicleType) {
             // case "caminhonete":
             // case "vuc":
-            case "carro":
+            case "car":
                 if (tireQtd > 4) {
                     throw {
                         errorType: "Invalid tire number.",

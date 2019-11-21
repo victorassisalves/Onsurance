@@ -38,7 +38,7 @@ firstAccess.get(`/messenger`, async (request, response) => {
             messengerId: variables.messengerId
         };
 
-        // await updateDatabaseInfo(userDbPath.child('personal'), profile);
+        await updateDatabaseInfo(userDbPath.child('personal'), profile);
 
         const send = {
             variables: {
