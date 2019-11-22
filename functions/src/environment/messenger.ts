@@ -1115,10 +1115,10 @@ export const giveAccessVariables = async (request, response) => {
 export const firstAccessVariables = async (request, response) => {
     try {
         const accessVariables = {
-            userEmail:checkRequestVariables('UserEmail', request.query["userEmail"], String),
-            firstName:checkRequestVariables('First Name', request.query["first name"]),
-            lastName:checkRequestVariables('Last Name', request.query["last name"]),
-            messengerId: checkRequestVariables('Messenger Id', request.query["messenger user id"], String),
+            userEmail:checkRequestVariables('UserEmail', request.body["userEmail"], String),
+            firstName:checkRequestVariables('First Name', request.body["first name"]),
+            lastName:checkRequestVariables('Last Name', request.body["last name"]),
+            messengerId: checkRequestVariables('Messenger Id', request.body["messenger user id"], String),
         }
 
         return accessVariables
@@ -1242,8 +1242,8 @@ export const saveIndicatorVariables = async (request, response) => {
 export const changeItemVariables = async (req, res) => {
     try {
         const changeItem = {
-            userEmail: checkRequestVariables('userEmail', req.query[`userEmail`], String),
-            messengerId: checkRequestVariables("messenger user id", req.query[`messenger user id`], String)
+            userEmail: checkRequestVariables('userEmail', req.body[`userEmail`], String),
+            messengerId: checkRequestVariables("messenger user id", req.body[`messenger user id`], String)
         };
         return changeItem;
     } catch (error) {

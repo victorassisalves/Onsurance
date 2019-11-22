@@ -87,10 +87,11 @@ export const databaseMethods = async () => {
 * @description This function get's the data on database path. 
 * @param dbPath Path to database data
 */
-export const getDatabaseInfo = (dbPath) => {
-    return dbPath.once('value').then((result) => {
-        return result.val();
-    }).catch((error) => {
+export const getDatabaseInfo = async (dbPath) => {
+    try {
+        const data = await dbPath.once('value');
+        return data.val();
+    } catch (error) {
         console.error(new Error(`Error getting database info. on path - ${error}.`));
         throw {
             status: 500, // internal server error
@@ -98,8 +99,7 @@ export const getDatabaseInfo = (dbPath) => {
             callback: "serverError",
             variables: {}
         };
-        
-    });
+    };
 };
 
 

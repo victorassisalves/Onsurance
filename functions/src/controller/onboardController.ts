@@ -309,8 +309,8 @@ export const tireOnboard = (variables) => {
                             const itemInUserProfile = {
 
                                 [itemId]: {
-                                    vehicleId: onboardVariables.plate,
-                                    itemType: "tires",
+                                    itemId: onboardVariables.plate,
+                                    type: "tires",
                                     activationsCounter: {
                                         accident: 0
                                     },
@@ -380,7 +380,6 @@ export const tireOnboard = (variables) => {
                             
                             await updateDatabaseInfo(tireProfilePath.child("protectionData"), protectionData);
                             const pushResult = await pushDatabaseInfo(tireProfilePath.child("tires"), tireProfile);
-                            console.log(`TCL: pushResult`, pushResult);
 
                             const newTireProfile = {
                                 profile:{

@@ -12,7 +12,7 @@ const firstAccess = express();
 firstAccess.use(cors({ origin: true }));
 // firstAccess.use(authMiddleware);
 
-firstAccess.get(`/messenger`, async (request, response) => {
+firstAccess.post(`/messenger`, async (request, response) => {
     try {
         const variables = await firstAccessVariables(request, response);
         console.log(request.path)

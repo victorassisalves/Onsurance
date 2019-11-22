@@ -11,7 +11,7 @@ const items = express();
 items.use(cors({ origin: true }));
 // onsurance.use(authMiddleware);
 
-items.get(`/list/messenger`, async (request, response) => {
+items.post(`/list/messenger`, async (request, response) => {
     console.log(request.path);
     try {
         /**
@@ -28,8 +28,9 @@ items.get(`/list/messenger`, async (request, response) => {
         const result = await getItemList(variables);
         response.send(result);
     } catch (error) {
+        console.error(new Error(` Error: ${JSON.stringify(error)}.`));
         const resp = require('../environment/responses.messenger');
-        if (error.status) response.status(error.status).send(resp[error.callback](error.variables));
+        if (error.status) response.status(error.status).json(resp[error.callback](error.variables));
         response.send(error);
     };
 });

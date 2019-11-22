@@ -257,10 +257,7 @@ export const firstAccessResponse = variables => {
     const firstAccess = {
         "messages": [
             {
-                "text": "Opaa! Verificamos os dados com sucesso."
-            },
-            {
-                "text": "Agora está tudo pronto para acessar o Onsurance para o seu veículo."
+                "text": "Opaa! Verifiquei seus dados com sucesso."
             },
         ],
         "set_attributes": {
@@ -960,6 +957,54 @@ export const onlyOneItemInProfile = variables => {
         };
     };
     
+};
+
+export const showItemsListInGalery = (variables?) => {
+    const galeryModel = {
+        "messages": [
+           {
+             "attachment":{
+               "type":"template",
+               "payload":{
+                 "template_type":"generic",
+                 "image_aspect_ratio": "square",
+                 "elements":[
+                   {
+                     "title":"Chatfuel Rockets Jersey",
+                     "image_url":"https://rockets.chatfuel.com/assets/shirt.jpg",
+                     "subtitle":"Size: M",
+                     "buttons":[
+                       {
+                         "type":"web_url",
+                         "url":"https://rockets.chatfuel.com/store",
+                         "title":"View Item"
+                       }
+                     ]
+                   },
+                   {
+                     "title":"Chatfuel Rockets Jersey",
+                     "image_url":"https://rockets.chatfuel.com/assets/shirt.jpg",
+                     "subtitle":"Size: L",
+                     "default_action": {
+                       "type": "web_url",
+                       "url": "https://rockets.chatfuel.com/store",
+                       "messenger_extensions": true
+                     },
+                     "buttons":[
+                       {
+                         "type":"web_url",
+                         "url":"https://rockets.chatfuel.com/store",
+                         "title":"View Item"
+                       }
+                     ]
+                   }
+                 ]
+               }
+             }
+           }
+         ]
+       };
+    return galeryModel;
 };
 
 

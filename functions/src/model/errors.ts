@@ -138,12 +138,23 @@ export const checkUserWallet = (userProfile, variables) => {
  */
 export const checkMessengerId = async (messengerId: string, variables: any) => {
     // tslint:disable-next-line: triple-equals
-    if (variables.messengerId != messengerId && messengerId !== null) throw {
-        status: 401, // Unauthorized
-        text: `User is using a different messenger account.`,
-        callback: `userUsingDiffMessenger`,
-        variables: {}
-    };
+    if (variables.messengerId != messengerId && messengerId !== null) {
+        throw {
+            status: 401, // Unauthorized
+            text: `User is using a different messenger account.`,
+            callback: `userUsingDiffMessenger`,
+            variables: {}
+        };
+    } else if (messengerId === null || messengerId === undefined) {
+        throw {
+            status: 403, // forbidden
+            text: "Not onboard made yet",
+            callback: 'noOnboard',
+            variables: {
+                userEmail: variables.userEmail,
+            }
+        };
+    }
 };
 
 export const checkItemProfile = async (itemProfile, variables) => {
