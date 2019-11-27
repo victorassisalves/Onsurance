@@ -87,7 +87,7 @@ export const databaseMethods = async () => {
 * @description This function get's the data on database path. 
 * @param dbPath Path to database data
 */
-export const getDatabaseInfo = async (dbPath) => {
+export const getDatabaseInfo = async (dbPath: any): Promise<any> => {
     try {
         const data = await dbPath.once('value');
         return data.val();

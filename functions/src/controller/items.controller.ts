@@ -1,21 +1,10 @@
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { getDatabaseInfo } from "../model/databaseMethods";
 import { checkUserProfile, checkOnboard} from "../model/errors";
-import { showItemsListInGalery } from "../environment/responses.messenger";
-import { checkItemUsagePermission } from "../model/validation.model";
-import { tiresInItemDbPath } from "../database/tire.database";
 import { itemProfileDbRef } from "../database/auto.database";
+import { vehicleData } from "../report/reportDataVehicles";
 
 
-interface TireData {
-    activationsCounter: {
-        accident: number
-    };
-    itemType: string
-    owner: string
-    itemId: string
-    vehicleType: string
-}
 /**
  * @description This function gets the list of items wich the user can access
  * @param variables 
@@ -45,34 +34,43 @@ export const getItemList = async (variables) => {
         const itemsInUserProfile = await getDatabaseInfo(itemsInUserDbPath);
 
         const itemsArray = Object.keys(itemsInUserProfile);
-        var arr = ["6f4d85bab4ff861432a565539d9b8334", 'tires', "6f4d85bab4ff861432a565539d9b8334", "cellphones"];
-        const result = [];
-
-        itemsArray.forEach(async (item) => {
+        const resultArray = [];
+        for (let i = 0; i < itemsArray.length; i++) {
+            const item = itemsArray[i];
+            console.log(`TCL: item`, item);
             switch (item) {
-                case "tires": {
-                    result.push({
-                        tire: "tires"
-                    });
+                case "tires":
+                        const tiresArray = Object.keys(itemsInUserProfile[item]);
+                        tiresArray.forEach(tire => {
+                            resultArray.push({
+                                itemId: itemsInUserProfile[item][tire].itemId,
+                                type: itemsInUserProfile[item][tire].type,
+                                owner: itemsInUserProfile[item][tire].owner
+                            });
+                        });
                     break;
-                };
             
-                default: {
+                default:
+                    const vehicleProfilePath = itemProfileDbRef(
+                        itemsInUserProfile[item].itemId, 
+                        itemsInUserProfile[item].type, 
+                        itemsInUserProfile[item].innerType,
+                    );
 
-                    // const itemProfileDbPath = await itemProfileDbRef(itemsInUserProfile[item].itemId, itemsInUserProfile[item].type, itemsInUserProfile[item].innerType);
-                    // const itemProfile = await getDatabaseInfo(itemProfileDbPath.child("profile"));
-                    // console.log(`TCL: itemProfile`, itemProfile);
-                    result.push({
+                    const vehicleProfile = await getDatabaseInfo(vehicleProfilePath.child("profile"));
+                    console.log(`TCL: vehicleProfile`, vehicleProfile);
+                    resultArray.push({
                         itemId: itemsInUserProfile[item].itemId,
                         type: itemsInUserProfile[item].type,
-                        // itemProfile: await itemProfile
+                        innerType:itemsInUserProfile[item].innerType,
+                        owner: itemsInUserProfile[item].owner,
+                        brand: vehicleProfile.brand,
+                        model: vehicleProfile.model,
                     });
-                    break;
-                }
-            }
-        });
+            };
+        };
 
-        return result;
+        return resultArray;
     } catch (error) {
         throw error;
     }
