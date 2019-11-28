@@ -1,4 +1,5 @@
 
+
 /**
  * @description This function checks if user profile is null or undefined
  * @param {Object} userProfile Is the profile we get from database
@@ -258,12 +259,16 @@ export const checkUserAccessPermission = (variables, itemToAccess) => {
         CHANGE ITEM
 
 */
-// Check if there is a item in user profile
-export const checkItemList = (userItemsList) => {
+
+/**
+ * @description This function checks if user have items in profile. If null or undefined, throw error.
+ * @param {Object} userItemsList List of items in user profile
+ */
+export const checkItemList = (userItemsList: Object) => {
     if (userItemsList === null || userItemsList === undefined || !userItemsList) throw {
         status: 404, // Not Found
         text: `No items in user profile check if Onboard was made.`,
-        callback: 'noOnboard',
+        callback: "noItemsOnProfile",
         variables: {}
     };
 };

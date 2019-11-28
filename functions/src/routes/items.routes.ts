@@ -1,10 +1,11 @@
 import * as express from "express";
 import * as cors from "cors";
-import { getProtectionVariables, changeItemVariables } from "../environment/messenger";
+import { changeItemVariables } from "../environment/messenger";
 import { userProfileDbRefRoot } from "../database/customer.database";
-import { getDatabaseInfo, updateDatabaseInfo } from "../model/databaseMethods";
+import { getDatabaseInfo } from "../model/databaseMethods";
 import { checkMessengerId } from "../model/errors";
 import { getItemList } from "../controller/items.controller";
+import { showItemsListInGalery } from "../environment/responses.messenger";
 
 const items = express();
 // Automatically allow cross-origin requests
@@ -26,7 +27,10 @@ items.post(`/list/messenger`, async (request, response) => {
         await checkMessengerId(messengerId, variables);
 
         const result = await getItemList(variables);
-        response.send(result);
+
+        const messengerResponse = await showItemsListInGalery(result);
+
+        response.json(messengerResponse);
     } catch (error) {
         console.error(new Error(` Error: ${JSON.stringify(error)}.`));
         const resp = require('../environment/responses.messenger');

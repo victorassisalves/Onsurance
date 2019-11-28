@@ -252,6 +252,30 @@ export const noOnboard = variables => {
     return noOnboard
 };
 
+/**
+ * @description This function checks if the profile have
+ */
+export const noItemsOnProfile = (variables?) => {
+    const noItems = {
+        "messages": [
+            {
+                "text": "Olá {{first name}}. Não encontrei nenhum item em seu perfil."
+            },
+            {
+                "text": `Verifique se seus dados foram aprovados e o onboard do item já foi feito.`
+            },
+            {
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
+            },
+        ],
+        "redirect_to_blocks": [
+            `Informar Dados`
+        ]
+    }
+    
+    return noItems;
+};
+
 export const firstAccessResponse = variables => {
 
     const firstAccess = {
@@ -952,59 +976,160 @@ export const onlyOneItemInProfile = variables => {
         };
         
         return {
-            status: 200,
+            status: 500,
             text: serverError
         };
     };
     
 };
 
-export const showItemsListInGalery = (variables?) => {
-    const galeryModel = {
-        "messages": [
-           {
-             "attachment":{
-               "type":"template",
-               "payload":{
-                 "template_type":"generic",
-                 "image_aspect_ratio": "square",
-                 "elements":[
-                   {
-                     "title":"Chatfuel Rockets Jersey",
-                     "image_url":"https://rockets.chatfuel.com/assets/shirt.jpg",
-                     "subtitle":"Size: M",
-                     "buttons":[
-                       {
-                         "type":"web_url",
-                         "url":"https://rockets.chatfuel.com/store",
-                         "title":"View Item"
-                       }
-                     ]
-                   },
-                   {
-                     "title":"Chatfuel Rockets Jersey",
-                     "image_url":"https://rockets.chatfuel.com/assets/shirt.jpg",
-                     "subtitle":"Size: L",
-                     "default_action": {
-                       "type": "web_url",
-                       "url": "https://rockets.chatfuel.com/store",
-                       "messenger_extensions": true
-                     },
-                     "buttons":[
-                       {
-                         "type":"web_url",
-                         "url":"https://rockets.chatfuel.com/store",
-                         "title":"View Item"
-                       }
-                     ]
-                   }
-                 ]
-               }
-             }
-           }
-         ]
-       };
-    return galeryModel;
+/**
+ * @description This function returns the galery with the items in user profile.
+ * @param {Array<any>} items Its the list of items to send to user profile
+ */
+export const showItemsListInGalery = async (items: Array<any>): Promise<Object> => {
+    try {
+        let atributtes = {}
+        let statusProtection = 'ON';
+        let autoTitle = "Quando desejar ligar o Onsurance do seu veículo é só clicar em Onsurance ON";
+        let tireTitle = "Quando desejar ligar o Onsurance do(s) seu(s) Pneu(s) é só clicar em Onsurance ON";
+        let block = "protection router";
+        for (let i = 0; i < items.length; i++) {
+
+            switch (items[i].type) {
+            
+                case "vehicle": {
+                    if (items[i].protectionStatus) {
+                        statusProtection = "OFF";
+                        autoTitle = "Quando desejar desligar o Onsurance do seu veículo é só clicar em Onsurance OFF";
+                    }   
+                atributtes = {
+                        ...atributtes,
+                        "itemInUse": items[i].itemId,
+                        "car-brand": items[i].brand,
+                        "car-model":items[i].model,
+                        "status-protecao": statusProtection,
+                        "autoTitle": autoTitle
+                    };
+                    break;
+                };
+                case "tires": {
+
+                    if (items[i].protectionStatus) {
+                        statusProtection = "OFF";
+                        tireTitle = "Quando desejar desligar o Onsurance do(s) seu(s) Pneu(s) é só clicar em Onsurance OFF";
+                    } 
+                    atributtes = {
+                        ...atributtes,
+                        "tireVehicleId": items[i].itemId,
+                        "tireQtd": items[i].tireQtd,
+                        "tireOnsuranceStatus": statusProtection,
+                        "tireTitle": tireTitle
+                    };
+                        
+                    break;
+                };
+                default:
+                    throw {
+                        error: `Unknown type: ${items[i].type}`
+                    };
+            }
+        };
+
+        const galeryModel = {
+            "set_attributes": {
+                ...atributtes,
+            },
+            "redirect_to_blocks": [
+                block
+            ]
+        };
+        const orderId = "1125484nb353v"
+        // Name have to be a name not chatfuel variable
+        const test = {
+            "messages": [
+              {
+                "attachment": {
+                  "type": "template",
+                  "payload": { 
+                    "template_type": "receipt",
+                    "recipient_name": "Victor",
+                    "order_number": orderId,
+                    "currency": "USD",
+                    "payment_method": "Créditos Onsurance",
+                    "order_url": `https://rockets.chatfuel.com/store?order_id=${orderId}`,
+                    "timestamp": "1574983400",
+                    "address": {
+                      "street_1": "1 Hacker Way",
+                      "street_2": "",
+                      "city": "Menlo Park",
+                      "postal_code": "94025",
+                      "state": "CA",
+                      "country": "US"
+                    },
+                    "summary": {
+                      "subtotal": 105,
+                      "shipping_cost": 4.95,
+                      "total_tax": 9,
+                      "total_cost": 435.6
+                    },
+                    "adjustments": [
+                      {
+                        "name": "CF Rockets Superstar",
+                        "amount": -25
+                      }
+                    ],
+                    "elements": [
+                      {
+                        "title": "Seguro auto Onsurance",
+                        "subtitle": "Tempo gasto:",
+                        "quantity": 90,
+                        "price": 4.84,
+                        "currency": "USD",
+                        "image_url":   "http://rockets.chatfuel.com/assets/shirt.jpg"
+                      },
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        return test;
+        
+    } catch (error) {
+        console.error(new Error(`TCL: error: ${error}`));
+        const serverError = {
+            "messages": [
+                {
+                    "text": "OOOoooppsss. Tivemos um pequeno erro em nosso servidor. Por favor verifique se está conectado à internet e tente novamente em 5 segundos."
+                },
+                {
+                    "text": "O que deseja fazer?",
+                    "quick_replies": [
+                        {
+                            "title":"Falar com Especialista",
+                            "block_names": ["Human interaction"]
+                        },
+                        {
+                            "title":"Menu de Opções",
+                            "block_names": ["Menu de opções"]
+                        },
+                        {
+                            "title":"Indicar a Onsurance",
+                            "block_names": ["Referer"]
+                        },
+                        {
+                            "title":"Conhecer a Onsurance",
+                            "block_names": ["PRON"]
+                        },
+                        
+                    ]
+                },
+            ]
+        };
+        
+        throw serverError;
+    };
 };
 
 
