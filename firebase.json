@@ -38,6 +38,10 @@
       "function": "onboard"
     },
     {
+      "source": "/quote", 
+      "function": "quote"
+    },
+    {
       "source": "/firstAccess", 
       "function": "firstAccess"
     },

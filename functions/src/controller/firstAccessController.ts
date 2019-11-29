@@ -108,12 +108,6 @@ export const getfirstAccess = async (variables) => {
         // DO BACKUP
             const userDbPath = await userProfileDbRefRoot(variables.userEmail);
             
-            /*
-                TODO:
-                    return to messenger for product access
-
-            */
-            
             const userProfile = await getDatabaseInfo(userDbPath.child(`personal`));
             const userItems = await getDatabaseInfo(userDbPath.child(`items`));
             
@@ -129,10 +123,10 @@ export const getfirstAccess = async (variables) => {
             // ERROR check for wallet and wallet amount
             checkUserWallet(userProfile, variables);
 
-            const checkAccessToProducts = async () => {
+            const checkAccessToProducts = () => {
                 // First we need to check vehicles PRON
                 const result = {
-                    pronAccess: false,
+                    autoAccess: false,
                     tireAccess: false,
                 };
 
@@ -150,14 +144,14 @@ export const getfirstAccess = async (variables) => {
                         };
                     };
                     if (userItems[item].type === "vehicle") {
-                        result.pronAccess = true;
+                        result.autoAccess = true;
                     };
                 });
 
                 return result;
             };
 
-            const access = await checkAccessToProducts();
+            const access = checkAccessToProducts();
             
             return {
                 userProfile: userProfile,

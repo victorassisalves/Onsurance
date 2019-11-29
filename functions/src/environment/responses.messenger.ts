@@ -285,10 +285,8 @@ export const firstAccessResponse = variables => {
             },
         ],
         "set_attributes": {
-            // "car-model": variables.itemModel,
-            // "car-brand": variables.itemBrand,
             "tireAccess": variables.tireAccess,
-            "pronAccess": variables.pronAccess,
+            "autoAccess": variables.autoAccess,
         },
         "redirect_to_blocks": [
             `welcome`
@@ -1036,7 +1034,13 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
             }
         };
 
-        const galeryModel = {
+
+        const response = {
+            "messages" :[
+                {
+                    "text": `Tudo certo. Vamos começar.`,
+                }
+            ],
             "set_attributes": {
                 ...atributtes,
             },
@@ -1044,57 +1048,7 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
                 block
             ]
         };
-        const orderId = "1125484nb353v"
-        // Name have to be a name not chatfuel variable
-        const test = {
-            "messages": [
-              {
-                "attachment": {
-                  "type": "template",
-                  "payload": { 
-                    "template_type": "receipt",
-                    "recipient_name": "Victor",
-                    "order_number": orderId,
-                    "currency": "USD",
-                    "payment_method": "Créditos Onsurance",
-                    "order_url": `https://rockets.chatfuel.com/store?order_id=${orderId}`,
-                    "timestamp": "1574983400",
-                    "address": {
-                      "street_1": "1 Hacker Way",
-                      "street_2": "",
-                      "city": "Menlo Park",
-                      "postal_code": "94025",
-                      "state": "CA",
-                      "country": "US"
-                    },
-                    "summary": {
-                      "subtotal": 105,
-                      "shipping_cost": 4.95,
-                      "total_tax": 9,
-                      "total_cost": 435.6
-                    },
-                    "adjustments": [
-                      {
-                        "name": "CF Rockets Superstar",
-                        "amount": -25
-                      }
-                    ],
-                    "elements": [
-                      {
-                        "title": "Seguro auto Onsurance",
-                        "subtitle": "Tempo gasto:",
-                        "quantity": 90,
-                        "price": 4.84,
-                        "currency": "USD",
-                        "image_url":   "http://rockets.chatfuel.com/assets/shirt.jpg"
-                      },
-                    ]
-                  }
-                }
-              }
-            ]
-          }
-        return test;
+        return response;
         
     } catch (error) {
         console.error(new Error(`TCL: error: ${error}`));

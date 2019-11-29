@@ -139,23 +139,12 @@ export const checkUserWallet = (userProfile, variables) => {
  */
 export const checkMessengerId = async (messengerId: string, variables: any) => {
     // tslint:disable-next-line: triple-equals
-    if (variables.messengerId != messengerId && messengerId !== null) {
-        throw {
+    if (variables.messengerId != messengerId && messengerId !== null) throw {
             status: 401, // Unauthorized
             text: `User is using a different messenger account.`,
             callback: `userUsingDiffMessenger`,
             variables: {}
         };
-    } else if (messengerId === null || messengerId === undefined) {
-        throw {
-            status: 403, // forbidden
-            text: "Not onboard made yet",
-            callback: 'noOnboard',
-            variables: {
-                userEmail: variables.userEmail,
-            }
-        };
-    }
 };
 
 export const checkItemProfile = async (itemProfile, variables) => {
@@ -278,25 +267,30 @@ export const checkItemList = (userItemsList: Object) => {
  * @param {string} varName Is the variable name to return error dubug
  * @param {any} variable Is the variable you want to check for undefined or null
  * @param {String | Number} variableType If variable is String or Number send this paramenter
+ * @param {boolean} required For default every variable is required. If not, pass value false
  * @returns {variable}
  * ```
  * return variable;
  * ```
  */
-export const checkRequestVariables = (varName, variable, variableType?) => {
+export const checkRequestVariables = (varName, variable, variableType?, required = true ) => {
     switch (variable) {
         case null:
         case undefined:
-            throw {
-                errorType: "Variable is null or undefined",
-                message: `Variable ${varName} can't be null or undefined. Check the request and try again.`
+            if (required === true){
+                throw {
+                    errorType: "Variable is null or undefined",
+                    message: `Variable ${varName} can't be null or undefined. Check the request and try again.`
+                };
             };
+            return null;
         case '':
         case ' ':
-            throw {
+            if (required === true) throw {
                 errorType: "Variable is empty",
                 message: `Variable ${varName} can't be empty. Check the request and try again.`
             };
+            return null;
         default:
             if (variableType === String){
                 return variable.toLowerCase()

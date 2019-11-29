@@ -595,8 +595,10 @@ exports.firstAccess = functions.https.onRequest(firstAccess);
 
 // -------------- GET ITEMS ------------------
 
-
-// -------------- FIRST ACCESS ---------------
-
 import items = require("./routes/items.routes");
 exports.items = functions.https.onRequest(items);
+
+// -------------- GET ITEMS ------------------
+
+import quote = require("./routes/quotation.routes");
+exports.quote = functions.https.onRequest(quote);

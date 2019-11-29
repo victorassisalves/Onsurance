@@ -43,7 +43,7 @@ firstAccess.post(`/messenger`, async (request, response) => {
         const send = {
             variables: {
                 tireAccess: result.access.tireAccess,
-                pronAccess: result.access.pronAccess,
+                autoAccess: result.access.autoAccess,
                 userEmail: variables.userEmail,
             }
         };
@@ -52,8 +52,9 @@ firstAccess.post(`/messenger`, async (request, response) => {
         response.json(messengerResp);  
 
     } catch (error) {
+        console.error(new Error(`TCL: error: ${JSON.stringify(error)}`));
         const resp = require('../environment/responses.messenger');
-        if (error.status) response.status(error.status).send(resp[error.callback](error.variables));
+        if (error.status) response.json(resp[error.callback](error.variables));
         response.send(error);
     };
 });
