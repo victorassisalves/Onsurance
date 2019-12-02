@@ -732,7 +732,7 @@ export const indicatorEqualIndicated = variables => {
     return indicatorEqualIndicated
 };
 
-export const serverError = variables => {
+export const serverError = (variables?) => {
 
     const serverError = {
         "messages": [
@@ -1115,10 +1115,10 @@ export const giveAccessVariables = async (request, response) => {
 export const firstAccessVariables = async (request, response) => {
     try {
         const accessVariables = {
-            userEmail:checkRequestVariables('UserEmail', request.body["userEmail"], String),
-            firstName:checkRequestVariables('First Name', request.body["first name"]),
-            lastName:checkRequestVariables('Last Name', request.body["last name"]),
-            messengerId: checkRequestVariables('Messenger Id', request.body["messenger user id"], String),
+            userEmail:checkRequestVariables('UserEmail', request["userEmail"], String),
+            firstName:checkRequestVariables('First Name', request["firstName"]),
+            lastName:checkRequestVariables('Last Name', request["lastName"]),
+            messengerId: checkRequestVariables('Messenger Id', request["messengerId"], String),
         }
 
         return accessVariables
@@ -1126,6 +1126,7 @@ export const firstAccessVariables = async (request, response) => {
         /*
             TODO: Set response to messenger standards
         */
+       if (error.callback) throw error
 
         console.error(new Error(`Error to get variables for user ${request.query["email_address"]}. Error: ${error}.`));
 
@@ -1239,24 +1240,24 @@ export const saveIndicatorVariables = async (request, response) => {
     };
 };
 
-export const changeItemVariables = async (req, res) => {
+export const getItemListVariables = async (req, res) => {
     try {
-        const changeItem = {
-            userEmail: checkRequestVariables('userEmail', req.body[`userEmail`], String),
-            messengerId: checkRequestVariables("messenger user id", req.body[`messenger user id`], String)
+        const getItems = {
+            userEmail: checkRequestVariables('userEmail', req.userEmail, String),
+            messengerId: checkRequestVariables("messenger user id", req.messengerId, String)
         };
-        return changeItem;
+        return getItems;
     } catch (error) {
-        console.error(new Error(`Error to get variables for user ${req.body["userEmail"]}. Error: ${error}.`));
+        console.error(new Error(`Error to get variables for user ${req.body["userEmail"]}. Error: ${JSON.stringify(error)}.`));
 
         res.json({
             "messages": [
                 {
-                    "text": "Erro com varáveis. Verifique se os dados enviados estão corretos e tente novamente."
+                    "text": "Erro com varáveis. Vou te encaminhar para um especialista. Aguarde somente um momento."
                 },
             ],
             "redirect_to_blocks": [
-                `changeItemEndpoint`
+                `Human interaction`
             ]
         });
     };

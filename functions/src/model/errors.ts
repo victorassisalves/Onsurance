@@ -139,12 +139,17 @@ export const checkUserWallet = (userProfile, variables) => {
  */
 export const checkMessengerId = async (messengerId: string, variables: any) => {
     // tslint:disable-next-line: triple-equals
-    if (variables.messengerId != messengerId && messengerId !== null) throw {
+    if (variables.messengerId != messengerId && messengerId !== null) {
+        throw {
             status: 401, // Unauthorized
             text: `User is using a different messenger account.`,
             callback: `userUsingDiffMessenger`,
             variables: {}
         };
+    } else {
+        return;
+    }
+
 };
 
 export const checkItemProfile = async (itemProfile, variables) => {
@@ -279,15 +284,19 @@ export const checkRequestVariables = (varName, variable, variableType?, required
         case undefined:
             if (required === true){
                 throw {
+                    callback: `variableNull`,
                     errorType: "Variable is null or undefined",
-                    message: `Variable ${varName} can't be null or undefined. Check the request and try again.`
+                    message: `Variable ${varName} can't be null or undefined. Check the request and try again.`,
+                    variable: variable
                 };
             };
             return null;
         case '':
         case ' ':
             if (required === true) throw {
+                callback: `variableNull`,
                 errorType: "Variable is empty",
+                variable: variable,
                 message: `Variable ${varName} can't be empty. Check the request and try again.`
             };
             return null;

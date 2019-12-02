@@ -1,7 +1,7 @@
 import { getItemId, itemProfileDbRef } from "../database/database";
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { databaseMethods, getDatabaseInfo } from "../model/databaseMethods";
-import { checkUserProfile, checkItemInUse, checkOnboard, checkClientId, checkUserWallet, checkItemProfile } from "../model/errors";
+import { checkUserProfile, checkItemInUse, checkOnboard, checkClientId, checkUserWallet, checkItemProfile, checkItemList } from "../model/errors";
 
 
 
@@ -104,7 +104,6 @@ export const doFirstAccess = variables => {
 
 
 export const getfirstAccess = async (variables) => {
-    try {
         // DO BACKUP
             const userDbPath = await userProfileDbRefRoot(variables.userEmail);
             
@@ -113,6 +112,9 @@ export const getfirstAccess = async (variables) => {
             
             // ERROR check for owner account NOT exist
             checkUserProfile(userProfile, variables)
+
+            // Check if user have items on profile
+            checkItemList(userItems);
 
             // ERROR check for onboard made
             checkOnboard(userProfile, variables);
@@ -158,8 +160,4 @@ export const getfirstAccess = async (variables) => {
                 userItems: userItems,
                 access: access,
             }
-    } catch (error) {
-        console.error(new Error(`Error in get first access. Error: ${JSON.stringify(error)}.`));
-        throw error;
-    }
 };

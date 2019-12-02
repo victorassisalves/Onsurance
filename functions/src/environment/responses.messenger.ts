@@ -287,6 +287,7 @@ export const firstAccessResponse = variables => {
         "set_attributes": {
             "tireAccess": variables.tireAccess,
             "autoAccess": variables.autoAccess,
+            "firstAccess": true,
         },
         "redirect_to_blocks": [
             `welcome`
@@ -311,7 +312,7 @@ export const alreadyDidFirstAccess = variables => {
             },
         ],
         "redirect_to_blocks": [
-            `Ligar`
+            `welcome`
         ]
     }
     
@@ -739,7 +740,7 @@ export const indicatorEqualIndicated = variables => {
     return indicatorEqualIndicated
 };
 
-export const serverError = variables => {
+export const serverError = (variables?) => {
 
     const serverError = {
         "messages": [
@@ -918,6 +919,30 @@ export const changeItemInfo = variables => {
     
 };
 
+/**
+ * @description This function returns the user to the block of choice to resend the variables wuth problems
+ * @param block It's the block you need to send the user.
+ */
+export const variableNull = block => {
+
+    const variableNull = {
+        "messages" :[
+            {
+                "text" : `Opa!!! Não recebi todas as informações que precisava. Vamos tentar de novo.`
+            },
+            {
+                "text": `Caso não dê certo, é só digitar "especialista" que trago alguém pra te ajudar.`
+            }
+        ],
+        "redirect_to_blocks": [
+            block
+        ]
+    }
+    
+    return variableNull
+    
+};
+
 export const onlyOneItemInProfile = variables => {
     try {
 
@@ -1007,7 +1032,8 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
                         "car-brand": items[i].brand,
                         "car-model":items[i].model,
                         "status-protecao": statusProtection,
-                        "autoTitle": autoTitle
+                        "autoTitle": autoTitle,
+                        "autoAccess": true,
                     };
                     break;
                 };
@@ -1022,7 +1048,8 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
                         "tireVehicleId": items[i].itemId,
                         "tireQtd": items[i].tireQtd,
                         "tireOnsuranceStatus": statusProtection,
-                        "tireTitle": tireTitle
+                        "tireTitle": tireTitle,
+                        "tireAccess": true
                     };
                         
                     break;
@@ -1085,5 +1112,7 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
         throw serverError;
     };
 };
+
+
 
 

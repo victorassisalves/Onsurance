@@ -5,16 +5,16 @@ import { getfirstAccess } from "../controller/firstAccessController";
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { getDatabaseInfo, updateDatabaseInfo } from "../model/databaseMethods";
 import { checkMessengerId } from "../model/errors";
-import { firstAccessResponse } from "../environment/responses.messenger";
+import { firstAccessResponse, serverError, variableNull } from "../environment/responses.messenger";
 
 const firstAccess = express();
 // Automatically allow cross-origin requests
 firstAccess.use(cors({ origin: true }));
 // firstAccess.use(authMiddleware);
 
-firstAccess.post(`/messenger`, async (request, response) => {
+firstAccess.get(`/messenger`, async (request, response) => {
     try {
-        const variables = await firstAccessVariables(request, response);
+        const variables = await firstAccessVariables(request.query, response);
         console.log(request.path)
 
         // Checking messenger variable here because other requisitions may not have messenger (Onsurance app, zoho bot and so on...)
@@ -49,13 +49,19 @@ firstAccess.post(`/messenger`, async (request, response) => {
         };
 
         const messengerResp = firstAccessResponse(send.variables);
-        response.json(messengerResp);  
-
+        return response.json(messengerResp);  
+        
     } catch (error) {
         console.error(new Error(`TCL: error: ${JSON.stringify(error)}`));
         const resp = require('../environment/responses.messenger');
-        if (error.status) response.json(resp[error.callback](error.variables));
-        response.send(error);
+        if (error.callback) {
+            if (error.callback === 'variableNull') response.json(variableNull('errorInVariablesOnboard'))
+            response.json(resp[error.callback](error.variables));
+        } else {
+            const serverErrorMessenger = serverError();
+            response.send(serverErrorMessenger);
+        }
+        
     };
 });
 

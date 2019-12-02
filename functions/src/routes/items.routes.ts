@@ -1,25 +1,25 @@
 import * as express from "express";
 import * as cors from "cors";
-import { changeItemVariables } from "../environment/messenger";
+import { getItemListVariables } from "../environment/messenger";
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { getDatabaseInfo } from "../model/databaseMethods";
 import { checkMessengerId } from "../model/errors";
 import { getItemList } from "../controller/items.controller";
-import { showItemsListInGalery } from "../environment/responses.messenger";
+import { showItemsListInGalery, serverError } from "../environment/responses.messenger";
 
 const items = express();
 // Automatically allow cross-origin requests
 items.use(cors({ origin: true }));
 // onsurance.use(authMiddleware);
 
-items.post(`/list/messenger`, async (request, response) => {
+items.get(`/list/messenger`, async (request, response) => {
     console.log(request.path);
     try {
         /**
          * To Do
          *  Check for user messenger id
          */
-        const variables = await changeItemVariables(request, response);
+        const variables = await getItemListVariables(request.query, response);
 
         const userDbPath = await userProfileDbRefRoot(variables.userEmail);
 
@@ -34,8 +34,9 @@ items.post(`/list/messenger`, async (request, response) => {
     } catch (error) {
         console.error(new Error(` Error: ${JSON.stringify(error)}.`));
         const resp = require('../environment/responses.messenger');
-        if (error.status) response.status(error.status).json(resp[error.callback](error.variables));
-        response.send(error);
+        if (error.callback) response.json(resp[error.callback](error.variables));
+        const serverErrorMessenger = serverError()
+        response.send(serverErrorMessenger);
     };
 });
 

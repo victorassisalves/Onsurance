@@ -34,11 +34,13 @@ export const getItemList = async (variables) => {
 
         const itemsInUserProfile = await getDatabaseInfo(itemsInUserDbPath);
         checkItemList(itemsInUserProfile);
+
         const itemsArray = Object.keys(itemsInUserProfile);
         const resultArray = [];
 
-        // Normal for is the only that accepts async callback
+        // Normal (for) is the only that accepts async callback
         // this first for iterates over itens on profile. Vehicles and tires
+
         for (let i = 0; i < itemsArray.length; i++) {
             const item = itemsArray[i];
             switch (item) {

@@ -1,8 +1,5 @@
-const functions = require('firebase-functions');
-import {newQuotation} from "./model/quotation";
+import * as functions from 'firebase-functions';
 
-const express = require('express');
-const cors = require('cors');
 
 
 
@@ -79,6 +76,9 @@ exports.timezoneExperiment = functions.https.onRequest(async (request, response)
 });
 
 exports.quotation = functions.https.onRequest(async (request, response) => {
+    const newQuotation = require("./model/quotation.auto").newQuotation;
+
+
     interface Result {
         privateApi: Object;
         publicApi: Object
@@ -578,27 +578,38 @@ exports.report = functions.https.onRequest(async (request, response) => {
 });
 
 
+// Remember to always return the functions    **********
+
 
 // -------------- ONSURANCE PNEUS ---------------
 
 // Expose Express API ONBOARD as single Cloud Function for all Onboard Operations:
-import onboard = require("./routes/onboard.routes");
-exports.onboard = functions.https.onRequest(onboard);
+exports.onboard = functions.https.onRequest(async (request, response) => {
+    const onboard = require("./routes/onboard.routes");
+    return await onboard(request, response);
+
+});
 
 
 
 // -------------- FIRST ACCESS ---------------
 
-import firstAccess = require("./routes/firstAccess.routes");
-exports.firstAccess = functions.https.onRequest(firstAccess);
+export const firstAccess = functions.https.onRequest(async(request, response) => {
+    const firstAccess = require("./routes/firstAccess.routes");
+    return await firstAccess(request, response);
+});
 
 
 // -------------- GET ITEMS ------------------
 
-import items = require("./routes/items.routes");
-exports.items = functions.https.onRequest(items);
+exports.items = functions.https.onRequest(async (request, response) => {
+    const items = require("./routes/items.routes");
+    return await items(request, response);
+});
 
 // -------------- GET ITEMS ------------------
 
-import quote = require("./routes/quotation.routes");
-exports.quote = functions.https.onRequest(quote);
+exports.quote = functions.https.onRequest(async (request, response) => {
+    const quote = require("./routes/quotation.routes");
+    return await quote(request, response);
+});
