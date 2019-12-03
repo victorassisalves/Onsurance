@@ -16,7 +16,6 @@ export const ignition = (variables) => {
 
             // Get user profile on personal database
             const userProfile = await dbMethods.getDatabaseInfo(database);
-            console.log("TCL: returnIgnition -> userProfile", userProfile)
 
             // Check if user exists. If Not, throw error
             //CHECK FOR ONBOARD???

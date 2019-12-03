@@ -185,7 +185,7 @@ export const clientOnboard = async (variables: VehicleOnboardInterface) => {
             const getFullUserProfile = await userMethods.getDatabaseInfo(userDbPath)
             console.log("TCL: doBackup -> getFullUserProfile", getFullUserProfile)
             // ERROR check
-            checkUserProfile(getFullUserProfile, variables.userProfile)
+            checkUserProfile(getFullUserProfile, variables.userProfile.userEmail)
             
             const getFullItem = await itemMethods.getDatabaseInfo(itemDbPath)
             console.log("TCL: doBackup -> getFullItem", getFullItem)
@@ -229,39 +229,22 @@ export const tireOnboard = (variables) => {
     return new Promise(async (resolve, reject) => {
         try {
             const onboardVariables = await tireOnboardVariables(variables);
-            /**
-             * TODO: 
-             *  @todo 
-             * 
-            */
 
             // ------------ DB PATHS --------
 
-
             const userProfilePath = await userProfileDbRefRoot(onboardVariables.userEmail);
-
-
             const tireProfilePath = await tiresInItemDbPath(onboardVariables.vehicleType, onboardVariables.plate).child("profile");
-            
-            const itemId = await getItemId(onboardVariables.plate);
-            const tiresInUserProfilePath = await userProfileDbRefRoot(onboardVariables.userEmail).child(`items/tires/${itemId}`);
 
 
             // ------------ USER PROFILE -----
             const userProfileBackup = await getDatabaseInfo(userProfilePath);
             console.log(`TCL: tireOnboard -> userProfileBackup`, JSON.stringify(userProfileBackup));
-            checkUserProfile(userProfileBackup, onboardVariables);
-
-
-            // ------------ ITEM IN USER PROFILE ---
-            const tireInUserProfileBackup = await getDatabaseInfo(tiresInUserProfilePath);
-            console.log(`TCL: tireOnboard -> tireInUserProfileBackup`, JSON.stringify(tireInUserProfileBackup));
+            checkUserProfile(userProfileBackup, onboardVariables.userEmail);
 
 
             // ------------ ITEMS -----------
             const tireProfileBackup = await getDatabaseInfo(tireProfilePath);
-            console.log(`TCL: tireOnboard -> tireProfileBackup`, JSON.stringify(tireProfileBackup));
-
+            // console.log(`TCL: tireOnboard -> tireProfileBackup`, JSON.stringify(tireProfileBackup));
 
 
             // ------------ EXECUTE ONBOARD --------

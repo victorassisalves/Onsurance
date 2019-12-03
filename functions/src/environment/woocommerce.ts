@@ -6,7 +6,7 @@ export const getVariables = (request) => {
     const orderStatus = wooRequestParsed.status
     let orderPaid: boolean;
 
-     orderStatus === "completed" ? orderPaid = true : orderPaid = false;
+     orderStatus === "completed" || "processing" ? orderPaid = true : orderPaid = false;
     
     const woocommerceVariables = {
         idClient: wooRequestParsed.customer_id, 

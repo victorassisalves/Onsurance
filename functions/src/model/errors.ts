@@ -5,7 +5,7 @@
  * @param {Object} userProfile Is the profile we get from database
  * @param {string} userEmail Is the userEmail to send in response 
  */
-export const checkUserProfile = (userProfile, userEmail) => {
+export const checkUserProfile = (userProfile, userEmail: string) => {
     // Error check for owner account NOT exist
     switch (userProfile) {
         case null:
