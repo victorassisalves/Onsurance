@@ -1,8 +1,7 @@
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { getDatabaseInfo } from "../model/databaseMethods";
-import { checkUserProfile, checkOnboard, checkItemList} from "../model/errors";
+import { checkUserProfile, checkOnboard, checkItemList, checkUserEmail} from "../model/errors";
 import { itemProfileDbRef } from "../database/auto.database";
-import { vehicleData } from "../report/reportDataVehicles";
 import { tiresInItemDbPath } from "../database/tire.database";
 
 
@@ -92,3 +91,78 @@ export const getItemList = async (variables) => {
         throw error;
     }
 }
+
+/**
+ * @description Gets the list of auto vehicles on user profile
+ * @param variables 
+ */
+export const getAutoList = (variables): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const userDbPath = await userProfileDbRefRoot(variables.userEmail);
+
+            const userProfile = await getDatabaseInfo(userDbPath.child(`/personal`));
+            checkUserProfile(userProfile, variables.userEmail);
+            checkOnboard(userProfile, variables.userEmail);
+            const userItemsList = await getDatabaseInfo(userDbPath.child(`/items`));
+            checkItemList(userItemsList);
+
+            const vehicles = Object.keys(userItemsList);
+
+
+            if (vehicles.length === 1) {
+                if (vehicles[0] === "tires") {
+                    return resolve({
+                        status: 204, // No content
+                        text: `User only have tires in profile. `,
+                        callback: 'itemTypeTire',
+                        variables: {}
+                    });
+                };
+                const itemInUse = userItemsList[`${vehicles[0]}`];
+                const itemDbPath = await itemProfileDbRef(itemInUse.itemId, itemInUse.type, itemInUse.innerType);
+                const itemProfile = await getDatabaseInfo(itemDbPath.child("profile"));
+                return resolve({
+                    status: 204, // No content
+                    text: `User only have vehicle ${vehicles[0]} in profile.`,
+                    callback: 'onlyOneVehicleInProfile',
+                    variables: {
+                        itemProfile: itemProfile,
+                        vehiclePlate: userItemsList[`${vehicles[0]}`].itemId
+                    }
+                });
+            };
+
+            let vehiclePlates = [];
+            vehicles.forEach(element => {
+                if (element === "tires"){
+                    return;
+                } else {
+                    console.log("TCL: element", element)
+                    console.log("TCL: element id", userItemsList[`${element}`].itemId)
+
+                    vehiclePlates.push(userItemsList[`${element}`].itemId);
+                };
+                
+            });
+
+            console.log("TCL: vehiclePlates", vehiclePlates);
+
+            return resolve({
+                status: 200,
+                text: `Items to change ${vehiclePlates}`,
+                callback: 'changeVehicleOptions',
+                variables: {
+                    vehiclePlates: vehiclePlates,
+                }
+            });
+        } catch (error) {
+            console.error("TCL: error", error)
+            if (error.callback) reject(error)
+            throw reject({
+                status: 500, // server error
+                text: `Error getting items list on profile.`
+            });
+        };
+    });
+};

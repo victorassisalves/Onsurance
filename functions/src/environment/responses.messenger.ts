@@ -812,11 +812,14 @@ export const alreadyHaveIndicator = variables => {
 
 */
 
-
-export const changeItem = async variables => {
+/**
+ * @description This function returns the response for the messenger to change the vehicle in protection
+ * @param variables Conatins the array of vehicle plates
+ */
+export const changeVehicleOptions = variables => {
 
     let replies = [];
-    await variables.vehiclePlates.forEach(element => {
+    variables.vehiclePlates.forEach(element => {
         const reply = {
             "title": element,
             "set_attributes": {
@@ -836,7 +839,7 @@ export const changeItem = async variables => {
     const changeItemResponse = {
         "messages": [
             {
-                "text": "Qual opção deseja escolher?",
+                "text": "Qual veículo deseja escolher?",
                 "quick_replies": replies,
                 "quick_reply_options": {
                   "process_text_by_ai": false,
@@ -849,17 +852,17 @@ export const changeItem = async variables => {
     return changeItemResponse
 };
 
-export const changeItemInfo = variables => {
+/**
+ * @descriptionThis functions returns the chatfuel callback to set item variables
+ * @param variables Holds the item profile data
+ */
+export const changeVehicleInfo = variables => {
     try {
-        console.log("TCL: variables", variables)
-        console.log("TCL: variables.itemProfile.protectiondata.protectionStatus", variables.itemProfile.protectionData.protectionStatus)
-        console.log("TCL: variables.itemProfile.protectiondata.protectionStatus.theft", variables.itemProfile.protectionData.protectionStatus.theft)
 
         let protectionStatus = "ON"
         if (variables.itemProfile.protectionData.protectionStatus.theft === false) {
             protectionStatus = "OFF"
         };
-        console.log("TCL: protectionStatus", protectionStatus)
 
         const changeItemInfoResponse = {
             "messages" :[
@@ -943,7 +946,7 @@ export const variableNull = block => {
     
 };
 
-export const onlyOneItemInProfile = variables => {
+export const onlyOneVehicleInProfile = variables => {
     try {
 
         const onlyOneItemInProfileResponse = {

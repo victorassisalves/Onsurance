@@ -584,16 +584,14 @@ exports.report = functions.https.onRequest(async (request, response) => {
 // -------------- ONSURANCE PNEUS ---------------
 
 // Expose Express API ONBOARD as single Cloud Function for all Onboard Operations:
-exports.onboard = functions.https.onRequest(async (request, response) => {
+export const onboard = functions.https.onRequest(async (request, response) => {
     const onboard = require("./routes/onboard.routes");
     return await onboard(request, response);
 
 });
 
 
-
 // -------------- FIRST ACCESS ---------------
-
 export const firstAccess = functions.https.onRequest(async(request, response) => {
     const firstAccess = require("./routes/firstAccess.routes");
     return await firstAccess(request, response);
@@ -601,15 +599,14 @@ export const firstAccess = functions.https.onRequest(async(request, response) =>
 
 
 // -------------- GET ITEMS ------------------
-
-exports.items = functions.https.onRequest(async (request, response) => {
+export const items = functions.https.onRequest(async (request, response) => {
     const items = require("./routes/items.routes");
     return await items(request, response);
 });
 
-// -------------- GET ITEMS ------------------
 
-exports.quote = functions.https.onRequest(async (request, response) => {
+// -------------- NEW QUOTE ------------------
+export const quote = functions.https.onRequest(async (request, response) => {
     const quote = require("./routes/quotation.routes");
     return await quote(request, response);
 });

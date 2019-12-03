@@ -808,7 +808,7 @@ export const alreadyHaveIndicator = variables => {
 export const changeItem = async variables => {
 
     let replies = [];
-    await variables.vehiclePlates.forEach(element => {
+    variables.vehiclePlates.forEach(element => {
         const reply = {
             "title": element,
             "set_attributes": {

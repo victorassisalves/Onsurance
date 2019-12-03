@@ -4,7 +4,7 @@ import { getItemListVariables } from "../environment/messenger";
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { getDatabaseInfo } from "../model/databaseMethods";
 import { checkMessengerId } from "../model/errors";
-import { getItemList } from "../controller/items.controller";
+import { getItemList, getAutoList } from "../controller/items.controller";
 import { showItemsListInGalery, serverError } from "../environment/responses.messenger";
 
 const items = express();
@@ -40,14 +40,31 @@ items.get(`/list/messenger`, async (request, response) => {
     };
 });
 
-items.get(`/messenger`, async (request, response) => {
+/**
+ * @description Gets the list of automobile vehicles to give it back for messenger in a quick reply form
+ * @todo Response itemTypeTire for only having item tire on profile
+ */
+items.get(`/list/auto/messenger`, async (request, response) => {
     try {
         console.log(request.path);
-        response.send(request.path);
+        const variables = await getItemListVariables(request.query, response);
+        const userDbPath = await userProfileDbRefRoot(variables.userEmail);
+
+        const messengerId = await getDatabaseInfo(userDbPath.child("/personal/messengerId"));
+        await checkMessengerId(messengerId, variables);
+        
+        const result = await getAutoList(variables);
+        console.log(`TCL: result`, result);
+        const resp = await require('../environment/responses.messenger');
+
+        const messengerResponse = await resp[result.callback](result.variables);
+        response.send(messengerResponse);
     } catch (error) {
+        console.error(new Error(` Error: ${JSON.stringify(error)}.`));
         const resp = require('../environment/responses.messenger');
-        if (error.status) response.status(error.status).send(resp[error.callback](error.variables));
-        response.send(error);
+        if (error.callback) response.json(resp[error.callback](error.variables));
+        const serverErrorMessenger = serverError()
+        response.send(serverErrorMessenger);
     };
 });
 
