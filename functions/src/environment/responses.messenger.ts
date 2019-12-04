@@ -290,7 +290,7 @@ export const firstAccessResponse = variables => {
             "firstAccess": true,
         },
         "redirect_to_blocks": [
-            `welcome`
+            `getItems`
         ]
     };
     
@@ -312,7 +312,7 @@ export const alreadyDidFirstAccess = variables => {
             },
         ],
         "redirect_to_blocks": [
-            `welcome`
+            `getItems`
         ]
     }
     
@@ -813,6 +813,46 @@ export const alreadyHaveIndicator = variables => {
 */
 
 /**
+ * @description This function returns the response for the messenger to change the vehtiresicle in protection
+ * @param variables Conatins the array of vehicle plates
+ */
+export const changeTireOptions = variables => {
+
+    let replies = [];
+    variables.vehiclePlates.forEach(element => {
+        const reply = {
+            "title": element,
+            "set_attributes": {
+              "tireVehicleId": element
+            }
+        };
+        replies.push(reply)
+    });
+    replies.push({
+        "title":"Falar com Especialista",
+        "block_names": ["Human interaction"]
+      },
+      {
+        "title":"Menu de Opções",
+        "block_names": ["Menu de opções"]
+      });
+    const changeItemResponse = {
+        "messages": [
+            {
+                "text": "Qual veículo deseja segurar os pneus?",
+                "quick_replies": replies,
+                "quick_reply_options": {
+                  "process_text_by_ai": false,
+                  "text_attribute_name": "tireVehicleId"
+                }
+            }
+        ],
+    }
+    
+    return changeItemResponse
+};
+
+/**
  * @description This function returns the response for the messenger to change the vehicle in protection
  * @param variables Conatins the array of vehicle plates
  */
@@ -946,7 +986,7 @@ export const variableNull = block => {
     
 };
 
-export const onlyOneVehicleInProfile = variables => {
+export const oneVehicleInProfile = variables => {
     try {
 
         const onlyOneItemInProfileResponse = {
@@ -966,6 +1006,9 @@ export const onlyOneVehicleInProfile = variables => {
                 "car-model": variables.itemProfile.model,
                 "itemInUse": variables.vehiclePlate
             },
+            "redirect_to_blocks": [
+                "protection Router"
+            ]
         }
         
         return onlyOneItemInProfileResponse
@@ -1010,47 +1053,82 @@ export const onlyOneVehicleInProfile = variables => {
 };
 
 /**
+ * @description This function returns the response for messenger informing the user that in his profile, only have 1 tire inseured vehicle
+ * @param variables The tires insurance information
+ */
+export const oneTireInProfile = variables => {
+
+    const oneTireInProfile = {
+        "messages" :[
+            {
+                "text" : `Opa!!! Encontrei o veículo ${variables.vehiclePlate} com acesso a seguro de pneus em seu perfil.`
+            },
+            {
+                "text": `Pode utilizar seu Onsurance Pneus normalmente.`
+            },
+            {
+                "text": `Caso tenha comprado o Onsurance pra pneus de outro veículo ou para o veículo em sí, entre em contato com nossos especialistas para resolver esse problema.`,
+            }
+        ],
+        "set_attributes": {
+            "tireVehicleId": variables.vehiclePlate,
+            "tireQtd": variables.itemProfile.tireQtd,
+            "tireAccess": true,
+        },
+        "redirect_to_blocks": [
+            "protection Router"
+        ]
+    }
+    
+    return oneTireInProfile
+    
+};
+
+
+/**
  * @description This function returns the galery with the items in user profile.
  * @param {Array<any>} items Its the list of items to send to user profile
  */
 export const showItemsListInGalery = async (items: Array<any>): Promise<Object> => {
     try {
         let atributtes = {}
-        let statusProtection = 'ON';
-        let autoTitle = "Quando desejar ligar o Onsurance do seu veículo é só clicar em Onsurance ON";
-        let tireTitle = "Quando desejar ligar o Onsurance do(s) seu(s) Pneu(s) é só clicar em Onsurance ON";
+        let autoStatusProtection = 'OFF';
+        let tireStatusProtection = 'OFF';
+        let autoTitle = "Quando desejar ligar o Onsurance do seu veículo é só clicar em Onsurance Auto";
+        let tireTitle = "Quando desejar ligar o Onsurance Pneus é só clicar em Onsurance Pneus";
         let block = "protection router";
         for (let i = 0; i < items.length; i++) {
 
             switch (items[i].type) {
-            
                 case "vehicle": {
-                    if (items[i].protectionStatus) {
-                        statusProtection = "OFF";
-                        autoTitle = "Quando desejar desligar o Onsurance do seu veículo é só clicar em Onsurance OFF";
+                    console.log(`TCL: items[i].protectionStatus`, items[i].protectionStatus);
+                    if (items[i].protectionStatus === true) {
+                        autoStatusProtection = "ON";
+                        autoTitle = "Quando desejar desligar o Onsurance do seu veículo é só clicar em Onsurance Auto";
                     }   
                 atributtes = {
                         ...atributtes,
                         "itemInUse": items[i].itemId,
                         "car-brand": items[i].brand,
                         "car-model":items[i].model,
-                        "status-protecao": statusProtection,
+                        "status-protecao": autoStatusProtection,
                         "autoTitle": autoTitle,
                         "autoAccess": true,
                     };
                     break;
                 };
                 case "tires": {
+                    console.log(`TCL: items[i].protectionStatus`, items[i].protectionStatus);
 
-                    if (items[i].protectionStatus) {
-                        statusProtection = "OFF";
-                        tireTitle = "Quando desejar desligar o Onsurance do(s) seu(s) Pneu(s) é só clicar em Onsurance OFF";
+                    if (items[i].protectionStatus === true) {
+                        tireStatusProtection = "ON";
+                        tireTitle = "Quando desejar desligar o Onsurance Pneus é só clicar em Onsurance Pneus";
                     } 
                     atributtes = {
                         ...atributtes,
                         "tireVehicleId": items[i].itemId,
                         "tireQtd": items[i].tireQtd,
-                        "tireOnsuranceStatus": statusProtection,
+                        "tireOnsuranceStatus": tireStatusProtection,
                         "tireTitle": tireTitle,
                         "tireAccess": true
                     };

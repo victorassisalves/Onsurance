@@ -96,6 +96,69 @@ export const getItemList = async (variables) => {
  * @description Gets the list of auto vehicles on user profile
  * @param variables 
  */
+export const getTiresList = (variables): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const userDbPath = await userProfileDbRefRoot(variables.userEmail);
+
+            const userProfile = await getDatabaseInfo(userDbPath.child(`/personal`));
+            checkUserProfile(userProfile, variables.userEmail);
+            checkOnboard(userProfile, variables.userEmail);
+            const userTiresList = await getDatabaseInfo(userDbPath.child(`/items/tires`));
+            checkItemList(userTiresList);
+
+            const tires = Object.keys(userTiresList);
+
+            if (tires.length === 1) {
+
+                const itemInUse = userTiresList[`${tires[0]}`];
+
+                const tireDbPath = await tiresInItemDbPath(itemInUse.vehicleType, itemInUse.itemId);
+                const itemProfile = await getDatabaseInfo(tireDbPath.child("profile/protectionData"));
+                return resolve({
+                    status: 204, // No content
+                    text: `User only have vehicle ${tires[0]} in profile.`,
+                    callback: 'oneTireInProfile',
+                    variables: {
+                        itemProfile: itemProfile,
+                        vehiclePlate: userTiresList[`${tires[0]}`].itemId
+                    }
+                }); 
+            };
+
+            let vehiclePlates = [];
+            tires.forEach(element => {
+                if (element === "tires"){
+                    return;
+                } else {
+                    vehiclePlates.push(userTiresList[`${element}`].itemId);
+                };
+                
+            });
+
+            return resolve({
+                status: 200,
+                text: `Items to change ${vehiclePlates}`,
+                callback: 'changeTireOptions',
+                variables: {
+                    vehiclePlates: vehiclePlates,
+                }
+            });
+        } catch (error) {
+            console.error("TCL: error", error)
+            if (error.callback) reject(error)
+            throw reject({
+                status: 500, // server error
+                text: `Error getting items list on profile.`
+            });
+        };
+    });
+};
+
+/**
+ * @description Gets the list of auto vehicles on user profile
+ * @param variables 
+ */
 export const getAutoList = (variables): Promise<any> => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -107,30 +170,41 @@ export const getAutoList = (variables): Promise<any> => {
             const userItemsList = await getDatabaseInfo(userDbPath.child(`/items`));
             checkItemList(userItemsList);
 
-            const vehicles = Object.keys(userItemsList);
+            const items = Object.keys(userItemsList);
 
+            const vehicles = items.filter((item, index) => {
+                return item !== "tires";
+            });
 
-            if (vehicles.length === 1) {
-                if (vehicles[0] === "tires") {
-                    return resolve({
-                        status: 204, // No content
-                        text: `User only have tires in profile. `,
-                        callback: 'itemTypeTire',
-                        variables: {}
-                    });
-                };
+            const onlyOneVehicle = async () => {
                 const itemInUse = userItemsList[`${vehicles[0]}`];
                 const itemDbPath = await itemProfileDbRef(itemInUse.itemId, itemInUse.type, itemInUse.innerType);
                 const itemProfile = await getDatabaseInfo(itemDbPath.child("profile"));
                 return resolve({
                     status: 204, // No content
                     text: `User only have vehicle ${vehicles[0]} in profile.`,
-                    callback: 'onlyOneVehicleInProfile',
+                    callback: 'oneVehicleInProfile',
                     variables: {
                         itemProfile: itemProfile,
                         vehiclePlate: userItemsList[`${vehicles[0]}`].itemId
                     }
-                });
+                }); 
+            };
+            
+            if (items.length === 1) {
+                if (items[0] === "tires") {
+                    return resolve({
+                        status: 204, // No content
+                        text: `User only have tires in profile. `,
+                        callback: 'oneTireInProfile',
+                        variables: {}
+                    });
+                };
+                return onlyOneVehicle();
+            } else {
+                if (vehicles.length === 1) {
+                    return onlyOneVehicle();
+                }
             };
 
             let vehiclePlates = [];
