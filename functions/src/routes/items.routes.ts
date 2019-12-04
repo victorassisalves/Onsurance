@@ -1,10 +1,10 @@
 import * as express from "express";
 import * as cors from "cors";
-import { getItemListVariables } from "../environment/messenger.variables";
+import { getItemListVariables, getTiresInfoVariables } from "../environment/messenger.variables";
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { getDatabaseInfo } from "../model/databaseMethods";
 import { checkMessengerId } from "../model/errors";
-import { getItemList, getAutoList, getTiresList } from "../controller/items.controller";
+import { getItemList, getAutoList, getTiresList, getTire } from "../controller/items.controller";
 import { showItemsListInGalery, serverError } from "../environment/responses.messenger";
 
 const items = express();
@@ -96,4 +96,38 @@ items.get(`/list/auto/messenger`, async (request, response) => {
     };
 });
 
+
+
+export interface GetTire {
+    userEmail: string;
+    messengerId: string
+    tireVehicleId: string
+};
+
+/**
+ * @interface 
+ */
+items.get('/tire/messenger', async (req, res) => {
+    try {
+        console.log(req.path);
+        const variables: GetTire = await getTiresInfoVariables(req.query, res);
+        const userDbPath = await userProfileDbRefRoot(variables.userEmail);
+
+        const messengerId = await getDatabaseInfo(userDbPath.child("/personal/messengerId"));
+        await checkMessengerId(messengerId, variables);
+        
+        const result = await getTire(variables);
+        console.log(`TCL: result`, result);
+        const resp = await require('../environment/responses.messenger');
+
+        const messengerResponse = await resp[result.callback](result.variables);
+        res.send(messengerResponse);
+    } catch (error) {
+        console.error(new Error(` Error: ${JSON.stringify(error)}.`));
+        const resp = require('../environment/responses.messenger');
+        if (error.callback) res.json(resp[error.callback](error.variables));
+        const serverErrorMessenger = serverError()
+        res.send(serverErrorMessenger);
+    };
+});
 module.exports = items;

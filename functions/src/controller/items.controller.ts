@@ -1,27 +1,19 @@
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { getDatabaseInfo } from "../model/databaseMethods";
-import { checkUserProfile, checkOnboard, checkItemList, checkUserEmail} from "../model/errors";
+import { checkUserProfile, checkOnboard, checkItemList, checkTireProfile} from "../model/errors";
 import { itemProfileDbRef } from "../database/auto.database";
-import { tiresInItemDbPath } from "../database/tire.database";
+import { tiresInItemDbPath, getItemId } from "../database/tire.database";
+import { GetTire } from "../routes/items.routes";
+import { TireInUserProfile, TireItemProfile, TireProtectionData } from "../model/tires.model";
 
 
 /**
  * @description This function gets the list of items wich the user can access
  * @param variables 
+ * @todo check if user have permission to access the item
  */
 export const getItemList = async (variables) => {
     try {
-
-        /**
-         * Todo: 
-         *  get user profile
-         *      check if profile exists
-         *      check onboard
-         *  get user items list
-         *      check if user is owner or have access granted
-         *      check if have items
-         *      
-         */
 
         const userDbPath = await userProfileDbRefRoot(variables.userEmail);
         const itemsInUserDbPath = userDbPath.child('items');
@@ -229,6 +221,50 @@ export const getAutoList = (variables): Promise<any> => {
                 callback: 'changeVehicleOptions',
                 variables: {
                     vehiclePlates: vehiclePlates,
+                }
+            });
+        } catch (error) {
+            console.error("TCL: error", error)
+            if (error.callback) reject(error)
+            throw reject({
+                status: 500, // server error
+                text: `Error getting items list on profile.`
+            });
+        };
+    });
+};
+
+
+
+/**
+ * @description Gets the list of auto vehicles on user profile
+ * @param variables 
+ * @todo create response for returning tire for messenger
+ */
+export const getTire = (variables: GetTire): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const userDbPath = await userProfileDbRefRoot(variables.userEmail);
+
+            const userProfile = await getDatabaseInfo(userDbPath.child(`/personal`));
+            checkUserProfile(userProfile, variables.userEmail);
+            checkOnboard(userProfile, variables.userEmail);
+
+            const itemId = await getItemId(variables.tireVehicleId)
+            const userTires: TireInUserProfile = await getDatabaseInfo(userDbPath.child(`/items/tires/${itemId}`));
+            checkItemList(userTires);
+
+            const tireDbPath = await tiresInItemDbPath(userTires.vehicleType, userTires.itemId)
+            const tireProfile: TireProtectionData = await getDatabaseInfo(tireDbPath.child("profile/protectionData"));
+            checkTireProfile(tireProfile, variables)
+
+            return resolve({
+                status: 200,
+                text: `Items to change`,
+                callback: 'changeTireOptions',
+                variables: {
+                    tireVehicleId: variables.tireVehicleId,
+                    tireQtd: tireProfile.tireQtd
                 }
             });
         } catch (error) {

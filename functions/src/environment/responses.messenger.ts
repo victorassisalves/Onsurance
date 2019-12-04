@@ -990,7 +990,7 @@ export const variableNull = block => {
 export const oneVehicleInProfile = variables => {
     try {
 
-        const onlyOneItemInProfileResponse = {
+        const response = {
             "messages" :[
                 {
                     "text" : `Opa!!! Encontrei o veículo ${variables.vehiclePlate} em seu perfil.`
@@ -1009,11 +1009,11 @@ export const oneVehicleInProfile = variables => {
                 "autoAccess": true
             },
             "redirect_to_blocks": [
-                "protection Router"
+                "protectionRouter"
             ]
         }
         
-        return onlyOneItemInProfileResponse
+        return response;
         
     } catch (error) {
         const serverError = {
@@ -1069,7 +1069,7 @@ export const oneTireInProfile = variables => {
                 "text": `Pode utilizar seu Onsurance Pneus normalmente.`
             },
             {
-                "text": `Caso tenha comprado o Onsurance pra pneus de outro veículo ou para o veículo em sí, entre em contato com nossos especialistas para resolver esse problema.`,
+                "text": `Caso tenha comprado o Onsurance pra pneus de outro veículo, entre em contato com nossos especialistas para resolver esse problema.`,
             }
         ],
         "set_attributes": {
@@ -1078,7 +1078,7 @@ export const oneTireInProfile = variables => {
             "tireAccess": true,
         },
         "redirect_to_blocks": [
-            "protection Router"
+            "protectionRouter"
         ]
     }
     
@@ -1098,7 +1098,7 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
         let tireStatusProtection = 'OFF';
         let autoTitle = "Quando desejar ligar o Onsurance do seu veículo é só clicar em Onsurance Auto";
         let tireTitle = "Quando desejar ligar o Onsurance Pneus é só clicar em Onsurance Pneus";
-        let block = "protection router";
+        let block = "protectionRouter";
         for (let i = 0; i < items.length; i++) {
 
             switch (items[i].type) {

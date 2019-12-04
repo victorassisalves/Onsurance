@@ -152,12 +152,35 @@ export const checkMessengerId = async (messengerId: string, variables: any) => {
 
 };
 
-export const checkItemProfile = async (itemProfile, variables) => {
+/**
+ * @description This functions check is Vehicle exists on Item DB Path
+ * @param itemProfile It's the item profile that comes from item db. 
+ * @param variables It's the request variables that come from payload
+ * @todo change this function name to checkVehicleProfile
+ */
+export const checkItemProfile = (itemProfile, variables) => {
     // ERROR check for non existing ItemProfile
     if (itemProfile === null || itemProfile === undefined) throw {
         status: 404, // Not found
         text: `Error checking item profile for ${variables.userEmail}. Check if user made onboard for item ${variables.itemInUse} or the data is correct.`,
         callback: 'noItemProfile',
+        variables: {
+            itemInUse: variables.itemInUse
+        }
+    };
+};
+
+/**
+ * @description This functions check if Tire exists on DB Path
+ * @param tireProfile It's the item profile that comes from item db. 
+ * @param variables It's the request variables that come from payload
+ */
+export const checkTireProfile = (tireProfile, variables) => {
+    // ERROR check for non existing ItemProfile
+    if (tireProfile === null || tireProfile === undefined) throw {
+        status: 404, // Not found
+        text: `Error checking tire profile for ${variables.userEmail}. Check if user made onboard for item ${variables.tireVehicleId} or the data is correct.`,
+        callback: 'noTireProfile',
         variables: {
             itemInUse: variables.itemInUse
         }

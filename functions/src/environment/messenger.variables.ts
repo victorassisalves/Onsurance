@@ -11,44 +11,6 @@ import { checkRequestVariables } from "../model/errors";
         create a chatfuel block for every response
         Fix the quick replies 
 */
-
-const activationFail = (protectionVariables) => {
-    const activationFail = {
-        "messages": [
-            {
-                "text": `Opa ${protectionVariables.firstName}. Não consegui ligar sua proteção. Vou trazer a função de Ligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
-            }
-        ],
-        "set_attributes":
-            {
-                "status-protecao": `OFF`,
-            },
-        "redirect_to_blocks": [
-            "Ligar"
-        ]
-    }
-    return activationFail
-}
-
-const deactivationFail = (protectionVariables, response) => {
-    const deactivationFail = {
-        "messages": [
-            {
-                "text": `Opa ${protectionVariables.firstName}. Não consegui desligar sua proteção. Vou trazer a função de Desligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
-            }
-        ],
-        "set_attributes":
-        {
-            "status-protecao": "ON",
-        },
-        "redirect_to_blocks": [
-            "Desligar"
-        ]
-    }
-    
-    response.json(deactivationFail)
-};
-
 export const singleDeactivation = variables => {
 
     const singleDeactivation = {
@@ -259,7 +221,7 @@ export const noOnboard = variables => {
             },
         ],
         "redirect_to_blocks": [
-            `Informar Dados`
+            `informarDados`
         ]
     }
     
@@ -1137,7 +1099,7 @@ export const firstAccessVariables = async (request, response) => {
                 },
             ],
             "redirect_to_blocks": [
-                `Informar Dados`
+                `errorInVariablesOnboard`
             ]
         });
     }
@@ -1244,7 +1206,7 @@ export const getItemListVariables = async (req, res) => {
     try {
         const getItems = {
             userEmail: checkRequestVariables('userEmail', req.userEmail, String),
-            messengerId: checkRequestVariables("messenger user id", req.messengerId, String)
+            messengerId: checkRequestVariables("messengerId", req.messengerId, String)
         };
         return getItems;
     } catch (error) {
@@ -1289,7 +1251,36 @@ export const getItemInfoVariables = async (req, res) => {
     };
 };
 
+/**
+ * @description This function returns the treated variables for usage. Get the specific tire information for specific vehicle
+ * @param req The requested variables from ulr params (req.query)
+ * @param res Response form endpoint
+ */
+export const getTiresInfoVariables = async (req, res) => {
+    try {
+        const getTireInfo = {
+            userEmail: checkRequestVariables('userEmail', req.userEmail, String),
+            messengerId: checkRequestVariables("messenger user id", req.messengerId, String),
+            tireVehicleId: checkRequestVariables("tire vehicle Id", req.tireVehicleId, String),
+        };
 
+        
+        return getTireInfo;
+    } catch (error) {
+        console.error(new Error(`Error to get variables for user ${req.body["userEmail"]}. Error: ${JSON.stringify(error)}.`));
+
+        res.json({
+            "messages": [
+                {
+                    "text": "Erro com varáveis. Vou te encaminhar para um especialista. Aguarde somente um momento."
+                },
+            ],
+            "redirect_to_blocks": [
+                `changeTire`
+            ]
+        });
+    };
+};
 
 
 

@@ -581,6 +581,14 @@ exports.report = functions.https.onRequest(async (request, response) => {
 // Remember to always return the functions    **********
 
 
+/**
+ * @todo Liga/desliga Messenger
+ * @todo thirdParty messenger
+ *      @todo Get messenger ID and other data to account, specify whta product can share.
+ * @todo indication messenger
+ * @todo
+ */
+
 // -------------- ONSURANCE PNEUS ---------------
 
 // Expose Express API ONBOARD as single Cloud Function for all Onboard Operations:
