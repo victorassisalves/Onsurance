@@ -288,9 +288,10 @@ export const firstAccessResponse = variables => {
             "tireAccess": variables.tireAccess,
             "autoAccess": variables.autoAccess,
             "firstAccess": true,
+            "user": "usuario"
         },
         "redirect_to_blocks": [
-            `getItems`
+            "getItems"
         ]
     };
     
@@ -1004,7 +1005,8 @@ export const oneVehicleInProfile = variables => {
             "set_attributes": {
                 "car-brand": variables.itemProfile.brand,
                 "car-model": variables.itemProfile.model,
-                "itemInUse": variables.vehiclePlate
+                "itemInUse": variables.vehiclePlate,
+                "autoAccess": true
             },
             "redirect_to_blocks": [
                 "protection Router"
@@ -1101,7 +1103,6 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
 
             switch (items[i].type) {
                 case "vehicle": {
-                    console.log(`TCL: items[i].protectionStatus`, items[i].protectionStatus);
                     if (items[i].protectionStatus === true) {
                         autoStatusProtection = "ON";
                         autoTitle = "Quando desejar desligar o Onsurance do seu veículo é só clicar em Onsurance Auto";
@@ -1118,7 +1119,6 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
                     break;
                 };
                 case "tires": {
-                    console.log(`TCL: items[i].protectionStatus`, items[i].protectionStatus);
 
                     if (items[i].protectionStatus === true) {
                         tireStatusProtection = "ON";

@@ -1,6 +1,6 @@
 import * as express from "express";
 import * as cors from "cors";
-import { getItemListVariables } from "../environment/messenger";
+import { getItemListVariables } from "../environment/messenger.variables";
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { getDatabaseInfo } from "../model/databaseMethods";
 import { checkMessengerId } from "../model/errors";
@@ -27,8 +27,10 @@ items.get(`/list/messenger`, async (request, response) => {
         await checkMessengerId(messengerId, variables);
 
         const result = await getItemList(variables);
+        console.log(`TCL: result`, result);
 
         const messengerResponse = await showItemsListInGalery(result);
+        console.log(`TCL: messengerResponse`, messengerResponse);
 
         response.json(messengerResponse);
     } catch (error) {

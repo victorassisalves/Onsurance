@@ -32,9 +32,11 @@ export const getItemList = async (variables) => {
         checkOnboard(userProfile.personal, variables.userEmail);
 
         const itemsInUserProfile = await getDatabaseInfo(itemsInUserDbPath);
+        console.log(`TCL: itemsInUserProfile`, itemsInUserProfile);
         checkItemList(itemsInUserProfile);
 
         const itemsArray = Object.keys(itemsInUserProfile);
+        console.log(`TCL: itemsArray`, itemsArray);
         const resultArray = [];
 
         // Normal (for) is the only that accepts async callback
@@ -73,7 +75,6 @@ export const getItemList = async (variables) => {
 
                     const vehicleProfile = await getDatabaseInfo(vehicleProfilePath.child("profile"));
 
-                    console.log(`TCL: vehicleProfile.protectionData.protectionStatus.accident`, vehicleProfile.protectionData.protectionStatus.accident);
                     resultArray.push({
                         itemId: itemsInUserProfile[item].itemId,
                         type: itemsInUserProfile[item].type,

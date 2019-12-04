@@ -1,6 +1,6 @@
 import * as express from "express";
 import * as cors from "cors";
-import { firstAccessVariables } from "../environment/messenger";
+import { firstAccessVariables } from "../environment/messenger.variables";
 import { getfirstAccess } from "../controller/firstAccessController";
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { getDatabaseInfo, updateDatabaseInfo } from "../model/databaseMethods";
@@ -49,6 +49,7 @@ firstAccess.get(`/messenger`, async (request, response) => {
         };
 
         const messengerResp = firstAccessResponse(send.variables);
+        console.log(`TCL: messengerResp`, messengerResp);
         return response.json(messengerResp);  
         
     } catch (error) {
