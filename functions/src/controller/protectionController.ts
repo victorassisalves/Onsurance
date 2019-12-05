@@ -310,7 +310,7 @@ export const getVehicleInfo = variables => {
             console.log("TCL: doBackup -> itemInUse", itemInUse);
 
             // ERROR check for ITEM IN USE
-            await checkItemInUse(itemInUse, variables);
+            checkItemInUse(itemInUse, variables);
 
             const itemDbPath = await itemProfileDbRef(itemInUse.itemId, itemInUse.type, itemInUse.innerType);
             const itemProfile = await dbMethods.getDatabaseInfo(itemDbPath.child("profile"));

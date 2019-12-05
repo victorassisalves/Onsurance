@@ -1,3 +1,5 @@
+import { GetTire } from "../routes/items.routes";
+
 const activationFail = (protectionVariables) => {
     const activationFail = {
         "messages": [
@@ -897,12 +899,14 @@ export const changeVehicleOptions = variables => {
  * @descriptionThis functions returns the chatfuel callback to set item variables
  * @param variables Holds the item profile data
  */
-export const changeVehicleInfo = variables => {
+export const setVehicleInfo = variables => {
     try {
 
         let protectionStatus = "ON"
+        let autoTitle = "Quando desejar desligar o Onsurance do seu veículo é só clicar em Onsurance Auto";
         if (variables.itemProfile.protectionData.protectionStatus.theft === false) {
             protectionStatus = "OFF"
+            autoTitle = "Quando desejar ligar o Onsurance do seu veículo é só clicar em Onsurance Auto";
         };
 
         const changeItemInfoResponse = {
@@ -918,7 +922,8 @@ export const changeVehicleInfo = variables => {
                 "car-brand": variables.itemProfile.brand,
                 "car-model": variables.itemProfile.model,
                 "status-protecao": protectionStatus,
-                "itemInUse": variables.itemProfile.plate
+                "itemInUse": variables.itemProfile.plate,
+                "autoTitle": autoTitle
             },
         }
         
@@ -960,6 +965,40 @@ export const changeVehicleInfo = variables => {
             text: serverError
         };
     }
+    
+};
+
+/**
+ * @descriptionThis functions returns the chatfuel callback to set the tire to be protected 
+ * @param variables Holds the tire profile data
+ */
+export const setTireInfo = (variables) => {
+
+    let protectionStatus = "ON"
+    let tireTitle = "Quando desejar Desligar o Onsurance Pneus é só clicar em Onsurance Pneus";
+    if (variables.protectionStatus === false) {
+        tireTitle = "Quando desejar ligar o Onsurance Pneus é só clicar em Onsurance Pneus";
+        protectionStatus = "OFF"
+    };
+
+    const changeItemInfoResponse = {
+        "messages" :[
+            {
+                "text" : `Tudo pronto para usar o Onsurance Pneus para o veículo ${variables.tireVehicleId}.`
+            },
+            {
+                "text": `Seu Onsurance Pneus está atualmente ${protectionStatus} para esse veículo.`
+            }
+        ],
+        "set_attributes": {
+            "tireOnsuranceStatus": protectionStatus,
+            "tireQtd": variables.tireQtd,
+            "tireVehicleId": variables.tireVehicleId,
+            "tireTitle": tireTitle
+        },
+    }
+    
+    return changeItemInfoResponse
     
 };
 

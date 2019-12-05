@@ -1,9 +1,9 @@
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { getDatabaseInfo } from "../model/databaseMethods";
-import { checkUserProfile, checkOnboard, checkItemList, checkTireProfile} from "../model/errors";
+import { checkUserProfile, checkOnboard, checkItemList, checkTireProfile, checkItemInUse, checkItemProfile} from "../model/errors";
 import { itemProfileDbRef } from "../database/auto.database";
 import { tiresInItemDbPath, getItemId } from "../database/tire.database";
-import { GetTire } from "../routes/items.routes";
+import { GetTire, GetAuto } from "../routes/items.routes";
 import { TireInUserProfile, TireItemProfile, TireProtectionData } from "../model/tires.model";
 
 
@@ -237,9 +237,8 @@ export const getAutoList = (variables): Promise<any> => {
 
 
 /**
- * @description Gets the list of auto vehicles on user profile
+ * @description This function gets the tires profile to return to user
  * @param variables 
- * @todo create response for returning tire for messenger
  */
 export const getTire = (variables: GetTire): Promise<any> => {
     return new Promise(async (resolve, reject) => {
@@ -252,25 +251,71 @@ export const getTire = (variables: GetTire): Promise<any> => {
 
             const itemId = await getItemId(variables.tireVehicleId)
             const userTires: TireInUserProfile = await getDatabaseInfo(userDbPath.child(`/items/tires/${itemId}`));
-            checkItemList(userTires);
+            checkItemInUse(userTires, variables)
 
             const tireDbPath = await tiresInItemDbPath(userTires.vehicleType, userTires.itemId)
             const tireProfile: TireProtectionData = await getDatabaseInfo(tireDbPath.child("profile/protectionData"));
+            console.log(`TCL: tireProfile`, tireProfile);
             checkTireProfile(tireProfile, variables)
 
             return resolve({
                 status: 200,
-                text: `Items to change`,
-                callback: 'changeTireOptions',
+                text: `Got tire. Now lets change it on messenger`,
+                callback: 'setTireOptions',
                 variables: {
                     tireVehicleId: variables.tireVehicleId,
-                    tireQtd: tireProfile.tireQtd
+                    tireQtd: tireProfile.tireQtd,
+                    protectionStatus: tireProfile.protectionStatus
                 }
             });
         } catch (error) {
             console.error("TCL: error", error)
             if (error.callback) reject(error)
             throw reject({
+                status: 500, // server error
+                text: `Error getting tire.`
+            });
+        };
+    });
+};
+
+
+/**
+ * @description This function gets the auto profile to return to user
+ * @param variables 
+ */
+export const getAuto = (variables: GetAuto): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const userDbPath = await userProfileDbRefRoot(variables.userEmail);
+
+            // Get item in use from user DB
+            const itemDbId = await getItemId(variables.itemInUse);
+
+            const itemInUse = await getDatabaseInfo(userDbPath.child(`items/${itemDbId}`));
+
+
+            // ERROR check for ITEM IN USE
+            checkItemInUse(itemInUse, variables);
+
+            const itemDbPath = await itemProfileDbRef(itemInUse.itemId, itemInUse.type, itemInUse.innerType);
+            const itemProfile = await getDatabaseInfo(itemDbPath.child("profile"));
+
+            // ERROR check for non existing ItemProfile
+            checkItemProfile(itemProfile, variables)
+
+            resolve({
+                status: 200,
+                text: `Item info ${itemProfile}`,
+                callback: 'changeItemInfo',
+                variables: {
+                    itemProfile: itemProfile,
+                }
+            });
+        } catch (error) {
+            console.error("TCL: error", error)
+            if (error.status) reject(error)
+            reject({
                 status: 500, // server error
                 text: `Error getting items list on profile.`
             });

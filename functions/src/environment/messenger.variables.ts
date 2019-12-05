@@ -1225,32 +1225,35 @@ export const getItemListVariables = async (req, res) => {
     };
 };
 
-export const getItemInfoVariables = async (req, res) => {
+/**
+ * @description This function returns the treated variables for usage. Get the variables for auto usage
+ * @param req The requested variables from ulr params (req.query)
+ * @param res Response form endpoint
+ */
+export const getAutoInfoVariables = async (req, res) => {
     try {
-        const getItemInfo = {
-            userEmail: req.body[`userEmail`].toLowerCase(),
-            messengerId: req.body[`messenger user id`],
-            itemInUse: req.body[`itemInUse`].toLowerCase()
+        const getTireInfo = {
+            userEmail: checkRequestVariables('userEmail', req.userEmail, String),
+            messengerId: checkRequestVariables("messenger user id", req.messengerId, String),
+            itemInUse: checkRequestVariables("item in use", req.itemInUse, String, true),
         };
-
         
-        return getItemInfo;
+        return getTireInfo;
     } catch (error) {
-        console.error(new Error(`Error to get variables for user ${req.body["userEmail"]}. Error: ${error}.`));
+        console.error(new Error(`Error to get variables for user ${req["userEmail"]}. Error: ${JSON.stringify(error)}.`));
 
         res.json({
             "messages": [
                 {
-                    "text": "Erro com varáveis. Verifique se os dados enviados estão corretos e tente novamente."
+                    "text": "Erro com varáveis. Vamos tentar novamente, caso o erro se repita, por favor entre em contato com nossos especialistas."
                 },
             ],
             "redirect_to_blocks": [
-                `changeItemEndpoint`
+                `changeItemRouter`
             ]
         });
     };
 };
-
 /**
  * @description This function returns the treated variables for usage. Get the specific tire information for specific vehicle
  * @param req The requested variables from ulr params (req.query)
@@ -1263,27 +1266,23 @@ export const getTiresInfoVariables = async (req, res) => {
             messengerId: checkRequestVariables("messenger user id", req.messengerId, String),
             tireVehicleId: checkRequestVariables("tire vehicle Id", req.tireVehicleId, String),
         };
-
         
         return getTireInfo;
     } catch (error) {
-        console.error(new Error(`Error to get variables for user ${req.body["userEmail"]}. Error: ${JSON.stringify(error)}.`));
+        console.error(new Error(`Error to get variables for user ${req["userEmail"]}. Error: ${JSON.stringify(error)}.`));
 
         res.json({
             "messages": [
                 {
-                    "text": "Erro com varáveis. Vou te encaminhar para um especialista. Aguarde somente um momento."
+                    "text": "Erro com varáveis. Vamos tentar novamente, caso o erro se repita, por favor entre em contato com nossos especialistas."
                 },
             ],
             "redirect_to_blocks": [
-                `changeTire`
+                `changeItemRouter`
             ]
         });
     };
 };
-
-
-
 
 
 
