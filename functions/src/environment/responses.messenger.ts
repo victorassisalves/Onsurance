@@ -247,7 +247,7 @@ export const noOnboard = variables => {
             },
         ],
         "redirect_to_blocks": [
-            `Informar Dados`
+            `informarDados`
         ]
     }
     
@@ -271,7 +271,31 @@ export const noItemsOnProfile = (variables?) => {
             },
         ],
         "redirect_to_blocks": [
-            `Informar Dados`
+            `informarDados`
+        ]
+    }
+    
+    return noItems;
+};
+
+/**
+ * @description This function checks if the profile have Tires
+ */
+export const noTiresOnProfile = (variables?) => {
+    const noItems = {
+        "messages": [
+            {
+                "text": "Olá {{first name}}. Não encontrei nenhum veículo com Onsurance Pneus em seu perfil."
+            },
+            {
+                "text": `Verifique se seus dados foram aprovados e o onboard do item já foi feito.`
+            },
+            {
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
+            },
+        ],
+        "redirect_to_blocks": [
+            `informarDados`
         ]
     }
     
@@ -344,6 +368,28 @@ export const noItemInUse = variables => {
     return noItemInUse
 };
 
+export const noTireInUse = variables => {
+
+    const noItemInUse = {
+        "messages": [
+            {
+                "text": `Olá {{first name}}. Não encontramos o veículo ${variables.tireVehicleId} com acesso ao Onsurance Pneus em seu perfil.`
+            },
+            {
+                "text": `Verifique se seus dados foram aprovados e seu veículo cadastrado. Caso não seja o dono do item, verifique se o acesso foi liberado para o seu perfil.`
+            },
+            {
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
+            },
+        ],
+        "redirect_to_blocks": [
+            `changeItem`
+        ]
+    }
+    
+    return noItemInUse
+};
+
 export const noItemProfile = variables => {
 
     const noItemProfile = {
@@ -371,7 +417,7 @@ export const noItemAccess = variables => {
     const noItemAccess = {
         "messages": [
             {
-                "text": `Oooops. Você não tem permissão para gerenciar a proteção deste veículo. Entre em contato com o proprietário.`,
+                "text": `Oooops. Você não tem permissão para gerenciar a proteção deste item. Entre em contato com o proprietário.`,
                 "quick_replies": [
                     {
                       "title":"Entrar em contato",
@@ -1233,7 +1279,10 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
     };
 };
 
-
+/**
+ * @description This function returns to messenger informing the user don't have any item to access im profile
+ * @param variables Mock variables
+ */
 export const noAccessToItems = (variables?) => {
     const noAccessToItems = {
         "messages" :[
@@ -1251,6 +1300,64 @@ export const noAccessToItems = (variables?) => {
             "tireAccess": false,
             "autoAccess": false,
             "firstAccess": false,
+        },
+        "redirect_to_blocks": [
+            "Menu de opções"
+        ]
+    }
+    
+    return noAccessToItems
+    
+};
+
+/**
+ * @description This function returns to messenger informing the user don't have any Auto to access im profile
+ * @param variables Mock variables
+ */
+export const noAccessToAuto = (variables?) => {
+    const noAccessToItems = {
+        "messages" :[
+            {
+                "text" : `Opa!!! Parece que temos um problema!`
+            },
+            {
+                "text": `Seu perfil não tem acesso a nenhum veículo. Verfique com o proprietário se o acesso foi encerrado.`
+            },
+            {
+                "text": `Caso tenha comprado o Onsurance ou tenha confirmado que o proprietário tenha liberado o acesso, entre em contato com nossos especialistas para resolver esse problema.`,
+            }
+        ],
+        "set_attributes": {
+            "autoAccess": false,
+        },
+        "redirect_to_blocks": [
+            "Menu de opções"
+        ]
+    }
+    
+    return noAccessToItems
+    
+};
+
+/**
+ * @description This function returns to messenger informing the user don't have any Vehicle with Onsurance Tires to access im profile
+ * @param variables Mock variables
+ */
+export const noAccessToTire = (variables?) => {
+    const noAccessToItems = {
+        "messages" :[
+            {
+                "text" : `Opa!!! Parece que temos um problema!`
+            },
+            {
+                "text": `Seu perfil não tem acesso a nenhum veículo com o Onsurance Pneus. Verfique com o proprietário se o acesso foi encerrado.`
+            },
+            {
+                "text": `Caso tenha comprado o Onsurance ou tenha confirmado que o proprietário tenha liberado o acesso, entre em contato com nossos especialistas para resolver esse problema.`,
+            }
+        ],
+        "set_attributes": {
+            "tireAccess": false,
         },
         "redirect_to_blocks": [
             "Menu de opções"

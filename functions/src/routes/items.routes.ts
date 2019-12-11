@@ -114,9 +114,9 @@ items.get('/auto/messenger', async (req, res) => {
         const messengerResponse = setVehicleInfo(result.variables);
         res.send(messengerResponse);
     } catch (error) {
-        console.error(new Error(` Error: ${JSON.stringify(error)}.`));
-        const resp = require('../environment/responses.messenger');
-        if (error.callback) res.json(resp[error.callback](error.variables));
+        console.error(new Error(` Error in get specific auto: ${JSON.stringify(error)}.`));
+        const resp = await require('../environment/responses.messenger');
+        if (error.callback) return res.json(resp[error.callback](error.variables));
         const serverErrorMessenger = serverError()
         res.send(serverErrorMessenger);
     };
@@ -142,9 +142,9 @@ items.get('/tire/messenger', async (req, res) => {
         const messengerResponse = setTireInfo(result.variables);
         res.send(messengerResponse);
     } catch (error) {
-        console.error(new Error(` Error: ${JSON.stringify(error)}.`));
-        const resp = require('../environment/responses.messenger');
-        if (error.callback) res.json(resp[error.callback](error.variables));
+        console.error(new Error(` Error in get specific tire: ${JSON.stringify(error)}.`));
+        const resp = await require('../environment/responses.messenger');
+        if (error.callback) return res.json(resp[error.callback](error.variables));
         const serverErrorMessenger = serverError()
         res.send(serverErrorMessenger);
     };

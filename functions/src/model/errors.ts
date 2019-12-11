@@ -57,6 +57,7 @@ export const checkItemInUse = (itemInUse, variables) => {
             itemInUse: variables.itemInUse,
         }
     };
+    return;
 };
 
 
@@ -118,6 +119,7 @@ export const checkOwnerCredit = (ownerCredit) => {
             ownerCredit: parseFloat((ownerCredit / 1000).toFixed(3)),
         }
     };
+    return;
 };
 
 export const checkUserWallet = (userProfile, variables) => {
@@ -130,6 +132,7 @@ export const checkUserWallet = (userProfile, variables) => {
             userEmail: variables.userEmail,
         }
     };
+    return;
 };
 
 /**
@@ -168,6 +171,7 @@ export const checkItemProfile = (itemProfile, variables) => {
             itemInUse: variables.itemInUse
         }
     };
+    return;
 };
 
 /**
@@ -180,11 +184,29 @@ export const checkTireProfile = (tireProfile, variables) => {
     if (tireProfile === null || tireProfile === undefined) throw {
         status: 404, // Not found
         text: `Error checking tire profile for ${variables.userEmail}. Check if user made onboard for item ${variables.tireVehicleId} or the data is correct.`,
-        callback: 'noTireProfile',
+        callback: 'noTireInUse',
         variables: {
-            itemInUse: variables.itemInUse
+            itemInUse: variables.tireVehicleId
         }
     };
+    return;
+};
+/**
+ * @description This functions check if Tire exists on DB Path
+ * @param tireProfile It's the item profile that comes from item db. 
+ * @param variables It's the request variables that come from payload
+ */
+export const checkTiresInProfile = (tires, variables) => {
+    // ERROR check for non existing ItemProfile
+    if (tires === null || tires === undefined) throw {
+        status: 404, // Not found
+        text: `Error checking tire profile for ${variables.userEmail}. Check if user made onboard for item ${variables.tireVehicleId} or the data is correct.`,
+        callback: 'noTiresOnProfile',
+        variables: {
+            itemInUse: variables.tireVehicleId
+        }
+    };
+    return;
 };
 
 export const checkItemProfileAlreadyExists = (itemProfile, variables) => {
@@ -192,7 +214,6 @@ export const checkItemProfileAlreadyExists = (itemProfile, variables) => {
     // ERROR check for non existing ItemProfile
     if (itemProfile === null || itemProfile === undefined) {
         return true
-        
     } else {
         throw {
             status: 409, // Conflict
@@ -216,6 +237,7 @@ export const checkEqualIndicationEmail = (variables) => {
             userEmail: variables.userEmail
         }
     };
+    return;
 };
 
 export const checkForIndicator = (indicatedProfile, variables) => {
@@ -288,6 +310,7 @@ export const checkItemList = (userItemsList: Object) => {
         callback: "noItemsOnProfile",
         variables: {}
     };
+    return;
 };
 
 /**

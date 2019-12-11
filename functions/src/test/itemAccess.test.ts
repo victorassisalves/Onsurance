@@ -48,8 +48,7 @@ export class TestAccessToItem {
         if (this.itemAuth === null || this.itemAuth === undefined){
             return false;
         } else {
-            const thirdParty = this.itemAuth.thirdParty;
-            if (thirdParty === null || thirdParty === undefined){
+            if (this.itemAuth.thirdParty === null || this.itemAuth.thirdParty === undefined){
                 return false;
             } else {
                 const itemId = getItemId(this.itemInUserProfile.itemId.toLowerCase());
