@@ -45,7 +45,7 @@ export const customersDbRoot = () => {
     return customers.ref(`/`);
 };
 
-export const getItemId = itemId => {
+export const getItemId = (itemId: string) => {
     const itemDbId = crypto.createHash('md5').update(itemId).digest("hex");
     // const itemDbId = crypto.createHmac('sha256', getSecretCustomer.userSecret).update(itemId).digest('hex')
     return itemDbId;

@@ -2,7 +2,20 @@ import { getItemId, itemProfileDbRef } from "../database/database";
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { databaseMethods, getDatabaseInfo } from "../model/databaseMethods";
 import { checkUserProfile, checkItemInUse, checkOnboard, checkClientId, checkUserWallet, checkItemProfile, checkItemList } from "../model/errors";
-
+import { TestAccessToItem } from "../test/itemAccess.test";
+import { ItemAuthorizations, TireInUserProfileInterface } from "../interfaces/user.interfaces";
+import { noItemAccess } from "../environment/messenger.variables";
+import { noAccessToItems } from "../environment/responses.messenger";
+interface ItemAuth {
+    thirdParty: {
+        itemId: boolean
+    },
+    myItems: {
+        itemId: {
+            userId: boolean
+        }
+    }
+}
 
 
 export const doFirstAccess = variables => {
@@ -103,15 +116,22 @@ export const doFirstAccess = variables => {
 };
 
 
+/**
+ * 
+ * @param variables 
+ * @todo Check item access to see if user.
+ */
 export const getfirstAccess = async (variables) => {
         // DO BACKUP
             const userDbPath = await userProfileDbRefRoot(variables.userEmail);
             
-            const userProfile = await getDatabaseInfo(userDbPath.child(`personal`));
-            const userItems = await getDatabaseInfo(userDbPath.child(`items`));
-            
+            const userProfileFull = await getDatabaseInfo(userDbPath);
             // ERROR check for owner account NOT exist
-            checkUserProfile(userProfile, variables)
+            checkUserProfile(userProfileFull, variables.userEmail)
+            
+            const userItems = userProfileFull.items;
+            const userProfile = userProfileFull.personal;
+            const itemAuth: ItemAuthorizations = userProfileFull.itemAuthorizations;            
 
             // Check if user have items on profile
             checkItemList(userItems);
@@ -132,29 +152,61 @@ export const getfirstAccess = async (variables) => {
                     tireAccess: false,
                 };
 
-                const items = Object.keys(userItems);
-                items.forEach(item => {
+                const itemsUser = Object.keys(userItems);
+
+                const autoAccess = []
+                const tireAccess = []
+                
+                itemsUser.forEach(item => {
                     // Inside tires in items 
-                    if (item === "tires") {
-                        switch (userItems.tires) {
-                            case null:
-                            case undefined:
-                                break
-                            default:
-                                result.tireAccess = true;
-                                break;
+                    switch (item) {
+                        case "tires": {
+                            const tires = Object.keys(userItems.tires);
+                            tires.forEach(tire => {
+                                const testTireAccess = new TestAccessToItem(variables, userItems.tires[tire], itemAuth);
+                                const owner = testTireAccess.checkOwnership()
+                                if (!owner) {
+                                    const thirdParty = testTireAccess.checkThirdPartyAccess()
+                                    tireAccess.push(thirdParty);
+                                } else {
+                                    tireAccess.push(owner);
+                                }
+                            });
+                            const access =  tireAccess.some((value) => {
+                                return value === true;
+                            })
+                            return result.tireAccess = access;
                         };
-                    };
-                    if (userItems[item].type === "vehicle") {
-                        result.autoAccess = true;
-                    };
+                        
+                        default: {
+                            const testAccessAuto = new TestAccessToItem(variables, userItems[item], itemAuth)
+                            const owner = testAccessAuto.checkOwnership();
+                            if (!owner) {
+                                const thirdParty = testAccessAuto.checkThirdPartyAccess()
+                                autoAccess.push(thirdParty);
+                            } else {
+                                autoAccess.push(owner);
+                            }
+                            const access =  autoAccess.some((value) => {
+                                return value === true;
+                            })
+                            return result.autoAccess = access;
+                        }
+                                
+                    }
                 });
 
                 return result;
             };
 
             const access = checkAccessToProducts();
-            
+            if (!access.autoAccess && !access.tireAccess){
+                throw {
+                    errorType: "No item access",
+                    callback: 'noAccessToItems',
+                    variables: {}
+                }
+            }
             return {
                 userProfile: userProfile,
                 userItems: userItems,

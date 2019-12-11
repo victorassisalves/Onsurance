@@ -26,11 +26,9 @@ items.get(`/list/messenger`, async (request, response) => {
         const messengerId = await getDatabaseInfo(userDbPath.child("/personal/messengerId"));
         await checkMessengerId(messengerId, variables);
 
-        const result = await getItemList(variables);
-        console.log(`TCL: result`, result);
+        const result: Array<any> = await getItemList(variables);
 
         const messengerResponse = await showItemsListInGalery(result);
-        console.log(`TCL: messengerResponse`, messengerResponse);
 
         response.json(messengerResponse);
     } catch (error) {
@@ -96,17 +94,12 @@ items.get(`/list/auto/messenger`, async (request, response) => {
     };
 });
 
-
-
 export interface GetAuto {
     userEmail: string;
     messengerId: string
     itemInUse: string
 };
 
-/**
- * 
- */
 items.get('/auto/messenger', async (req, res) => {
     try {
         console.log(req.path);
@@ -129,18 +122,12 @@ items.get('/auto/messenger', async (req, res) => {
     };
 });
 
-
-
-
-
 export interface GetTire {
     userEmail: string;
     messengerId: string
     tireVehicleId: string
 };
-/**
- * 
- */
+
 items.get('/tire/messenger', async (req, res) => {
     try {
         console.log(req.path);
@@ -162,4 +149,6 @@ items.get('/tire/messenger', async (req, res) => {
         res.send(serverErrorMessenger);
     };
 });
+
+
 module.exports = items;

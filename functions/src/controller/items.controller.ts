@@ -4,7 +4,9 @@ import { checkUserProfile, checkOnboard, checkItemList, checkTireProfile, checkI
 import { itemProfileDbRef } from "../database/auto.database";
 import { tiresInItemDbPath, getItemId } from "../database/tire.database";
 import { GetTire, GetAuto } from "../routes/items.routes";
-import { TireInUserProfile, TireItemProfile, TireProtectionData } from "../model/tires.model";
+import { TireInUserProfile, TireProtectionData } from "../model/tires.model";
+import { UserProfileInterface, ItemAuthorizations, ItemsInUserProfile, VehicleInUserProfileInterface } from "../interfaces/user.interfaces";
+import { TestAccessToItem } from "../test/itemAccess.test";
 
 
 /**
@@ -18,17 +20,17 @@ export const getItemList = async (variables) => {
         const userDbPath = await userProfileDbRefRoot(variables.userEmail);
         const itemsInUserDbPath = userDbPath.child('items');
 
-        const userProfile = await getDatabaseInfo(userDbPath);
+        const userProfile: UserProfileInterface = await getDatabaseInfo(userDbPath);
 
-        checkUserProfile(userProfile.personal, variables.userEmail);
+        checkUserProfile(userProfile, variables.userEmail);
         checkOnboard(userProfile.personal, variables.userEmail);
 
-        const itemsInUserProfile = await getDatabaseInfo(itemsInUserDbPath);
-        console.log(`TCL: itemsInUserProfile`, itemsInUserProfile);
+        const itemsAuth: ItemAuthorizations = userProfile.itemAuthorizations
+
+        const itemsInUserProfile: ItemsInUserProfile = await getDatabaseInfo(itemsInUserDbPath);
         checkItemList(itemsInUserProfile);
 
         const itemsArray = Object.keys(itemsInUserProfile);
-        console.log(`TCL: itemsArray`, itemsArray);
         const resultArray = [];
 
         // Normal (for) is the only that accepts async callback
@@ -37,13 +39,24 @@ export const getItemList = async (variables) => {
         for (let i = 0; i < itemsArray.length; i++) {
             const item = itemsArray[i];
             switch (item) {
-                case "tires":
+                case "tires": {
+
                     const tiresArray = Object.keys(itemsInUserProfile[item]);
+                    const tiresInProfile = itemsInUserProfile.tires;
                     // This second for iterates over tires inside profile.
                     // {tiresArray} is an array with the tires ids for that user
                     // We iterate through it and get the tire info
                     for (let i = 0; i < tiresArray.length; i++) {
-                        
+
+                        const checkTireAccess = new TestAccessToItem(variables, tiresInProfile[tiresArray[i]], itemsAuth);
+                        const owner = checkTireAccess.checkOwnership();
+                        if (!owner) {
+                            const thirdParty = checkTireAccess.checkThirdPartyAccess();
+                            if (!thirdParty){
+                                console.log(`User ${variables.userEmail} don't have acces to Tire ${JSON.stringify(tiresInProfile[tiresArray[i]])}.`);
+                                break;
+                            };
+                        }
                         const tireProfilePath = tiresInItemDbPath(itemsInUserProfile[item][tiresArray[i]].vehicleType, itemsInUserProfile[item][tiresArray[i]].itemId);
     
                         const tireProfile = await getDatabaseInfo(tireProfilePath.child("profile/protectionData"));
@@ -57,8 +70,22 @@ export const getItemList = async (variables) => {
                         });
                     };
                     break;
+                };
             
-                default:
+                default: {
+                    const autoInProfile: VehicleInUserProfileInterface = itemsInUserProfile[item]
+                    console.log(`TCL: autoInProfile`, autoInProfile);
+                    const checkAutoAccess = new TestAccessToItem(variables, autoInProfile, itemsAuth);
+                    const owner = checkAutoAccess.checkOwnership();
+                    console.log(`TCL: owner`, owner);
+                    if (!owner) {
+                        const thirdParty = checkAutoAccess.checkThirdPartyAccess();
+                        if (!thirdParty){
+                            console.log(`User ${variables.userEmail} don't have acces to Auto ${JSON.stringify(autoInProfile)}.`);
+                            break;
+                        };
+                    };
+                    
                     const vehicleProfilePath = itemProfileDbRef(
                         itemsInUserProfile[item].itemId, 
                         itemsInUserProfile[item].type, 
@@ -76,11 +103,14 @@ export const getItemList = async (variables) => {
                         model: vehicleProfile.model,
                         protectionStatus: vehicleProfile.protectionData.protectionStatus.accident
                     });
+                    break;
+                };
             };
         };
 
         return resultArray;
     } catch (error) {
+        console.error(new Error(`: ${JSON.stringify(error)}`));
         throw error;
     }
 }
@@ -205,9 +235,6 @@ export const getAutoList = (variables): Promise<any> => {
                 if (element === "tires"){
                     return;
                 } else {
-                    console.log("TCL: element", element)
-                    console.log("TCL: element id", userItemsList[`${element}`].itemId)
-
                     vehiclePlates.push(userItemsList[`${element}`].itemId);
                 };
                 
@@ -233,7 +260,6 @@ export const getAutoList = (variables): Promise<any> => {
         };
     });
 };
-
 
 
 /**
@@ -314,10 +340,10 @@ export const getAuto = (variables: GetAuto): Promise<any> => {
             });
         } catch (error) {
             console.error("TCL: error", error)
-            if (error.status) reject(error)
+            if (error.callback) reject(error)
             reject({
                 status: 500, // server error
-                text: `Error getting items list on profile.`
+                text: `Error getting vehicle on profile.`
             });
         };
     });

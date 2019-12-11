@@ -586,7 +586,7 @@ exports.report = functions.https.onRequest(async (request, response) => {
  * @todo thirdParty messenger
  *      @todo Get messenger ID and other data to account, specify whta product can share.
  * @todo indication messenger
- * @todo
+ * @todo Validate user access to items
  */
 
 // -------------- ONSURANCE PNEUS ---------------

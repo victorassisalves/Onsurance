@@ -218,14 +218,14 @@ export const noUserProfile = variables => {
     const noUserProfile = {
         "messages": [
             {
-                "text": "Olá {{first name}}. Não conseguimos encontrar seu perfil em nosso sistema. Por favor, verifique se seu email está correto."
+                "text": "Então... Não conseguimos encontrar seu perfil em nosso sistema. Por favor, verifique se seu email está correto."
             },
             {
                 "text": `Verifique também, se ${variables.userEmail} é o mesmo email que foi usado na compra dos créditos em nosso site.`
             },
         ],
         "redirect_to_blocks": [
-            `Informar Email`
+            `informarDados`
         ]
     }
     
@@ -903,10 +903,10 @@ export const setVehicleInfo = variables => {
     try {
 
         let protectionStatus = "ON"
-        let autoTitle = "Quando desejar desligar o Onsurance do seu veículo é só clicar em Onsurance Auto";
+        let autoTitle = "Para Desligar o Onsurance Auto clique em Onsurance ON - OFF";
         if (variables.itemProfile.protectionData.protectionStatus.theft === false) {
             protectionStatus = "OFF"
-            autoTitle = "Quando desejar ligar o Onsurance do seu veículo é só clicar em Onsurance Auto";
+            autoTitle = "Para Ligar o Onsurance Auto clique em Onsurance ON - OFF";
         };
 
         const changeItemInfoResponse = {
@@ -975,9 +975,9 @@ export const setVehicleInfo = variables => {
 export const setTireInfo = (variables) => {
 
     let protectionStatus = "ON"
-    let tireTitle = "Quando desejar Desligar o Onsurance Pneus é só clicar em Onsurance Pneus";
+    let tireTitle = "Para Desligar o Onsurance Pneus clique em Onsurance ON - OFF";
     if (variables.protectionStatus === false) {
-        tireTitle = "Quando desejar ligar o Onsurance Pneus é só clicar em Onsurance Pneus";
+        tireTitle = "Para Ligar o Onsurance Pneus clique em Onsurance ON - OFF";
         protectionStatus = "OFF"
     };
 
@@ -1032,7 +1032,7 @@ export const oneVehicleInProfile = variables => {
         const response = {
             "messages" :[
                 {
-                    "text" : `Opa!!! Encontrei o veículo ${variables.vehiclePlate} em seu perfil.`
+                    "text" : `Encontrei o veículo ${variables.vehiclePlate} em seu perfil.`
                 },
                 {
                     "text": `Pode utilizar seu Onsurance normalmente.`
@@ -1102,7 +1102,7 @@ export const oneTireInProfile = variables => {
     const oneTireInProfile = {
         "messages" :[
             {
-                "text" : `Opa!!! Encontrei o veículo ${variables.vehiclePlate} com acesso a seguro de pneus em seu perfil.`
+                "text" : `Encontrei o veículo ${variables.vehiclePlate} com acesso ao Onsurance pneus em seu perfil.`
             },
             {
                 "text": `Pode utilizar seu Onsurance Pneus normalmente.`
@@ -1135,8 +1135,8 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
         let atributtes = {}
         let autoStatusProtection = 'OFF';
         let tireStatusProtection = 'OFF';
-        let autoTitle = "Quando desejar ligar o Onsurance do seu veículo é só clicar em Onsurance Auto";
-        let tireTitle = "Quando desejar ligar o Onsurance Pneus é só clicar em Onsurance Pneus";
+        let autoTitle = "Para Ligar o Onsurance Auto clique em Onsurance ON - OFF";
+        let tireTitle = "Para Ligar o Onsurance Pneus clique Onsurance ON - OFF";
         let block = "protectionRouter";
         for (let i = 0; i < items.length; i++) {
 
@@ -1144,7 +1144,7 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
                 case "vehicle": {
                     if (items[i].protectionStatus === true) {
                         autoStatusProtection = "ON";
-                        autoTitle = "Quando desejar desligar o Onsurance do seu veículo é só clicar em Onsurance Auto";
+                        autoTitle = "Para Desligar o Onsurance Auto clique em Onsurance ON - OFF";
                     }   
                 atributtes = {
                         ...atributtes,
@@ -1161,7 +1161,7 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
 
                     if (items[i].protectionStatus === true) {
                         tireStatusProtection = "ON";
-                        tireTitle = "Quando desejar desligar o Onsurance Pneus é só clicar em Onsurance Pneus";
+                        tireTitle = "Para Desligar Onsurance Pneus clique em Onsurance ON - OFF";
                     } 
                     atributtes = {
                         ...atributtes,
@@ -1232,6 +1232,34 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
         throw serverError;
     };
 };
+
+
+export const noAccessToItems = (variables?) => {
+    const noAccessToItems = {
+        "messages" :[
+            {
+                "text" : `Opa!!! Parece que temos um problema!`
+            },
+            {
+                "text": `Seu perfil não tem acesso a nenhum item. Verfique com o proprietário se o acesso foi encerrado.`
+            },
+            {
+                "text": `Caso tenha comprado o Onsurance ou tenha confirmado que o proprietário tenha liberado o acesso, entre em contato com nossos especialistas para resolver esse problema.`,
+            }
+        ],
+        "set_attributes": {
+            "tireAccess": false,
+            "autoAccess": false,
+            "firstAccess": false,
+        },
+        "redirect_to_blocks": [
+            "Menu de opções"
+        ]
+    }
+    
+    return noAccessToItems
+    
+}
 
 
 
