@@ -196,7 +196,7 @@ export const checkTireProfile = (tireProfile, variables) => {
  * @param tireProfile It's the item profile that comes from item db. 
  * @param variables It's the request variables that come from payload
  */
-export const checkTiresInProfile = (tires, variables) => {
+export const checkTiresInProfile = async (tires, variables) => {
     // ERROR check for non existing ItemProfile
     if (tires === null || tires === undefined) throw {
         status: 404, // Not found

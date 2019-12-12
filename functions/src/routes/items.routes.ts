@@ -138,6 +138,7 @@ items.get('/tire/messenger', async (req, res) => {
         await checkMessengerId(messengerId, variables);
         
         const result = await getTire(variables);
+        console.log(`TCL: result`, result);
 
         const messengerResponse = setTireInfo(result.variables);
         res.send(messengerResponse);

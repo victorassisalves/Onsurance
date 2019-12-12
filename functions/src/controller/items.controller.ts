@@ -8,6 +8,15 @@ import { TireInUserProfile, TireProtectionData, TireItemProfile } from "../model
 import { UserProfileInterface, ItemAuthorizations, ItemsInUserProfile, VehicleInUserProfileInterface, PersonalUserProfileInterface, TireInUserProfileInterface } from "../interfaces/user.interfaces";
 import { TestAccessToItem } from "../test/itemAccess.test";
 
+/**
+ *  status: 200 - ok
+ *          201 - created
+ *          400 - erro badrequest
+ *          401 - Não autenticado
+ *          403 - acesso negado
+ *          500 - internal server erro
+ * */
+
 
 /**
  * @description This function gets the list of items wich the user can access
@@ -356,7 +365,7 @@ export const getTire = (variables: GetTire): Promise<any> => {
 
             const itemId = await getItemId(variables.tireVehicleId)
             const tires = await getDatabaseInfo(userDbPath.child(`/items/tires/`));
-            checkTiresInProfile(tires, variables)
+            await checkTiresInProfile(tires, variables);
             const userTires: TireInUserProfile = tires[itemId];
             checkTireProfile(userTires, variables);
 
@@ -391,8 +400,8 @@ export const getTire = (variables: GetTire): Promise<any> => {
             });
         } catch (error) {
             console.error(new Error(JSON.stringify(error)));
-            if (error.callback) reject(error)
-            throw reject({
+            if (error.callback) return reject(error)
+            return reject({
                 status: 500, // server error
                 text: `Error getting tire.`
             });
@@ -453,8 +462,8 @@ export const getAuto = (variables: GetAuto): Promise<any> => {
             });
         } catch (error) {
             console.error(new Error(JSON.stringify(error)));
-            if (error.callback) reject(error)
-            reject({
+            if (error.callback) return reject(error)
+            return reject({
                 status: 500, // server error
                 text: `Error getting vehicle on profile.`
             });

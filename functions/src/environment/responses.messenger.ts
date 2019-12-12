@@ -418,6 +418,9 @@ export const noItemAccess = variables => {
         "messages": [
             {
                 "text": `Oooops. Você não tem permissão para gerenciar a proteção deste item. Entre em contato com o proprietário.`,
+            },
+            {
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`,
                 "quick_replies": [
                     {
                       "title":"Entrar em contato",
@@ -428,9 +431,6 @@ export const noItemAccess = variables => {
                         "block_names": ['changeItem']
                     }
                 ]
-            },
-            {
-                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
     }
