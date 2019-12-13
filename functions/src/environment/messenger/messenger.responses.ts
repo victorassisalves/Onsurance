@@ -1397,3 +1397,13 @@ export const noAccessToTire = (variables?) => {
 
 
 
+
+// ------------------ TIRES RESPONSES ---------------
+
+export const TireRes_NoChangeOnsuranceOn = (tireVehicleId: string, status: boolean) => {
+    
+}
+
+export const TireRes_NoChangeOnsuranceOff = (tireVehicleId: string, status: boolean) => {
+
+}

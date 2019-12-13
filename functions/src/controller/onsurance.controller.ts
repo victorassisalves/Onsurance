@@ -1,12 +1,14 @@
 
 import { userProfileDbRefRoot } from "../database/customer.database"
-import { databaseMethods, getDatabaseInfo, setDatabaseInfo, updateDatabaseInfo } from "../model/databaseMethods";
+import { getDatabaseInfo } from "../model/databaseMethods";
 import { OnsuraceTiresVariables } from "../environment/messenger/messenger.variables";
 import { TireInUserProfile, TireProtectionData } from "../model/tires.model";
 import { getItemId, tiresInItemDbPath } from "../database/tire.database";
 import { PersonalUserProfileInterface, ItemAuthorizations } from "../interfaces/user.interfaces";
 import { checkUserProfile, checkTireProfile, checkItemAccess, checkItemProfile, checkOnboard } from "../model/errors";
 import { TestAccessToItem } from "../test/itemAccess.test";
+import { checkStatusOnsuranceTires } from "../test/onsurance.test";
+import { stat } from "fs";
 
 
 
@@ -53,9 +55,12 @@ const onsuranceTire = async (_variables: OnsuraceTiresVariables) => {
             console.log(`TCL: status`, status);
             const protectionStatus = status.every(status => status === true);
             console.log(`TCL: protectionStatus`, protectionStatus);
+            checkStatusOnsuranceTires(protectionStatus, _variables)
             return protectionStatus;
         };
         const status = checkOnsuranceStatus()
+
+        checkStatusOnsuranceTires(status, _variables);
 
         return {
             protectionStatus: status,
@@ -73,5 +78,5 @@ const onsuranceTire = async (_variables: OnsuraceTiresVariables) => {
 };
 
 export const onsuranceTireOn = async (variables: OnsuraceTiresVariables) => {
-    return await onsuranceTire(variables);
+    const onsuranceData = await onsuranceTire(variables);
 };

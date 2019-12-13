@@ -57,6 +57,7 @@ onsurance.post(`/tire/on/messenger`, async (req, res) => {
         const dbMessengerId = await compareMessengerId(variables.userEmail, variables.messengerId);
         checkFirstAccess(dbMessengerId);
         const result = await onsuranceTireOn(variables);
+        console.log(`TCL: result`, result);
         return res.send(result);
     } catch (error) {
         console.error(new Error(`Error: ${JSON.stringify(error)}`));
