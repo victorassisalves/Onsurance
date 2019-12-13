@@ -2,7 +2,7 @@ import * as express from "express";
 import * as cors from "cors";
 import { serverError } from "../environment/messenger/messenger.responses";
 import { onsuranceTires, OnsuraceTiresVariables } from "../environment/messenger/messenger.variables";
-import { compareMessengerId } from "../test/messenger.test";
+import { compareMessengerId, checkFirstAccess } from "../test/messenger.test";
 import { onsuranceTireOn } from "../controller/onsurance.controller";
 
 const onsurance = express();
@@ -54,8 +54,8 @@ onsurance.post(`/tire/on/messenger`, async (req, res) => {
     console.log(req.path);
     try {
         const variables: OnsuraceTiresVariables = await onsuranceTires(req.body);
-        await compareMessengerId(variables.userEmail, variables.messengerId);
-
+        const dbMessengerId = await compareMessengerId(variables.userEmail, variables.messengerId);
+        checkFirstAccess(dbMessengerId);
         const result = await onsuranceTireOn(variables);
         return res.send(result);
     } catch (error) {

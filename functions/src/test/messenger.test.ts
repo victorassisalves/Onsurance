@@ -9,11 +9,26 @@ import { getDatabaseInfo } from "../model/databaseMethods";
 export const compareMessengerId = async (userEmail: string, messengerId: string) => {
     const userDbPath = await userProfileDbRefRoot(userEmail);
     const dbMessengerId = await getDatabaseInfo(userDbPath.child("/personal/messengerId"));
+    console.log(`TCL: dbMessengerId`, dbMessengerId);
     if (messengerId != dbMessengerId && dbMessengerId !== null) {
         throw {
             status: 401, // Unauthorized
             text: `User is using a different messenger account.`,
             callback: `userUsingDiffMessenger`,
+            variables: {}
+        };
+    } else {
+        return dbMessengerId;
+    }
+};
+
+
+export const checkFirstAccess = (dbMessengerId) => {
+    if (dbMessengerId === undefined || dbMessengerId === null) {
+        throw {
+            status: 401, // Unauthorized
+            text: `User haven't made first access in messenger.`,
+            callback: `noFirstAccess`,
             variables: {}
         };
     } else {

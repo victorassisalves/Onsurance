@@ -127,21 +127,21 @@ export const getfirstAccess = async (variables) => {
             // ERROR check for owner account NOT exist
             checkUserProfile(userProfileFull, variables.userEmail)
             
-            const userItems = userProfileFull.items;
             const userProfile = userProfileFull.personal;
-            const itemAuth: ItemAuthorizations = userProfileFull.itemAuthorizations;            
-
-            // Check if user have items on profile
-            checkItemList(userItems);
-
             // ERROR check for onboard made
             checkOnboard(userProfile, variables);
+
+            const userItems = userProfileFull.items;
+            // Check if user have items on profile
+            checkItemList(userItems);
 
             // ERROR check for client ID (Woocommerce)
             checkClientId(userProfile, variables);
 
             // ERROR check for wallet and wallet amount
             checkUserWallet(userProfile, variables);
+
+            const itemAuth: ItemAuthorizations = userProfileFull.itemAuthorizations;            
 
             const checkAccessToProducts = () => {
                 // First we need to check vehicles PRON

@@ -284,7 +284,7 @@ export const onsuranceTires = async (req) => {
             userEmail: checkRequestVariables('userEmail', req.userEmail, String),
             messengerId: checkRequestVariables("messengerId", req.messengerId, String),
             tireVehicleId: checkRequestVariables(`Tire Vehicle ID`, req.tireVehicleId, String),
-            accident: checkRequestVariables(`Accident`, req.accident, Boolean)
+            accident: checkRequestVariables(`Tire Accident`, req.tireAccident, Boolean)
         };
 
         return onsuranceTires

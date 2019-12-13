@@ -54,7 +54,7 @@ firstAccess.get(`/messenger`, async (request, response) => {
         
     } catch (error) {
         console.error(new Error(`TCL: error: ${JSON.stringify(error)}`));
-        const resp = require('../environment/responses.messenger');
+        const resp = require('../environment/messenger/messenger.responses');
         if (error.callback) {
             if (error.callback === 'variableNull') response.json(variableNull('errorInVariablesOnboard'))
             response.json(resp[error.callback](error.variables));

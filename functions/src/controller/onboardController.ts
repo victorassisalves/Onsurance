@@ -270,7 +270,9 @@ export const tireOnboard = (variables) => {
                                 activationsCounter: {
                                     accident: 0
                                 },
-                                protectionStatus: false,
+                                protectionStatus: {
+                                    accident: false,
+                                },
                                 totalValue: onboardVariables.totalValue,
                                 vehicleType: onboardVariables.vehicleType,
                             };

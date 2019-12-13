@@ -162,13 +162,20 @@ export const checkMessengerId = async (messengerId: string, variables: any) => {
  * @todo change this function name to checkVehicleProfile
  */
 export const checkItemProfile = (itemProfile, variables) => {
+    let itemInUse;
+    if (variables.tireVehicleId) {
+        itemInUse = variables.tireVehicleId
+    } else {
+        itemInUse = variables.itemInUse
+    }
+
     // ERROR check for non existing ItemProfile
     if (itemProfile === null || itemProfile === undefined) throw {
         status: 404, // Not found
-        text: `Error checking item profile for ${variables.userEmail}. Check if user made onboard for item ${variables.itemInUse} or the data is correct.`,
+        text: `Error checking item profile for ${variables.userEmail}. Check if user made onboard for item ${itemInUse} or the data is correct.`,
         callback: 'noItemProfile',
         variables: {
-            itemInUse: variables.itemInUse
+            itemInUse: itemInUse
         }
     };
     return;

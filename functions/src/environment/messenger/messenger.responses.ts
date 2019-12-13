@@ -300,6 +300,28 @@ export const noTiresOnProfile = (variables?) => {
     return noItems;
 };
 
+export const noFirstAccess = (variables?) => {
+
+    const firstAccess = {
+        "messages": [
+            {
+                "text": "Então, vi aqui que não realizou sua verificação inicial de dados."
+            },
+            {
+                "text": `Não se preocupe. Vou fazer isso agora com você.`
+            }
+        ],
+        "set_attributes": {
+            "firstAccess": false,
+        },
+        "redirect_to_blocks": [
+            "informarDados"
+        ]
+    };
+    
+    return firstAccess;
+};
+
 export const firstAccessResponse = variables => {
 
     const firstAccess = {

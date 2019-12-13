@@ -5,7 +5,7 @@ import { OnsuraceTiresVariables } from "../environment/messenger/messenger.varia
 import { TireInUserProfile, TireProtectionData } from "../model/tires.model";
 import { getItemId, tiresInItemDbPath } from "../database/tire.database";
 import { PersonalUserProfileInterface, ItemAuthorizations } from "../interfaces/user.interfaces";
-import { checkUserProfile, checkTireProfile, checkItemAccess, checkItemProfile } from "../model/errors";
+import { checkUserProfile, checkTireProfile, checkItemAccess, checkItemProfile, checkOnboard } from "../model/errors";
 import { TestAccessToItem } from "../test/itemAccess.test";
 
 
@@ -22,8 +22,11 @@ const onsuranceTire = async (_variables: OnsuraceTiresVariables) => {
     
         const userProfile: PersonalUserProfileInterface = await getDatabaseInfo(userDbPath.child('personal'));
         checkUserProfile(userProfile, _variables.userEmail);
+        checkOnboard(userProfile, _variables.userEmail);
+
         const tireProfile: TireInUserProfile = await getDatabaseInfo(userDbPath.child(`items/tires/${itemId}`));
         checkTireProfile(tireProfile, _variables);
+
         const itemAuth: ItemAuthorizations = await getDatabaseInfo(userDbPath.child(`itemAuthorizations`));
         
         function checkAccess () {
@@ -45,15 +48,24 @@ const onsuranceTire = async (_variables: OnsuraceTiresVariables) => {
         const tireProtectionData: TireProtectionData = await getDatabaseInfo(tireDbPath.child('profile/protectionData'));
         checkItemProfile(tireProtectionData, _variables);
 
-
         function checkOnsuranceStatus () {
-            return true;
+            const status = Object.values(tireProtectionData.protectionStatus);
+            console.log(`TCL: status`, status);
+            const protectionStatus = status.every(status => status === true);
+            console.log(`TCL: protectionStatus`, protectionStatus);
+            return protectionStatus;
         };
-    
-        function activateOnsuranceTire () {
-            return true;
-        };
-        return _access
+        const status = checkOnsuranceStatus()
+
+        return {
+            protectionStatus: status,
+            userProfile: userProfile,
+            itemId: itemId,
+            tireProfile: tireProfile,
+            protectionData: tireProtectionData,
+            userDbPath: userDbPath,
+            tireDbPath: tireDbPath
+        }
     } catch (error) {
         console.error(new Error(`Error in Onsurace Tire Activation - ${JSON.stringify(error)}`))
         throw error;
