@@ -1,11 +1,11 @@
 import * as express from "express";
 import * as cors from "cors";
-import { getItemListVariables, getTiresInfoVariables, getAutoInfoVariables } from "../environment/messenger.variables";
+import { getItemListVariables, getTiresInfoVariables, getAutoInfoVariables } from "../environment/messenger/messenger.variables";
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { getDatabaseInfo } from "../model/databaseMethods";
 import { checkMessengerId } from "../model/errors";
 import { getItemList, getAutoList, getTiresList, getTire, getAuto } from "../controller/items.controller";
-import { showItemsListInGalery, serverError, changeTireOptions, setTireInfo, setVehicleInfo } from "../environment/responses.messenger";
+import { showItemsListInGalery, serverError, changeTireOptions, setTireInfo, setVehicleInfo } from "../environment/messenger/messenger.responses";
 
 const items = express();
 // Automatically allow cross-origin requests

@@ -1,5 +1,5 @@
 import { getItemId } from "../database/database";
-import { UserProfileInterface, ItemAuthorizations, VehicleInUserProfileInterface, TireInUserProfileInterface } from "../interfaces/user.interfaces";
+import { ItemAuthorizations} from "../interfaces/user.interfaces";
 
 
 /**

@@ -618,3 +618,10 @@ export const quote = functions.https.onRequest(async (request, response) => {
     const quote = require("./routes/quotation.routes");
     return await quote(request, response);
 });
+
+
+// -------------- ONSURANCE ACTIVATION ------------------
+export const onsurance = functions.https.onRequest(async (request, response) => {
+    const onsurance = require("./routes/onsurance.routes");
+    return await onsurance(request, response);
+});

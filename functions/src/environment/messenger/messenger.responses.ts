@@ -1,16 +1,40 @@
-import { databaseMethods } from "../model/databaseMethods";
-import { userProfileDbRefPersonal } from "../database/database";
-import { checkRequestVariables } from "../model/errors";
+const activationFail = (protectionVariables) => {
+    const activationFail = {
+        "messages": [
+            {
+                "text": `Opa ${protectionVariables.firstName}. Não consegui ligar sua proteção. Vou trazer a função de Ligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
+            }
+        ],
+        "set_attributes":
+            {
+                "status-protecao": `OFF`,
+            },
+        "redirect_to_blocks": [
+            "Ligar"
+        ]
+    }
+    return activationFail
+}
 
-// request.query comes from get
-// request.body comes from post
+const deactivationFail = (protectionVariables, response) => {
+    const deactivationFail = {
+        "messages": [
+            {
+                "text": `Opa ${protectionVariables.firstName}. Não consegui desligar sua proteção. Vou trazer a função de Desligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
+            }
+        ],
+        "set_attributes":
+        {
+            "status-protecao": "ON",
+        },
+        "redirect_to_blocks": [
+            "Desligar"
+        ]
+    }
+    
+    response.json(deactivationFail)
+};
 
-/*
-    RESPONSES
-    TODO:
-        create a chatfuel block for every response
-        Fix the quick replies 
-*/
 export const singleDeactivation = variables => {
 
     const singleDeactivation = {
@@ -192,14 +216,14 @@ export const noUserProfile = variables => {
     const noUserProfile = {
         "messages": [
             {
-                "text": "Olá {{first name}}. Não conseguimos encontrar seu perfil em nosso sistema. Por favor, verifique se seu email está correto."
+                "text": "Então... Não conseguimos encontrar seu perfil em nosso sistema. Por favor, verifique se seu email está correto."
             },
             {
                 "text": `Verifique também, se ${variables.userEmail} é o mesmo email que foi usado na compra dos créditos em nosso site.`
             },
         ],
         "redirect_to_blocks": [
-            `Informar Email`
+            `informarDados`
         ]
     }
     
@@ -217,7 +241,7 @@ export const noOnboard = variables => {
                 "text": `Verifique se seus dados foram aprovados.`
             },
             {
-                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -228,27 +252,74 @@ export const noOnboard = variables => {
     return noOnboard
 };
 
-export const firstAccess = variables => {
+/**
+ * @description This function checks if the profile have
+ */
+export const noItemsOnProfile = (variables?) => {
+    const noItems = {
+        "messages": [
+            {
+                "text": "Olá {{first name}}. Não encontrei nenhum item em seu perfil."
+            },
+            {
+                "text": `Verifique se seus dados foram aprovados e o onboard do item já foi feito.`
+            },
+            {
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
+            },
+        ],
+        "redirect_to_blocks": [
+            `informarDados`
+        ]
+    }
+    
+    return noItems;
+};
+
+/**
+ * @description This function checks if the profile have Tires
+ */
+export const noTiresOnProfile = (variables?) => {
+    const noItems = {
+        "messages": [
+            {
+                "text": "Olá {{first name}}. Não encontrei nenhum veículo com Onsurance Pneus em seu perfil."
+            },
+            {
+                "text": `Verifique se seus dados foram aprovados e o onboard do item já foi feito.`
+            },
+            {
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
+            },
+        ],
+        "redirect_to_blocks": [
+            `informarDados`
+        ]
+    }
+    
+    return noItems;
+};
+
+export const firstAccessResponse = variables => {
 
     const firstAccess = {
         "messages": [
             {
-                "text": "Opaa! Verificamos os dados com sucesso."
-            },
-            {
-                "text": "Agora está tudo pronto para acessar o Onsurance para o seu veículo."
+                "text": "Opaa! Verifiquei seus dados com sucesso."
             },
         ],
         "set_attributes": {
-            "car-model": variables.itemModel,
-            "car-brand": variables.itemBrand,
+            "tireAccess": variables.tireAccess,
+            "autoAccess": variables.autoAccess,
+            "firstAccess": true,
+            "user": "usuario"
         },
         "redirect_to_blocks": [
-            `welcome`
+            "getItems"
         ]
-    }
+    };
     
-    return firstAccess
+    return firstAccess;
 };
 
 export const alreadyDidFirstAccess = variables => {
@@ -266,7 +337,7 @@ export const alreadyDidFirstAccess = variables => {
             },
         ],
         "redirect_to_blocks": [
-            `Ligar`
+            `getItems`
         ]
     }
     
@@ -284,7 +355,29 @@ export const noItemInUse = variables => {
                 "text": `Verifique se seus dados foram aprovados e seu veículo cadastrado. Caso não seja o dono do item, verifique se o acesso foi liberado para o seu perfil.`
             },
             {
-                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
+            },
+        ],
+        "redirect_to_blocks": [
+            `changeItem`
+        ]
+    }
+    
+    return noItemInUse
+};
+
+export const noTireInUse = variables => {
+
+    const noItemInUse = {
+        "messages": [
+            {
+                "text": `Olá {{first name}}. Não encontramos o veículo ${variables.tireVehicleId} com acesso ao Onsurance Pneus em seu perfil.`
+            },
+            {
+                "text": `Verifique se seus dados foram aprovados e seu veículo cadastrado. Caso não seja o dono do item, verifique se o acesso foi liberado para o seu perfil.`
+            },
+            {
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -306,7 +399,7 @@ export const noItemProfile = variables => {
                 "text": `Verifique se seus dados foram aprovados e seu veículo cadastrado.`
             },
             {
-                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -322,7 +415,10 @@ export const noItemAccess = variables => {
     const noItemAccess = {
         "messages": [
             {
-                "text": `Oooops. Você não tem permissão para gerenciar a proteção deste veículo. Entre em contato com o proprietário.`,
+                "text": `Oooops. Você não tem permissão para gerenciar a proteção deste item. Entre em contato com o proprietário.`,
+            },
+            {
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`,
                 "quick_replies": [
                     {
                       "title":"Entrar em contato",
@@ -333,9 +429,6 @@ export const noItemAccess = variables => {
                         "block_names": ['changeItem']
                     }
                 ]
-            },
-            {
-                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
             },
         ],
     }
@@ -359,7 +452,7 @@ export const noOwnerCredit = variables => {
                 "text": `O proprietário do veículo não possui saldos suficiente.`
             },
             {
-                "text": `Caso já tenha efetuado a recarga, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso já tenha efetuado a recarga, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -381,7 +474,7 @@ export const noUserCredit = variables => {
                 "text": `Você não possui saldos suficiente. Seu saldo atual é: R$${variables.userCredit}`
             },
             {
-                "text": `Caso já tenha realizado a recarga, verifique se o pagamento já foi confirmado. Caso já tenha, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso já tenha realizado a recarga, verifique se o pagamento já foi confirmado. Caso já tenha, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -403,7 +496,7 @@ export const noWallet = variables => {
                 "text": `Você já realizou a compra dos créditos em nosso site?`
             },
             {
-                "text": `Caso já tenha realizado a compra, verifique se o pagamento já foi confirmado. Caso já tenha, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso já tenha realizado a compra, verifique se o pagamento já foi confirmado. Caso já tenha, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -425,7 +518,7 @@ export const noClientId = variables => {
                 "text": `Você já realizou a compra dos créditos em nosso site?`
             },
             {
-                "text": `Caso já tenha realizado a compra, verifique se o pagamento já foi confirmado. Caso já tenha, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso já tenha realizado a compra, verifique se o pagamento já foi confirmado. Caso já tenha, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -447,7 +540,7 @@ export const noItemToGiveAccess = variables => {
                 "text": `Verifique se seus dados foram aprovados e seu veículo cadastrado.`
             },
             {
-                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agoradecemos a compreensão.`
+                "text": `Caso todos os passos acima já tenham sido realizados, contate nossos especialista que rapidamente seu problema será resolvido. Agradecemos a compreensão.`
             },
         ],
         "redirect_to_blocks": [
@@ -766,8 +859,51 @@ export const alreadyHaveIndicator = variables => {
 
 */
 
+/**
+ * @description This function returns the response for the messenger to change the vehtiresicle in protection
+ * @param variables Conatins the array of vehicle plates
+ */
+export const changeTireOptions = variables => {
 
-export const changeItem = async variables => {
+    let replies = [];
+    variables.vehiclePlates.forEach(element => {
+        const reply = {
+            "title": element,
+            "set_attributes": {
+              "tireVehicleId": element
+            }
+        };
+        replies.push(reply)
+    });
+    replies.push({
+        "title":"Falar com Especialista",
+        "block_names": ["Human interaction"]
+      },
+      {
+        "title":"Menu de Opções",
+        "block_names": ["Menu de opções"]
+      });
+    const changeItemResponse = {
+        "messages": [
+            {
+                "text": "Qual veículo deseja segurar os pneus?",
+                "quick_replies": replies,
+                "quick_reply_options": {
+                  "process_text_by_ai": false,
+                  "text_attribute_name": "tireVehicleId"
+                }
+            }
+        ],
+    }
+    
+    return changeItemResponse
+};
+
+/**
+ * @description This function returns the response for the messenger to change the vehicle in protection
+ * @param variables Conatins the array of vehicle plates
+ */
+export const changeVehicleOptions = variables => {
 
     let replies = [];
     variables.vehiclePlates.forEach(element => {
@@ -790,7 +926,7 @@ export const changeItem = async variables => {
     const changeItemResponse = {
         "messages": [
             {
-                "text": "Qual opção deseja escolher?",
+                "text": "Qual veículo deseja escolher?",
                 "quick_replies": replies,
                 "quick_reply_options": {
                   "process_text_by_ai": false,
@@ -803,17 +939,19 @@ export const changeItem = async variables => {
     return changeItemResponse
 };
 
-export const changeItemInfo = variables => {
+/**
+ * @descriptionThis functions returns the chatfuel callback to set item variables
+ * @param variables Holds the item profile data
+ */
+export const setVehicleInfo = variables => {
     try {
-        console.log("TCL: variables", variables)
-        console.log("TCL: variables.itemProfile.protectiondata.protectionStatus", variables.itemProfile.protectionData.protectionStatus)
-        console.log("TCL: variables.itemProfile.protectiondata.protectionStatus.theft", variables.itemProfile.protectionData.protectionStatus.theft)
 
         let protectionStatus = "ON"
+        let autoTitle = "Para Desligar o Onsurance Auto clique em Onsurance ON - OFF";
         if (variables.itemProfile.protectionData.protectionStatus.theft === false) {
             protectionStatus = "OFF"
+            autoTitle = "Para Ligar o Onsurance Auto clique em Onsurance ON - OFF";
         };
-        console.log("TCL: protectionStatus", protectionStatus)
 
         const changeItemInfoResponse = {
             "messages" :[
@@ -828,7 +966,8 @@ export const changeItemInfo = variables => {
                 "car-brand": variables.itemProfile.brand,
                 "car-model": variables.itemProfile.model,
                 "status-protecao": protectionStatus,
-                "itemInUse": variables.itemProfile.plate
+                "itemInUse": variables.itemProfile.plate,
+                "autoTitle": autoTitle
             },
         }
         
@@ -873,13 +1012,77 @@ export const changeItemInfo = variables => {
     
 };
 
-export const onlyOneItemInProfile = variables => {
+/**
+ * @descriptionThis functions returns the chatfuel callback to set the tire to be protected 
+ * @param variables Holds the tire profile data
+ */
+export const setTireInfo = (variables) => {
+
+    let protectionStatus = "ON"
+    let tireTitle = "Para Desligar o Onsurance Pneus clique em Onsurance ON - OFF";
+    if (variables.protectionStatus === false) {
+        tireTitle = "Para Ligar o Onsurance Pneus clique em Onsurance ON - OFF";
+        protectionStatus = "OFF"
+    };
+
+    const changeItemInfoResponse = {
+        "messages" :[
+            {
+                "text" : `Tudo pronto para usar o Onsurance Pneus para o veículo ${variables.tireVehicleId}.`
+            },
+            {
+                "text": `Seu Onsurance Pneus está atualmente ${protectionStatus} para esse veículo.`
+            }
+        ],
+        "set_attributes": {
+            "tireOnsuranceStatus": protectionStatus,
+            "tireQtd": variables.tireQtd,
+            "tireVehicleId": variables.tireVehicleId,
+            "tireTitle": tireTitle
+        },
+    }
+    
+    return changeItemInfoResponse
+    
+};
+
+/**
+ * @description This function returns the user to the block of choice to resend the variables wuth problems
+ * @param block It's the block you need to send the user.
+ */
+export const variableNull = (block?) => {
+    console.log(`TCL: block`, block);
+    let sendToBlock = 'informarDados';
+
+    if (block !== null && block !== undefined) {
+        sendToBlock = block;
+    };
+
+    const variableNull = {
+        "messages" :[
+            {
+                "text" : `Opa!!! Não recebi todas as informações que precisava. Vamos tentar de novo.`
+            },
+            {
+                "text": `Caso não dê certo, é só digitar \"especialista\" que trago alguém pra te ajudar.`
+            }
+        ],
+        "redirect_to_blocks": [
+            sendToBlock
+        ]
+    }
+    
+    return variableNull
+    
+};
+
+export const oneVehicleInProfile = variables => {
     try {
 
-        const onlyOneItemInProfileResponse = {
+        const response = {
             "messages" :[
                 {
-                    "text" : `Opa!!! Encontrei o veículo ${variables.vehiclePlate} em seu perfil.`
+                    "text" : `Encontrei o veículo ${variables.vehiclePlate} em seu perfil.`
                 },
                 {
                     "text": `Pode utilizar seu Onsurance normalmente.`
@@ -891,11 +1094,15 @@ export const onlyOneItemInProfile = variables => {
             "set_attributes": {
                 "car-brand": variables.itemProfile.brand,
                 "car-model": variables.itemProfile.model,
-                "itemInUse": variables.vehiclePlate
+                "itemInUse": variables.vehiclePlate,
+                "autoAccess": true
             },
+            "redirect_to_blocks": [
+                "protectionRouter"
+            ]
         }
         
-        return onlyOneItemInProfileResponse
+        return response;
         
     } catch (error) {
         const serverError = {
@@ -929,399 +1136,242 @@ export const onlyOneItemInProfile = variables => {
         };
         
         return {
-            status: 200,
+            status: 500,
             text: serverError
         };
     };
     
 };
 
+/**
+ * @description This function returns the response for messenger informing the user that in his profile, only have 1 tire inseured vehicle
+ * @param variables The tires insurance information
+ */
+export const oneTireInProfile = variables => {
 
-
-
-
-
-/*
-    VARIABLES
-*/
-
-// Variables for protection endpoint
-export const getProtectionVariables = async (request, response) => {
-    try {
-        console.log(request.body);
-        const allPolicies = []
-        const on = [];
-        const off = [];
-        const checkString = (status, key) => {
-            // tslint:disable-next-line: triple-equals
-            const boolValue = status.toLowerCase() == 'true' ? true : false;
-            allPolicies.push(boolValue);
-            boolValue === true ? on.push(key) : off.push(key)
-            return boolValue  
-        };
-        const policies = await {
-            theft: checkString(request.body["theft"], 'theft'),
-            accident: checkString(request.body["accident"], 'accident'),
-            thirdParty: checkString(request.body["thirdParty"], 'thirdParty'),
-        };
-        
-        console.log("TCL: exports.getProtectionVariables -> allPolicies", allPolicies)
-        
-        const checkProtection = () => {
-            return {
-                allOff: allPolicies.every(status => status === false),
-                allOn: allPolicies.every(status => status === true),
-                on: on,
-                off: off,
+    const oneTireInProfile = {
+        "messages" :[
+            {
+                "text" : `Encontrei o veículo ${variables.vehiclePlate} com acesso ao Onsurance pneus em seu perfil.`
+            },
+            {
+                "text": `Pode utilizar seu Onsurance Pneus normalmente.`
+            },
+            {
+                "text": `Caso tenha comprado o Onsurance pra pneus de outro veículo, entre em contato com nossos especialistas para resolver esse problema.`,
             }
-        }
-        const statusProtection = await checkProtection();
-        console.log("TCL: exports.getProtectionVariables -> statusProtection", statusProtection);
-        
-        const protectionVariables = {
-            userEmail:(request.body["userEmail"]).toLowerCase(),
-            timezone:request.body["timezone"] || -3,
-            itemInUse: request.body["itemInUse"].toLowerCase(),
-            messengerId: request.body["messenger user id"],
-            policies: policies,
-            statusProtection: statusProtection
-        }
-
-
-        return protectionVariables
-    } catch (error) {
-        /*
-            TODO: Set response to messenger standards
-        */
-        console.error(new Error(`Error to get variables for user ${request.body["email_address"]}. Error: ${error}.`));
-        response.json({
-            "messages": [
-                {
-                    "text": "Erro com varáveis. Verifique se os dados enviados estão corretos e tente novamente."
-                },
-            ],
-            "redirect_to_blocks": [
-                `Informar Email`
-            ]
-        });
+        ],
+        "set_attributes": {
+            "tireVehicleId": variables.vehiclePlate,
+            "tireQtd": variables.itemProfile.tireQtd,
+            "tireAccess": true,
+        },
+        "redirect_to_blocks": [
+            "protectionRouter"
+        ]
     }
+    
+    return oneTireInProfile
     
 };
 
-export const giveAccessVariables = async (request, response) => {
+
+/**
+ * @description This function returns the galery with the items in user profile.
+ * @param {Array<any>} items Its the list of items to send to user profile
+ */
+export const showItemsListInGalery = async (items: Array<any>): Promise<Object> => {
     try {
-        console.log(request.body);
-        
-        const accessVariables = {
-            userEmail:(request.body["userEmail"]).toLowerCase(),
-            thirdPartyEmail:request.body["thirdPartyEmail"].toLowerCase(),
-            itemToAccess: request.body["itemToAccess"].toLowerCase(),
-            messengerId: request.body["messenger user id"],
-        }
+        let atributtes = {}
+        let autoStatusProtection = 'OFF';
+        let tireStatusProtection = 'OFF';
+        let autoTitle = "Para Ligar o Onsurance Auto clique em Onsurance ON - OFF";
+        let tireTitle = "Para Ligar o Onsurance Pneus clique Onsurance ON - OFF";
+        let block = "protectionRouter";
+        for (let i = 0; i < items.length; i++) {
 
+            switch (items[i].type) {
+                case "vehicle": {
+                    if (items[i].protectionStatus === true) {
+                        autoStatusProtection = "ON";
+                        autoTitle = "Para Desligar o Onsurance Auto clique em Onsurance ON - OFF";
+                    }   
+                atributtes = {
+                        ...atributtes,
+                        "itemInUse": items[i].itemId,
+                        "car-brand": items[i].brand,
+                        "car-model":items[i].model,
+                        "status-protecao": autoStatusProtection,
+                        "autoTitle": autoTitle,
+                        "autoAccess": true,
+                    };
+                    break;
+                };
+                case "tires": {
 
-        // Checking messenger variable here because other requisitions may not have messenger (Onsurance app, zoho bot and so on...)
-        const ownerDbPath = await userProfileDbRefPersonal(accessVariables.userEmail)
-        const dbMethods = await databaseMethods();
-        const messengerId = await dbMethods.getDatabaseInfo(ownerDbPath.child(`messengerId`));
-        console.log("TCL: doBackup -> messengerId", messengerId)
-        if (messengerId === undefined || messengerId === null) throw {
-            status: 404, //Not found
-            text: `No messenger id found in user ${accessVariables.userEmail} account.`,
-            callback: giveAccessNoMessenger,
-            variables: {}
-        };
-        // tslint:disable-next-line: triple-equals
-        if (accessVariables.messengerId != messengerId && messengerId !== null) throw {
-            status: 401, // Unauthorized
-            text: `User is using a different messenger account.`,
-            callback: giveAccessNoMessenger,
-            variables: {}
-        };
-        return accessVariables
-    } catch (error) {
-        /*
-            TODO: Set response to messenger standards
-        */
-
-        if(error.status) {
-            console.error(new Error(`Error status: ${error.status}`));
-            console.error(new Error(`Error description: ${error.text}`));
-            console.log("TCL: giveAccessVariables -> error[`callback`]()", error[`callback`]())
-            const callback = error.callback
-            console.log("TCL: giveAccessVariables -> callback", callback())
-            response.json(callback(error.variables))
-        } else {
-            /*
-
-                TODO:
-                    get the right block of messenger
-
-            */
-            console.error(new Error(`Error to get variables for user ${request.body["email_address"]}. Error: ${error}.`));
-
-            response.json({
-                "messages": [
-                    {
-                        "text": "Erro com varáveis. Verifique se os dados enviados estão corretos e tente novamente."
-                    },
-                ],
-                "redirect_to_blocks": [
-                    `Informar Email`
-                ]
-            });
-        }
-    }
-};
-
-export const firstAccessVariables = async (request, response) => {
-    try {
-        const accessVariables = {
-            userEmail:checkRequestVariables('UserEmail', request["userEmail"], String),
-            firstName:checkRequestVariables('First Name', request["firstName"]),
-            lastName:checkRequestVariables('Last Name', request["lastName"]),
-            messengerId: checkRequestVariables('Messenger Id', request["messengerId"], String),
-        }
-
-        return accessVariables
-    } catch (error) {
-        /*
-            TODO: Set response to messenger standards
-        */
-       if (error.callback) throw error
-
-        console.error(new Error(`Error to get variables for user ${request.query["email_address"]}. Error: ${error}.`));
-
-        response.json({
-            "messages": [
-                {
-                    "text": "Erro com varáveis. Verifique se os dados enviados estão corretos e tente novamente."
-                },
-            ],
-            "redirect_to_blocks": [
-                `errorInVariablesOnboard`
-            ]
-        });
-    }
-};
-
-export const indicationVariables = async (request, response) => {
-    try {
-        console.log(request.body);
-        
-        const indicationVariables = {
-            userEmail:(request.body["indicatedUserEmail"]).toLowerCase(),
-            indicatorEmail:request.body["indicator"].toLowerCase(),
-            messengerId: request.body["messenger user id"],
-            firstName: request.body["first name"],
-            lastName: request.body["last name"],
-        };
-
-        // Error check for owner account NOT exist
-        if (indicationVariables.indicatorEmail == indicationVariables.userEmail) throw {
-            status: 409, // Conflict
-            text: `Indicator is equal to indicated.`,
-            callback: indicatorEqualIndicated,
-            variables: {
-                userEmail: indicationVariables.userEmail
+                    if (items[i].protectionStatus === true) {
+                        tireStatusProtection = "ON";
+                        tireTitle = "Para Desligar Onsurance Pneus clique em Onsurance ON - OFF";
+                    } 
+                    atributtes = {
+                        ...atributtes,
+                        "tireVehicleId": items[i].itemId,
+                        "tireQtd": items[i].tireQtd,
+                        "tireOnsuranceStatus": tireStatusProtection,
+                        "tireTitle": tireTitle,
+                        "tireAccess": true
+                    };
+                        
+                    break;
+                };
+                default:
+                    throw {
+                        error: `Unknown type: ${items[i].type}`
+                    };
             }
         };
 
-        return indicationVariables
-    } catch (error) {
-        /*
-            TODO: 
-                Set response to messenger standards
-                get the right block of messenger
-        */
 
-       if(error.status) {
-            console.error(new Error(`Error status: ${error.status}`));
-            console.error(new Error(`Error description: ${error.text}`));
-            console.log("TCL: error[`callback`]()", error[`callback`]())
-            const callback = error.callback
-            console.log("TCL: callback", callback())
-            return response.json(callback(error.variables))
-        } else {
-            console.error(new Error(`Error to get variables for user ${request.body["userEmail"]}. Error: ${error}.`));
-
-            response.json({
-                "messages": [
-                    {
-                        "text": "Erro com varáveis. Verifique se os dados enviados estão corretos e tente novamente."
-                    },
-                ],
-                "redirect_to_blocks": [
-                    `validateIndication`
-                ]
-            });
+        const response = {
+            "messages" :[
+                {
+                    "text": `Tudo certo. Vamos começar.`,
+                }
+            ],
+            "set_attributes": {
+                ...atributtes,
+            },
+            "redirect_to_blocks": [
+                block
+            ]
         };
-    };
-};
-
-export const saveIndicatorVariables = async (request, response) => {
-    try {
-        console.log(request.body);
+        return response;
         
-        const indicationVariables = {
-            userEmail: request.body["email_address_indicacao"].toLowerCase(),
-            firstName: request.body["first name"],
-            lastName: request.body["last name"],
-            messengerId: request.body["messenger user id"],
-        };
-
-        return indicationVariables
     } catch (error) {
-        /*
-            TODO: 
-                Set response to messenger standards
-                get the right block of messenger
-        */
-
-       if(error.status) {
-            console.error(new Error(`Error status: ${error.status}`));
-            console.error(new Error(`Error description: ${error.text}`));
-            console.log("TCL: error[`callback`]()", error[`callback`]())
-            const callback = error.callback
-            console.log("TCL: callback", callback())
-            return response.json(callback(error.variables))
-        } else {
-            console.error(new Error(`Error to get variables for user ${request.body["userEmail"]}. Error: ${error}.`));
-
-            response.json({
-                "messages": [
-                    {
-                        "text": "Erro com varáveis. Verifique se os dados enviados estão corretos e tente novamente."
-                    },
-                ],
-                "redirect_to_blocks": [
-                    `validateIndication`
-                ]
-            });
-        };
-    };
-};
-
-export const getItemListVariables = async (req, res) => {
-    try {
-        const getItems = {
-            userEmail: checkRequestVariables('userEmail', req.userEmail, String),
-            messengerId: checkRequestVariables("messengerId", req.messengerId, String)
-        };
-        return getItems;
-    } catch (error) {
-        console.error(new Error(`Error to get variables for user ${req.body["userEmail"]}. Error: ${JSON.stringify(error)}.`));
-
-        res.json({
+        console.error(new Error(`TCL: error: ${error}`));
+        const serverError = {
             "messages": [
                 {
-                    "text": "Erro com varáveis. Vou te encaminhar para um especialista. Aguarde somente um momento."
+                    "text": "OOOoooppsss. Tivemos um pequeno erro em nosso servidor. Por favor verifique se está conectado à internet e tente novamente em 5 segundos."
                 },
-            ],
-            "redirect_to_blocks": [
-                `Human interaction`
+                {
+                    "text": "O que deseja fazer?",
+                    "quick_replies": [
+                        {
+                            "title":"Falar com Especialista",
+                            "block_names": ["Human interaction"]
+                        },
+                        {
+                            "title":"Menu de Opções",
+                            "block_names": ["Menu de opções"]
+                        },
+                        {
+                            "title":"Indicar a Onsurance",
+                            "block_names": ["Referer"]
+                        },
+                        {
+                            "title":"Conhecer a Onsurance",
+                            "block_names": ["PRON"]
+                        },
+                        
+                    ]
+                },
             ]
-        });
+        };
+        
+        throw serverError;
     };
 };
 
 /**
- * @description This function returns the treated variables for usage. Get the variables for auto usage
- * @param req The requested variables from ulr params (req.query)
- * @param res Response form endpoint
+ * @description This function returns to messenger informing the user don't have any item to access im profile
+ * @param variables Mock variables
  */
-export const getAutoInfoVariables = async (req, res) => {
-    try {
-        const getTireInfo = {
-            userEmail: checkRequestVariables('userEmail', req.userEmail, String),
-            messengerId: checkRequestVariables("messenger user id", req.messengerId, String),
-            itemInUse: checkRequestVariables("item in use", req.itemInUse, String, true),
-        };
-        
-        return getTireInfo;
-    } catch (error) {
-        console.error(new Error(`Error to get variables for user ${req["userEmail"]}. Error: ${JSON.stringify(error)}.`));
-
-        res.json({
-            "messages": [
-                {
-                    "text": "Erro com varáveis. Vamos tentar novamente, caso o erro se repita, por favor entre em contato com nossos especialistas."
-                },
-            ],
-            "redirect_to_blocks": [
-                `changeItemRouter`
-            ]
-        });
-    };
+export const noAccessToItems = (variables?) => {
+    const noAccessToItems = {
+        "messages" :[
+            {
+                "text" : `Opa!!! Parece que temos um problema!`
+            },
+            {
+                "text": `Seu perfil não tem acesso a nenhum item. Verfique com o proprietário se o acesso foi encerrado.`
+            },
+            {
+                "text": `Caso tenha comprado o Onsurance ou tenha confirmado que o proprietário tenha liberado o acesso, entre em contato com nossos especialistas para resolver esse problema.`,
+            }
+        ],
+        "set_attributes": {
+            "tireAccess": false,
+            "autoAccess": false,
+            "firstAccess": false,
+        },
+        "redirect_to_blocks": [
+            "Menu de opções"
+        ]
+    }
+    
+    return noAccessToItems
+    
 };
+
 /**
- * @description This function returns the treated variables for usage. Get the specific tire information for specific vehicle
- * @param req The requested variables from ulr params (req.query)
- * @param res Response form endpoint
+ * @description This function returns to messenger informing the user don't have any Auto to access im profile
+ * @param variables Mock variables
  */
-export const getTiresInfoVariables = async (req, res) => {
-    try {
-        const getTireInfo = {
-            userEmail: checkRequestVariables('userEmail', req.userEmail, String),
-            messengerId: checkRequestVariables("messenger user id", req.messengerId, String),
-            tireVehicleId: checkRequestVariables("tire vehicle Id", req.tireVehicleId, String),
-        };
-        
-        return getTireInfo;
-    } catch (error) {
-        console.error(new Error(`Error to get variables for user ${req["userEmail"]}. Error: ${JSON.stringify(error)}.`));
-
-        res.json({
-            "messages": [
-                {
-                    "text": "Erro com varáveis. Vamos tentar novamente, caso o erro se repita, por favor entre em contato com nossos especialistas."
-                },
-            ],
-            "redirect_to_blocks": [
-                `changeItemRouter`
-            ]
-        });
-    };
+export const noAccessToAuto = (variables?) => {
+    const noAccessToItems = {
+        "messages" :[
+            {
+                "text" : `Opa!!! Parece que temos um problema!`
+            },
+            {
+                "text": `Seu perfil não tem acesso a nenhum veículo. Verfique com o proprietário se o acesso foi encerrado.`
+            },
+            {
+                "text": `Caso tenha comprado o Onsurance ou tenha confirmado que o proprietário tenha liberado o acesso, entre em contato com nossos especialistas para resolver esse problema.`,
+            }
+        ],
+        "set_attributes": {
+            "autoAccess": false,
+        },
+        "redirect_to_blocks": [
+            "Menu de opções"
+        ]
+    }
+    
+    return noAccessToItems
+    
 };
 
+/**
+ * @description This function returns to messenger informing the user don't have any Vehicle with Onsurance Tires to access im profile
+ * @param variables Mock variables
+ */
+export const noAccessToTire = (variables?) => {
+    const noAccessToItems = {
+        "messages" :[
+            {
+                "text" : `Opa!!! Parece que temos um problema!`
+            },
+            {
+                "text": `Seu perfil não tem acesso a nenhum veículo com o Onsurance Pneus. Verfique com o proprietário se o acesso foi encerrado.`
+            },
+            {
+                "text": `Caso tenha comprado o Onsurance ou tenha confirmado que o proprietário tenha liberado o acesso, entre em contato com nossos especialistas para resolver esse problema.`,
+            }
+        ],
+        "set_attributes": {
+            "tireAccess": false,
+        },
+        "redirect_to_blocks": [
+            "Menu de opções"
+        ]
+    }
+    
+    return noAccessToItems
+    
+}
 
 
-/*
-
-        SEND MESSAGE TO MESSENGER
-
-*/
 
 
-export const sendMessage = variables =>{
-    // const urlHomolog = `https://api.chatfuel.com/bots/5b6c74f30ecd9f13f0f036e3/users/${messengerId}/send`
-    // const homologToken = 'qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74'
-
-    const urlProdution = `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${variables.messengerId}/send`
-    const productionToken = "qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74"
-    const request = require("request");
-
-    const options = { method: 'POST',
-    url: urlProdution,
-    qs: { 
-        chatfuel_token: productionToken,
-        chatfuel_message_tag: variables.messageTag,
-        chatfuel_block_id: '5d07a75fb65696000157825d',
-        text: variables.text 
-    },
-    headers: 
-    { Connection: 'keep-alive',
-        'content-length': '',
-        'accept-encoding': 'gzip, deflate',
-        Host: 'api.chatfuel.com',
-        Accept: '*/*',
-        'User-Agent': 'PostmanRuntime/7.13.0' } };
-
-    request(options, function (error, response, body) {
-    if (error) console.error(new Error(error));
-
-    console.log(body);
-});
-
-               
-};

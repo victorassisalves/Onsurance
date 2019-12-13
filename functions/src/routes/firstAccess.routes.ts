@@ -1,11 +1,11 @@
 import * as express from "express";
 import * as cors from "cors";
-import { firstAccessVariables } from "../environment/messenger.variables";
+import { firstAccessVariables } from "../environment/messenger/messenger.variables";
 import { getfirstAccess } from "../controller/firstAccessController";
 import { userProfileDbRefRoot } from "../database/customer.database";
 import { getDatabaseInfo, updateDatabaseInfo } from "../model/databaseMethods";
 import { checkMessengerId } from "../model/errors";
-import { firstAccessResponse, serverError, variableNull } from "../environment/responses.messenger";
+import { firstAccessResponse, serverError, variableNull } from "../environment/messenger/messenger.responses";
 
 const firstAccess = express();
 // Automatically allow cross-origin requests

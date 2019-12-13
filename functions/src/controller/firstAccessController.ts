@@ -3,9 +3,7 @@ import { userProfileDbRefRoot } from "../database/customer.database";
 import { databaseMethods, getDatabaseInfo } from "../model/databaseMethods";
 import { checkUserProfile, checkItemInUse, checkOnboard, checkClientId, checkUserWallet, checkItemProfile, checkItemList } from "../model/errors";
 import { TestAccessToItem } from "../test/itemAccess.test";
-import { ItemAuthorizations, TireInUserProfileInterface } from "../interfaces/user.interfaces";
-import { noItemAccess } from "../environment/messenger.variables";
-import { noAccessToItems } from "../environment/responses.messenger";
+import { ItemAuthorizations} from "../interfaces/user.interfaces";
 interface ItemAuth {
     thirdParty: {
         itemId: boolean

@@ -186,7 +186,7 @@ export const checkTireProfile = (tireProfile, variables) => {
         text: `Error checking tire profile for ${variables.userEmail}. Check if user made onboard for item ${variables.tireVehicleId} or the data is correct.`,
         callback: 'noTireInUse',
         variables: {
-            itemInUse: variables.tireVehicleId
+            tireVehicleId: variables.tireVehicleId
         }
     };
     return;
@@ -324,7 +324,8 @@ export const checkItemList = (userItemsList: Object) => {
  * return variable;
  * ```
  */
-export const checkRequestVariables = (varName, variable, variableType?, required = true ) => {
+export const checkRequestVariables = (varName, variable, variableType?, required = true) => {
+    console.log(`TCL: variable`, variable);
     switch (variable) {
         case null:
         case undefined:
@@ -351,7 +352,17 @@ export const checkRequestVariables = (varName, variable, variableType?, required
                 return variable.toLowerCase()
             } else if (variableType === Number) {
                 return parseFloat(variable);
-            };
+            } else if (variableType === Boolean) {
+                switch (variable) {
+                    case true:
+                    case 'true':
+                        return true;
+                    case false:
+                    case 'false':
+                    default:
+                        return false;
+                };
+            }
             return variable;
     }
 };

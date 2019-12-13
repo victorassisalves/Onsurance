@@ -35,10 +35,14 @@ export interface TireItemProfile {
     }
 }
 export interface TireProtectionData {
-    activationsCounter: number;
+    activationsCounter: {
+        accident: number;
+    };
     minuteValue: number;
     protectedMinutes: number;
-    protectionStatus: boolean;
+    protectionStatus: {
+        accident: boolean;
+    };
     tireQtd: number;
     totalValue: number;
     vehicleId: string;
