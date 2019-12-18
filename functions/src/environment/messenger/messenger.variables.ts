@@ -277,6 +277,7 @@ export interface OnsuraceTiresVariables {
     messengerId: string,
     tireVehicleId: string
     accident: boolean,
+    timezone?: number
 }
 export const onsuranceTires = async (req) => {
     try {
@@ -284,7 +285,8 @@ export const onsuranceTires = async (req) => {
             userEmail: checkRequestVariables('userEmail', req.userEmail, String),
             messengerId: checkRequestVariables("messengerId", req.messengerId, String),
             tireVehicleId: checkRequestVariables(`Tire Vehicle ID`, req.tireVehicleId, String),
-            accident: checkRequestVariables(`Tire Accident`, req.tireAccident, Boolean)
+            accident: checkRequestVariables(`Tire Accident`, req.tireAccident, Boolean),
+            timezone: checkRequestVariables(`Timezone`, req.timezone, Number, false),
         };
 
         return onsuranceTires

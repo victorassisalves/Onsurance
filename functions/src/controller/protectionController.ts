@@ -78,10 +78,10 @@ export const onsuranceProtection = variables => {
                 console.log("TCL: doBackup. -> userProfile", userProfile);
 
                 // ERROR check for non existing UserProfile
-                await checkUserProfile(userProfile, variables)
+                checkUserProfile(userProfile, variables)
 
                 // ERROR check for user onboard
-                await checkOnboard(userProfile, variables);
+                checkOnboard(userProfile, variables);
 
                 // Get item in use from user DB
                 const itemDbId = await getItemId(variables.itemInUse);
@@ -90,7 +90,7 @@ export const onsuranceProtection = variables => {
                 console.log("TCL: doBackup -> itemInUse", itemInUse);
 
                 // ERROR check for ITEM IN USE
-                await checkItemInUse(itemInUse, variables);
+                checkItemInUse(itemInUse, variables);
 
                 // Check if client is item owner
                 // tslint:disable-next-line: triple-equals
@@ -104,7 +104,7 @@ export const onsuranceProtection = variables => {
                     const hasAccessToItem = await dbMethods.getDatabaseInfo(userDbPath.child(`itemAuthorizations/thirdParty/${itemDbId}`))
                     console.log("TCL: hasAccessToItem", hasAccessToItem)
                     // ERROR check for item Access
-                    await checkItemAccess(hasAccessToItem, variables)
+                    checkItemAccess(hasAccessToItem, variables)
 
                     // User have authorization, now check for owner credit
                     ownerDbPath = await userProfileDbRefRoot(itemInUse.owner);
@@ -113,11 +113,11 @@ export const onsuranceProtection = variables => {
 
                     console.log(`TCL: User have authorization from ${itemInUse.owner}. Owner credits: ${ownerCredit}.`)
                     // ERROR check for owner Credit
-                    await checkOwnerCredit(ownerCredit)
+                    checkOwnerCredit(ownerCredit)
                 } else {
                     await checkMessengerId(userProfile.messengerId, variables)
                     // ERROR check for credit in User wallet
-                    await checkUserCredit(userProfile, variables)
+                    checkUserCredit(userProfile, variables)
                 };
 
 
@@ -133,7 +133,7 @@ export const onsuranceProtection = variables => {
                 const itemProfile = await dbMethods.getDatabaseInfo(itemDbPath.child("profile/protectionData"));
                 console.log("TCL: doBackup -> itemProfile", itemProfile)
                 // ERROR check for non existing ItemProfile
-                await checkItemProfile(itemProfile, variables)
+                checkItemProfile(itemProfile, variables)
 
                 // Check if protection request is equal to server protection
                 const checkProtectionEqual = checkEqual(variables.policies, itemProfile.protectionStatus)
@@ -242,7 +242,7 @@ export const changeVehicle = variables => {
 
             const userItemsList = await dbMethods.getDatabaseInfo(userDbPath.child(`/items`));
             console.log("TCL: userItemsList", userItemsList)
-            await checkItemList(userItemsList);
+            checkItemList(userItemsList);
 
             const vehicles = Object.keys(userItemsList);
             console.log("TCL: vehicles length", vehicles.length)
@@ -264,10 +264,9 @@ export const changeVehicle = variables => {
             };
 
             let vehiclePlates = [];
-            await vehicles.forEach(element => {
-                console.log("TCL: element", element)
-                console.log("TCL: element id", userItemsList[`${element}`].itemId)
-
+            vehicles.forEach(element => {
+                console.log("TCL: element", element);
+                console.log("TCL: element id", userItemsList[`${element}`].itemId);
                 vehiclePlates.push(userItemsList[`${element}`].itemId);
             });
 
@@ -316,7 +315,7 @@ export const getVehicleInfo = variables => {
             const itemProfile = await dbMethods.getDatabaseInfo(itemDbPath.child("profile"));
             console.log("TCL: doBackup -> itemProfile", itemProfile)
             // ERROR check for non existing ItemProfile
-            await checkItemProfile(itemProfile, variables)
+            checkItemProfile(itemProfile, variables)
 
             resolve({
                 status: 200,

@@ -1400,10 +1400,73 @@ export const noAccessToTire = (variables?) => {
 
 // ------------------ TIRES RESPONSES ---------------
 
-export const TireRes_NoChangeOnsuranceOn = (tireVehicleId: string, status: boolean) => {
-    
+export const TireRes_NoChangeOnsuranceOn = (variables) => {
+    console.log(`TCL: tireVehicleId`, variables.tireVehicleId);
+    return {
+        "messages": [
+            {
+                "text": `Oops... Não houve alteração no Onsurance Pneus do veículo ${variables.tireVehicleId}. Atualmente ela está ON.`
+            },
+        ],
+        "set_attributes": {
+            "tireOnsuranceStatus": "ON",
+            "tireTitle": "Para Desligar o Onsurance Pneus clique em Onsurance ON - OFF"
+        },
+        "redirect_to_blocks": [
+            `protectionRouter`
+        ]
+    }
+};
+
+export const TireRes_NoChangeOnsuranceOff = (variables) => {
+    return {
+        "messages": [
+            {
+                "text": `Oops... Não houve alteração no Onsurance Pneus do veículo ${variables.tireVehicleId}. Atualmente ela está OFF.`
+            },
+        ],
+        "set_attributes": {
+            "tireOnsuranceStatus": "OFF",
+            "tireTitle": "Para Ligar o Onsurance Pneus clique em Onsurance ON - OFF"
+        },
+        "redirect_to_blocks": [
+            `protectionRouter`
+        ]
+    }
+};
+
+export const TireRes_activationFail = (variables?) => {
+    return {
+        "messages": [
+            {
+                "text": `Ooops. Não consegui ligar seu Onsurance. Vou trazer a função de Ligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
+            }
+        ],
+        "set_attributes":
+            {
+                tireOnsuranceStatus: `OFF`,
+                "tireTitle": "Para Ligar o Onsurance Pneus clique em Onsurance ON - OFF"
+            },
+        "redirect_to_blocks": [
+            "protectionRouter"
+        ]
+    }
 }
 
-export const TireRes_NoChangeOnsuranceOff = (tireVehicleId: string, status: boolean) => {
-
-}
+export const TireRes_deactivationFail = (variables?) => {
+    return {
+        "messages": [
+            {
+                "text": `Ooops. Não consegui desligar seu Onsurance Pneus. Vou trazer a função de Desligar para você tentar novamente. Se o problema persistir entre em contato com nosso especialista digitando "falar com especialista".`
+            }
+        ],
+        "set_attributes":
+        {
+            tireOnsuranceStatus: "ON",
+            "tireTitle": "Para Desligar o Onsurance Pneus clique em Onsurance ON - OFF"
+        },
+        "redirect_to_blocks": [
+            "protectionRouter"
+        ]
+    }
+};

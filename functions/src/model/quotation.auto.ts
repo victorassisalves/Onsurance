@@ -1,3 +1,6 @@
+import { motoCounterDbRef } from "../database/database";
+import { getDatabaseInfo, setDatabaseInfo } from "./databaseMethods";
+import { checkRequestVariables } from "./errors";
 
 
 interface quotationMock {
@@ -9,6 +12,7 @@ interface quotationMock {
     thirdPartyCoverage: string;
     firstName: string;
     email: string;
+    motoCc?: boolean;
 
 }
 
@@ -541,6 +545,9 @@ export const newQuotation = (userInput: quotationMock) => {
 
                     case "moto": {
 
+                        const motoCc = checkRequestVariables(`Moto CC`, userInput.motoCc, Boolean);
+                        console.log(`TCL: motoCc`, motoCc);
+
                         const minuteValueBase = calcMinuteMoto(fipe);
                         const minuteValueFactory = minuteByFactory(factory, minuteValueBase)
                         console.log("TCL: executeCalculations -> Moto minute Value by factory", minuteValueFactory);
@@ -571,6 +578,38 @@ export const newQuotation = (userInput: quotationMock) => {
                             creditDuration: yearInfo.duration,
                             anualCost: yearInfo.anualCost
                         }
+                        if (motoCc === false) {
+                            console.log(`TCL: motoCc`, motoCc);
+                            const motoCounterDbPath = await motoCounterDbRef()
+                            
+                            const motoCounter: number = await getDatabaseInfo(motoCounterDbPath);
+                            console.log(`TCL: motoCounter`, motoCounter);
+
+                            const newMotoCounter:number = motoCounter + 1;
+                            console.log(`TCL: newMotoCounter`, newMotoCounter);
+
+                            await setDatabaseInfo(motoCounterDbPath, newMotoCounter);
+
+                            const quotationResponse = {
+                                publicApi: {
+                                    info: 'Moto under 250 cc',
+                                    motoCounter: newMotoCounter
+                                },
+                                privateApi: {
+                                    ...userInput,
+                                    creditDuration: quotationData.creditDuration,
+                                    minuteValue: quotationData.minuteValue,
+                                    anualCost: quotationData.anualCost,
+                                    activationCredit: quotationData.activationCredit,
+                                    franchise: quotationData.franchise,
+                                    motoCc: motoCc,
+                                    motoCounter: newMotoCounter - 1500
+                                }
+                            };
+                
+                            return resolve(quotationResponse);
+
+                        };
 
                         return quotationResponse(userInput, quotationData);
                     };

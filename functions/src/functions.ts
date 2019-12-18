@@ -85,6 +85,7 @@ exports.quotation = functions.https.onRequest(async (request, response) => {
     }
     
     const userInput = request.body;
+    console.log(`TCL: userInput`, JSON.stringify(userInput));
 
     await newQuotation(userInput).then(async (result: Result) => {
         const zoho = await require("./environment/zoho.flow");
@@ -474,24 +475,12 @@ exports.ignition = functions.https.onRequest(async (request, response) => {
     }
 });
 
-// // Request from geofence status - Hardware
-// exports.geofence = functions.https.onRequest((request, response) => {
-    
-//     console.log("TCL: request.headers", request.headers);
-//     console.log("TCL: request.body", request.body);
-
-//     response.status(200).send("OK");
-// });
-
-
 
 /*
 
         BILLING - OBDs
 
 */
-
-
 
 // Register obd and billing period on DB
 exports.registerObd = functions.https.onRequest(async (request, response) => {
@@ -584,7 +573,7 @@ exports.report = functions.https.onRequest(async (request, response) => {
 /**
  * @todo Liga/desliga Messenger
  * @todo thirdParty messenger
- *      @todo Get messenger ID and other data to account, specify whta product can share.
+ *      @todo Get messenger ID and other data to account, specify what product can share.
  * @todo indication messenger
  * @todo Validate user access to items
  */
@@ -620,8 +609,8 @@ export const quote = functions.https.onRequest(async (request, response) => {
 });
 
 
-// -------------- ONSURANCE ACTIVATION ------------------
-export const onsurance = functions.https.onRequest(async (request, response) => {
-    const onsurance = require("./routes/onsurance.routes");
+// -------------- ONSURANCE TIRES ACTIVATION ---------------
+export const onsuranceTires = functions.https.onRequest(async (request, response) => {
+    const onsurance = require("./routes/onsurance.tires.routes");
     return await onsurance(request, response);
 });

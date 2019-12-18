@@ -7,6 +7,10 @@ const items = admin.items;
 const main = admin.main;
  
 
+export const motoCounterDbRef = () => {
+    return customers.ref(`/motoCounter/`);
+};
+
 export const indicationDbRefRoot = (userEmail) => {
     const userDbId = crypto.createHash('md5').update(userEmail).digest("hex");
     // const userDbId = crypto.createHmac('sha256', getSecretCustomer.userSecret).update(userEmail).digest('hex')
