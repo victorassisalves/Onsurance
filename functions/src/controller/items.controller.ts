@@ -4,7 +4,7 @@ import { checkUserProfile, checkOnboard, checkItemList, checkTireProfile, checkI
 import { itemProfileDbRef } from "../database/auto.database";
 import { tiresInItemDbPath, getItemId } from "../database/tire.database";
 import { GetTire, GetAuto } from "../routes/items.routes";
-import { TireInUserProfile, TireProtectionData, TireItemProfile } from "../model/tires.model";
+import { TireInUserProfile, TireProtectionData } from "../model/tires.model";
 import { UserProfileInterface, ItemAuthorizations, ItemsInUserProfile, VehicleInUserProfileInterface, PersonalUserProfileInterface, TireInUserProfileInterface } from "../interfaces/user.interfaces";
 import { TestAccessToItem } from "../test/itemAccess.test";
 
@@ -61,7 +61,7 @@ export const getItemList = async (variables) => {
                         const checkTireAccess = new TestAccessToItem(variables, tiresInProfile[tiresArray[i]], itemsAuth);
                         const owner = checkTireAccess.checkOwnership();
                         if (!owner) {
-                            const thirdParty = checkTireAccess.checkThirdPartyAccess();
+                            const thirdParty = checkTireAccess.checkTireThirdPartyAccess();
                             if (!thirdParty){
                                 console.log(`User ${variables.userEmail} don't have acces to Tire ${JSON.stringify(tiresInProfile[tiresArray[i]])}.`);
                                 break;
@@ -88,7 +88,7 @@ export const getItemList = async (variables) => {
                     const owner = checkAutoAccess.checkOwnership();
                     console.log(`TCL: owner`, owner);
                     if (!owner) {
-                        const thirdParty = checkAutoAccess.checkThirdPartyAccess();
+                        const thirdParty = checkAutoAccess.checkAutoThirdPartyAccess();
                         if (!thirdParty){
                             console.log(`User ${variables.userEmail} don't have acces to Auto ${JSON.stringify(autoInProfile)}.`);
                             break;
@@ -156,7 +156,7 @@ export const getTiresList = (variables): Promise<any> => {
                 const owner = checkTireAccess.checkOwnership();
                 
                 if (!owner) {
-                    const thirdParty = checkTireAccess.checkThirdPartyAccess();
+                    const thirdParty = checkTireAccess.checkTireThirdPartyAccess();
                     if (!thirdParty){
                         console.log(`User ${variables.userEmail} don't have acces to Auto ${JSON.stringify(itemInUse)}.`);
                         throw {
@@ -193,7 +193,7 @@ export const getTiresList = (variables): Promise<any> => {
                     const owner = checkTireAccess.checkOwnership();
                     
                     if (!owner) {
-                        const thirdParty = checkTireAccess.checkThirdPartyAccess();
+                        const thirdParty = checkTireAccess.checkTireThirdPartyAccess();
                         if (!thirdParty){
                             console.log(`User ${variables.userEmail} don't have acces to Auto ${JSON.stringify(itemInUse)}.`);
                             return;
@@ -261,7 +261,7 @@ export const getAutoList = (variables): Promise<any> => {
                 const owner = checkAutoAccess.checkOwnership();
                 
                 if (!owner) {
-                    const thirdParty = checkAutoAccess.checkThirdPartyAccess();
+                    const thirdParty = checkAutoAccess.checkAutoThirdPartyAccess();
                     if (!thirdParty){
                         console.log(`User ${variables.userEmail} don't have acces to Auto ${JSON.stringify(autoInProfile)}.`);
                         throw {
@@ -312,7 +312,7 @@ export const getAutoList = (variables): Promise<any> => {
                     const owner = checkAutoAccess.checkOwnership();
 
                     if (!owner) {
-                        const thirdParty = checkAutoAccess.checkThirdPartyAccess();
+                        const thirdParty = checkAutoAccess.checkAutoThirdPartyAccess();
                         if (!thirdParty){
                             console.log(`User ${variables.userEmail} don't have acces to Auto ${JSON.stringify(autoInProfile)}.`);
                             return;
@@ -375,7 +375,7 @@ export const getTire = (variables: GetTire): Promise<any> => {
             const owner = checkTireAccess.checkOwnership();
             
             if (!owner) {
-                const thirdParty = checkTireAccess.checkThirdPartyAccess();
+                const thirdParty = checkTireAccess.checkTireThirdPartyAccess();
 
                 if (!thirdParty) reject({
                     text: `User don't have access to vehicle ${JSON.stringify(userTires)} to Onsurance Tires.`,
@@ -395,7 +395,7 @@ export const getTire = (variables: GetTire): Promise<any> => {
                 variables: {
                     tireVehicleId: variables.tireVehicleId,
                     tireQtd: tireProfile.tireQtd,
-                    protectionStatus: tireProfile.protectionStatus
+                    protectionStatus: tireProfile.protectionStatus.accident
                 }
             });
         } catch (error) {
@@ -437,7 +437,7 @@ export const getAuto = (variables: GetAuto): Promise<any> => {
             const owner = checkAutoAccess.checkOwnership();
             
             if (!owner) {
-                const thirdParty = checkAutoAccess.checkThirdPartyAccess();
+                const thirdParty = checkAutoAccess.checkAutoThirdPartyAccess();
 
                 if (!thirdParty) throw {
                     text: `User don't have access vehicle to ${JSON.stringify(itemInUse)}.`,

@@ -1,6 +1,6 @@
 import * as express from "express";
 import * as cors from "cors";
-import { serverError } from "../environment/messenger/messenger.responses";
+import { serverError, TireRes_deactivationSuccessful, TireRes_activationSuccessful } from "../environment/messenger/messenger.responses";
 import { onsuranceTires, OnsuraceTiresVariables } from "../environment/messenger/messenger.variables";
 import { compareMessengerId, checkFirstAccess } from "../test/messenger.test";
 import { onsuranceTireOn, onsuranceTireOff } from "../controller/onsurance.controller";
@@ -21,16 +21,23 @@ onsurance.post(`/on/messenger`, async (req, res) => {
                 variables: {}
             };
         };
+
         const dbMessengerId = await compareMessengerId(variables.userEmail, variables.messengerId);
         checkFirstAccess(dbMessengerId);
+
         const result = await onsuranceTireOn(variables);
-        return res.send(result);
+        console.log(result);
+
+        const response = TireRes_activationSuccessful()
+        return res.send(response);
+
     } catch (error) {
         console.error(new Error(`Error: ${JSON.stringify(error)}`));
         if (error.callback) {
             const response = await require(`../environment/messenger/messenger.responses`)[error.callback](error.variables);
             return res.send(response);
         };
+
         const response = serverError();
         return res.send(response);
     }
@@ -47,16 +54,22 @@ onsurance.post(`/off/messenger`, async (req, res) => {
                 variables: {}
             };
         };
+
         const dbMessengerId = await compareMessengerId(variables.userEmail, variables.messengerId);
         checkFirstAccess(dbMessengerId);
+
         const result = await onsuranceTireOff(variables);
-        return res.send(result);
+
+        const response = TireRes_deactivationSuccessful(result)
+        return res.send(response);
+
     } catch (error) {
         console.error(new Error(`Error: ${JSON.stringify(error)}`));
         if (error.callback) {
             const response = await require(`../environment/messenger/messenger.responses`)[error.callback](error.variables);
             return res.send(response);
         };
+
         const response = serverError();
         return res.send(response);
     }

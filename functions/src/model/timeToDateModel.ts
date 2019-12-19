@@ -40,24 +40,23 @@ export const convertTimestamp = (timestamp): returnedDateInterface => {
  * @param timeStart Time that onsurance start
  * @param timezone The user timezone 
  */
-export const generateTimeEnd = (timeStart, timezone) => {
-    console.log(`TCL: timezone`, timezone);
+export const generateTimeEnd = (timeStart, timezone = 0) => {
     let timezoneDiff = 0
     if (timezone !== null) {
         timezoneDiff = timezone * 1000 * 3600 
-        console.log(`TCL: timezoneDiff`, timezoneDiff);
     };
+    
     const timeEnd = (Date.now() + timezoneDiff)/1000|0;                              // TimeEnd - Timestamp do desligamento da protecão
     const useTime = timeEnd - timeStart       // TimeDiff - Tempo total de uso da protecão em segundos
     const days = (useTime/60/60/24|0)                         // TimeDiffDays - Tempo de uso em dias(totais) da protecão
     const totalHours = (useTime/60/60|0)                     // TimeDiffHoursTotais - Tempo de uso da protecão em Horas
     let totalMinutes = (useTime/60|0);                         // TimeDiffMinutesTotais - Tempo de uso em minutos da protecão
-    console.log(`TCL: totalMinutes`, totalMinutes);
     const hours = (totalHours - (days*24));                        // TimeDiffHours - Tempo de uso da protecão em horas dentro de 24H
     const minutes = (totalMinutes - (totalHours * 60));               // TimeDiffMinutes - Tempo de uso da protecão em minutos dentro de 60Min
     const seconds = (useTime - (totalMinutes*60)); 
+
     if (seconds >= 30) totalMinutes += 1
-    console.log(`TCL: totalMinutes`, totalMinutes);
+
     return {
         timeEnd: timeEnd,
         useTime: useTime,

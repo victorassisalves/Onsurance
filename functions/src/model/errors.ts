@@ -332,7 +332,6 @@ export const checkItemList = (userItemsList: Object) => {
  * ```
  */
 export const checkRequestVariables = (varName, variable, variableType?, required = true) => {
-    console.log(`TCL: variable`, variable);
     switch (variable) {
         case null:
         case undefined:

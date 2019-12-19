@@ -81,6 +81,9 @@ export interface ItemAuthorizations {
     },
     thirdParty: {
         [`itemId`] :  boolean,
+        tires: {
+            [`itemId`]: boolean
+        }
     }
 }
 

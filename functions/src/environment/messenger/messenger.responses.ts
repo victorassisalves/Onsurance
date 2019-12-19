@@ -1444,7 +1444,7 @@ export const TireRes_activationFail = (variables?) => {
         ],
         "set_attributes":
             {
-                tireOnsuranceStatus: `OFF`,
+                "tireOnsuranceStatus": `OFF`,
                 "tireTitle": "Para Ligar o Onsurance Pneus clique em Onsurance ON - OFF"
             },
         "redirect_to_blocks": [
@@ -1469,4 +1469,64 @@ export const TireRes_deactivationFail = (variables?) => {
             "protectionRouter"
         ]
     }
+};
+
+
+interface TiresSuccessfulDeactivation {
+    newSwitch: number,
+    consumedSwitch: number,
+    days: number,
+    hours: number,
+    minutes: number,
+    seconds: number,
+    tireOnsuranceStatus: string,
+    tireOnsuranceId: string,
+}
+/**
+ * @description This function returns the messenger response of a successful Onsurance Tires Deactivation
+ * @param variables Response Variables
+ */
+export const TireRes_deactivationSuccessful = (variables: TiresSuccessfulDeactivation) => {
+
+    return {
+        "messages": [
+            {
+                "text": "Seu Onsurance Pneus está desligado!"
+            }
+        ],
+        "set_attributes": {
+                "user-credit": variables.newSwitch,
+                "valorconsumido": variables.consumedSwitch,
+                "dias": variables.days,
+                "horas": variables.hours,
+                "minutos": variables.minutes,
+                "segundos": variables.seconds,
+                "tireOnsuranceStatus": variables.tireOnsuranceStatus,
+                "tireTitle": "Para Ligar o Onsurance Pneus clique em Onsurance ON - OFF" 
+        },
+        "redirect_to_blocks": [
+            `Pos Off`
+        ]
+    };
+};
+
+/**
+ * @description This function returns the messenger response of a successful Onsurance Tires Activation
+ */
+export const TireRes_activationSuccessful = () => {
+    
+    return {
+        "messages": [
+            {
+                "text": `Seu Onsurance Pneus está ligado!`
+            }
+        ],
+        "set_attributes": {
+            "tireOnsuranceStatus": "ON",
+            "tireTitle": "Para Desligar o Onsurance Pneus clique em Onsurance ON - OFF" 
+        },
+        "redirect_to_blocks": [
+            `protectionRouter`
+        ]
+    };
 };

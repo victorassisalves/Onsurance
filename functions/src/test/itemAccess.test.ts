@@ -44,7 +44,31 @@ export class TestAccessToItem {
      * return true | false
      * ```
      */
-    checkThirdPartyAccess (): boolean {
+    checkTireThirdPartyAccess (): boolean {
+        if (this.itemAuth === null || this.itemAuth === undefined){
+            return false;
+        } else {
+            if (this.itemAuth.thirdParty === null || this.itemAuth.thirdParty === undefined){
+                return false;
+            } else {
+                const itemId = getItemId(this.itemInUserProfile.itemId.toLowerCase());
+                const access: boolean = this.itemAuth.thirdParty.tires[itemId];
+                if (access === null || access === undefined){
+                    return false;
+                };
+                return access;
+            }
+        }
+    }
+
+    /**
+     * @description This function activates if the user is NOT owner of the item is trying to access. It check's if the owner gave access to this user
+     * @returns true or false
+     * ```
+     * return true | false
+     * ```
+     */
+    checkAutoThirdPartyAccess (): boolean {
         if (this.itemAuth === null || this.itemAuth === undefined){
             return false;
         } else {
@@ -58,8 +82,7 @@ export class TestAccessToItem {
                 };
                 return access;
             }
-        }
-        
+        } 
         
     };
 };

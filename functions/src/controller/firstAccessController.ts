@@ -164,7 +164,7 @@ export const getfirstAccess = async (variables) => {
                                 const testTireAccess = new TestAccessToItem(variables, userItems.tires[tire], itemAuth);
                                 const owner = testTireAccess.checkOwnership()
                                 if (!owner) {
-                                    const thirdParty = testTireAccess.checkThirdPartyAccess()
+                                    const thirdParty = testTireAccess.checkTireThirdPartyAccess()
                                     tireAccess.push(thirdParty);
                                 } else {
                                     tireAccess.push(owner);
@@ -180,7 +180,7 @@ export const getfirstAccess = async (variables) => {
                             const testAccessAuto = new TestAccessToItem(variables, userItems[item], itemAuth)
                             const owner = testAccessAuto.checkOwnership();
                             if (!owner) {
-                                const thirdParty = testAccessAuto.checkThirdPartyAccess()
+                                const thirdParty = testAccessAuto.checkAutoThirdPartyAccess()
                                 autoAccess.push(thirdParty);
                             } else {
                                 autoAccess.push(owner);

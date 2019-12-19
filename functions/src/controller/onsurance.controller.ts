@@ -5,11 +5,9 @@ import { OnsuraceTiresVariables } from "../environment/messenger/messenger.varia
 import { TireInUserProfile, TireProtectionData } from "../model/tires.model";
 import { getItemId, tiresInItemDbPath } from "../database/tire.database";
 import { PersonalUserProfileInterface, ItemAuthorizations, TireInUserProfileInterface } from "../interfaces/user.interfaces";
-import { checkUserProfile, checkTireProfile, checkItemAccess, checkItemProfile, checkOnboard } from "../model/errors";
+import { checkUserProfile, checkTireProfile, checkItemAccess, checkItemProfile, checkOnboard, checkOwnerCredit } from "../model/errors";
 import { TestAccessToItem } from "../test/itemAccess.test";
 import { checkStatusOnsuranceTires } from "../test/onsurance.test";
-import { stat } from "fs";
-import { updateDatabase } from "../database/database";
 import { generateTimeEnd } from "../model/timeToDateModel";
 
 
@@ -39,7 +37,7 @@ const onsuranceTire = async (_variables: OnsuraceTiresVariables) => {
             const owner = checkUserAccess.checkOwnership();
 
             if (!owner) {
-                const haveAccess = checkUserAccess.checkThirdPartyAccess();
+                const haveAccess = checkUserAccess.checkTireThirdPartyAccess();
                 return haveAccess;
             };
             return true;
@@ -54,9 +52,7 @@ const onsuranceTire = async (_variables: OnsuraceTiresVariables) => {
 
         function checkOnsuranceStatus () {
             const status = Object.values(tireProtectionData.protectionStatus);
-            console.log(`TCL: status`, status);
             const protectionStatus = status.every(status => status === true);
-            console.log(`TCL: protectionStatus`, protectionStatus);
             checkStatusOnsuranceTires(protectionStatus, _variables)
             return protectionStatus;
         };
@@ -91,7 +87,6 @@ interface OnsuranceData {
 };
 
 const executeBackupOn = async (onsuranceData: OnsuranceData) => {
-    console.log(`TCL: onsuranceData`, onsuranceData.itemId);
     try {
         await setDatabaseInfo(onsuranceData.userDbPath.child("personal"), onsuranceData.userProfile);
         await setDatabaseInfo(onsuranceData.userDbPath.child(`items/tires/${onsuranceData.itemId}`), onsuranceData.tireProfile);
@@ -120,6 +115,7 @@ const executeBackupOff = async (onsuranceData: OnsuranceData, logUse?) => {
  * @param variables Payload treated variables
  */
 export const onsuranceTireOn = async (variables: OnsuraceTiresVariables) => {
+    let ownerCredit = 0;
     try {
         const onsuranceData = await onsuranceTire(variables);
         // create Log of use for tire protection
@@ -127,7 +123,6 @@ export const onsuranceTireOn = async (variables: OnsuraceTiresVariables) => {
         if (variables.timezone !== null) {
             timezoneDiff = variables.timezone * 1000 * 3600 
         };
-        console.log(`TCL: timezoneDiff`, timezoneDiff);
 
         const logUse = {
             closed: false,
@@ -137,12 +132,18 @@ export const onsuranceTireOn = async (variables: OnsuraceTiresVariables) => {
                 accident: variables.accident
             },
         };
-        console.log(`TCL: (Date.now() + timezoneDiff)/1000|0`, (Date.now() + timezoneDiff)/1000|0);
-
 
         // Call database to turn Onsurance ON. Update data on database
         const turnOnsuranceOn = async() => {
             try {
+
+                // check if owner have enought credit
+                if (onsuranceData.tireProfile.owner !== variables.userEmail) {
+                    const ownerDbPath = await userProfileDbRefRoot(onsuranceData.tireProfile.owner);
+                    ownerCredit = await getDatabaseInfo(ownerDbPath.child("personal/wallet/switch"));
+                    checkOwnerCredit(ownerCredit);
+                }
+
                 const logId = await pushDatabaseInfo(onsuranceData.tireDbPath.child("logUse"), logUse);
                 // update profile activations counter
                 await updateDatabaseInfo(onsuranceData.userDbPath.child("personal"), {
@@ -171,12 +172,10 @@ export const onsuranceTireOn = async (variables: OnsuraceTiresVariables) => {
                 throw onsuranceData
             }
         };
-        
-        const logId = await turnOnsuranceOn();
-        return {
-            ...onsuranceData,
-            tireLogId: logId._id
-        };
+
+        await turnOnsuranceOn();
+
+        return "Onsurance Pneus ON";
     } catch (error) {
         if (error.callback) throw error
         await executeBackupOn(error);
@@ -187,24 +186,27 @@ export const onsuranceTireOn = async (variables: OnsuraceTiresVariables) => {
                 variables: {}
             };
         } else {
+            
             const lastProtectionId = Object.keys(lastProtection)[0]
-            await deleteDatabaseInfo(error.tireDbPath.child(`logUse/${lastProtectionId}`))
+            await deleteDatabaseInfo(error.tireDbPath.child(`logUse/${lastProtectionId}`));
+
             throw {
                 callback: `TireRes_activationFail`,
                 variables: {}
             };
-
-        }
-        
+        };
     };
-    
 };
 
 /**
  * @description This function is responsible for turnning the Onsurance Tires OFF
- * @param variables Payload treated variables
+ * @param {OnsuraceTiresVariables} variables Payload treated variables
  */
 export const onsuranceTireOff = async (variables: OnsuraceTiresVariables) => {
+    let ownerCredit = 0;
+    let ownerDbPath: any = '';
+    let newSwitch = 0;
+    let oldSwitch = 0;
     try {
         const onsuranceData = await onsuranceTire(variables);
         const lastProtectionObj = await getDatabaseInfo(onsuranceData.tireDbPath.child("logUse").limitToLast(1));
@@ -218,24 +220,19 @@ export const onsuranceTireOff = async (variables: OnsuraceTiresVariables) => {
         const minuteValue = onsuranceData.protectionData.minuteValue
         const consumedSwitch = parseFloat((timeInfo.totalMinutes*minuteValue).toFixed(3))
 
-        let newSwitch = 0;
-        let oldSwitch = onsuranceData.userProfile.wallet.switch
-
-        // if (onsuranceData.tireProfile.owner !== variables.userEmail) {
-        //     const 
-        //     oldSwitch = parseFloat(protectionData.ownerCredit)
-        //     newSwitch = parseFloat((parseFloat(protectionData.ownerCredit) - consumedSwitch).toFixed(2))
-        //     console.log("TCL: newSwitch", newSwitch)
-        //     const ownerDbPath = protectionData.ownerDbPath
-        //     await userDbMethods.updateDatabaseInfo(ownerDbPath.child("personal/wallet/"),{
-        //         switch: newSwitch
-        //     });
-        //     // console.log(`TCL: Owner wallet updated.`);
-        // } else {
-            newSwitch = parseFloat((oldSwitch - consumedSwitch).toFixed(2))
-            console.log("TCL: newSwitch", newSwitch)
-            
-        // };
+        // If user is not owner, discount credit on the owner wallet
+        if (onsuranceData.tireProfile.owner !== variables.userEmail) {
+            ownerDbPath = await userProfileDbRefRoot(onsuranceData.tireProfile.owner);
+            ownerCredit = await getDatabaseInfo(ownerDbPath.child("personal/wallet/switch"))
+            oldSwitch = ownerCredit;
+            newSwitch = parseFloat((ownerCredit - consumedSwitch).toFixed(2))
+            await updateDatabaseInfo(ownerDbPath.child("personal/wallet/"),{
+                switch: newSwitch
+            });
+        } else {
+            oldSwitch = onsuranceData.userProfile.wallet.switch
+            newSwitch = parseFloat((oldSwitch - consumedSwitch).toFixed(2)) 
+        };
         const logUse = {
             closed: true,
             timeEnd: timeInfo.timeEnd,
@@ -245,7 +242,6 @@ export const onsuranceTireOff = async (variables: OnsuraceTiresVariables) => {
             initialSwitch: oldSwitch,
             finalSwitch: newSwitch,
         };
-        console.log(`TCL: logUse`, logUse);
 
         const responseVariables = {
             days: timeInfo.days,
@@ -263,13 +259,14 @@ export const onsuranceTireOff = async (variables: OnsuraceTiresVariables) => {
         const turnOnsuranceOff = async () => {
             try {
                 // Update user wallet 
-                await updateDatabaseInfo(onsuranceData.userDbPath.child('personal'),{
-                    wallet: {
-                        switch: newSwitch
-                    },
-                });
+                if (onsuranceData.tireProfile.owner === variables.userEmail) {
+                    await updateDatabaseInfo(onsuranceData.userDbPath.child('personal'),{
+                        wallet: {
+                            switch: newSwitch
+                        },
+                    });
 
-                console.log(`wallet updated`);
+                };
 
                 // Update Tire Item profile: update protection Data protected minutes and protection status
                 await updateDatabaseInfo(onsuranceData.tireDbPath.child('profile/protectionData'), {
@@ -279,13 +276,12 @@ export const onsuranceTireOff = async (variables: OnsuraceTiresVariables) => {
                     }
                 });
 
-                console.log(`Item profile protection data updated`);
-
                 // Update and close log use
                 await updateDatabaseInfo(onsuranceData.tireDbPath.child(`logUse/${lastProtectionId}`), logUse);
 
-                console.log(`log use updated`)
-                return lastProtection[lastProtectionId];
+                console.log(`Onsurance Tires OFF. Back to user`);
+
+                return true
             } catch (error) {
                 console.error(new Error (`Error turnning Onsurance tires OFF. ${JSON.stringify(error)}`));
                 throw {
@@ -298,22 +294,33 @@ export const onsuranceTireOff = async (variables: OnsuraceTiresVariables) => {
             }
         };
         
-        const oldLogUse = await turnOnsuranceOff();
-        return {
-            ...onsuranceData,
-            logUse: oldLogUse,
-            responseVariables: responseVariables,
-        };
+        await turnOnsuranceOff();
+        return responseVariables
     } catch (error) {
-        console.error(`TCL: error`, JSON.stringify(error));
+        console.error(new Error(`Failed to turn Onsurance Tires OFF. Main function. ${JSON.stringify(error)}`));
+
         if (error.callback) throw error
+
         if (error.onsuranceData) {
             await executeBackupOff(error.onsuranceData, error.logUse);
+            if (error.onsuranceData.tireProfile.owner !== error.onsuranceData.userProfile.userEmail) {
+                await updateDatabaseInfo(ownerDbPath.child("personal/wallet/"),{
+                    switch: ownerCredit
+                });
+            }
             throw {
+                errorType: 'Unknown error. check what happened',
+                error: error,
                 callback: `TireRes_deactivationFail`,
                 variables: {}
             }; 
         };
+        throw {
+            errorType: 'Unknown error. check what happened',
+            error: error,
+            callback: `TireRes_deactivationFail`,
+            variables: {}
+        }; 
 
     };
     
