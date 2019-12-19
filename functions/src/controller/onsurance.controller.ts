@@ -10,6 +10,7 @@ import { TestAccessToItem } from "../test/itemAccess.test";
 import { checkStatusOnsuranceTires } from "../test/onsurance.test";
 import { stat } from "fs";
 import { updateDatabase } from "../database/database";
+import { generateTimeEnd } from "../model/timeToDateModel";
 
 
 
@@ -126,6 +127,8 @@ export const onsuranceTireOn = async (variables: OnsuraceTiresVariables) => {
         if (variables.timezone !== null) {
             timezoneDiff = variables.timezone * 1000 * 3600 
         };
+        console.log(`TCL: timezoneDiff`, timezoneDiff);
+
         const logUse = {
             closed: false,
             timeStart: (Date.now() + timezoneDiff)/1000|0,
@@ -134,6 +137,8 @@ export const onsuranceTireOn = async (variables: OnsuraceTiresVariables) => {
                 accident: variables.accident
             },
         };
+        console.log(`TCL: (Date.now() + timezoneDiff)/1000|0`, (Date.now() + timezoneDiff)/1000|0);
+
 
         // Call database to turn Onsurance ON. Update data on database
         const turnOnsuranceOn = async() => {
@@ -205,36 +210,13 @@ export const onsuranceTireOff = async (variables: OnsuraceTiresVariables) => {
         const lastProtectionObj = await getDatabaseInfo(onsuranceData.tireDbPath.child("logUse").limitToLast(1));
         const lastProtectionId = Object.keys(lastProtectionObj)[0];
         const lastProtection = lastProtectionObj[lastProtectionId]
-        
-        // create Log of use for tire protection
-        let timezoneDiff = 0
-        if (variables.timezone !== null) {
-            timezoneDiff = variables.timezone * 1000 * 3600 
-        };
-        const timeEnd = (Date.now() + timezoneDiff)/1000|0;                              // TimeEnd - Timestamp do desligamento da protecão
-        const useTime = timeEnd - lastProtection.timeStart       // TimeDiff - Tempo total de uso da protecão em segundos
-        const days = (useTime/60/60/24|0)                         // TimeDiffDays - Tempo de uso em dias(totais) da protecão
-        const totalHours = (useTime/60/60|0)                     // TimeDiffHoursTotais - Tempo de uso da protecão em Horas
-        let totalMinutes = (useTime/60|0);                         // TimeDiffMinutesTotais - Tempo de uso em minutos da protecão
-        const hours = (totalHours - (days*24));                        // TimeDiffHours - Tempo de uso da protecão em horas dentro de 24H
-        const minutes = (totalMinutes - (totalHours * 60));               // TimeDiffMinutes - Tempo de uso da protecão em minutos dentro de 60Min
-        const seconds = (useTime - (totalMinutes*60));              // TimeDiffSeconds - Tempo de uso da protecão em segundos dentro de 60Segundos
-    
-         // Calcula o valor conumido baseado no tempo de uso.
+
+        // Get all time End info (total minutes, hours, minutes, seconds, timeEnd....)
+        const timeInfo = generateTimeEnd(lastProtection.timeStart, variables.timezone)
 
         // Calculate minute value based on active polices on protection
         const minuteValue = onsuranceData.protectionData.minuteValue
-        let consumedSwitch = 0;
-        console.log("TCL: closeProtection -> protectionMinuteValue", minuteValue)
-        if (seconds >= 30){
-            consumedSwitch = parseFloat(((Math.ceil(useTime/60))*minuteValue).toFixed(3))
-            totalMinutes + 1;
-            console.log("TCL: closeProtection -> Considered minutes - ceil", Math.ceil(useTime/60))
-        } else if (seconds < 30) {
-            consumedSwitch = parseFloat(((Math.floor(useTime/60))*minuteValue).toFixed(3))
-            console.log("TCL: closeProtection -> Considered Minutes - floor", Math.floor(useTime/60))
-        }
-        console.log("TCL: consumedSwitch", consumedSwitch)
+        const consumedSwitch = parseFloat((timeInfo.totalMinutes*minuteValue).toFixed(3))
 
         let newSwitch = 0;
         let oldSwitch = onsuranceData.userProfile.wallet.switch
@@ -256,9 +238,9 @@ export const onsuranceTireOff = async (variables: OnsuraceTiresVariables) => {
         // };
         const logUse = {
             closed: true,
-            timeEnd: (Date.now() + timezoneDiff)/1000|0,
+            timeEnd: timeInfo.timeEnd,
             deactivationUser: variables.userEmail,
-            useTime: useTime,
+            useTime: timeInfo.useTime,
             consumedValue: consumedSwitch,
             initialSwitch: oldSwitch,
             finalSwitch: newSwitch,
@@ -266,10 +248,10 @@ export const onsuranceTireOff = async (variables: OnsuraceTiresVariables) => {
         console.log(`TCL: logUse`, logUse);
 
         const responseVariables = {
-            days:days,
-            hours:hours,
-            minutes:minutes,
-            seconds:seconds,
+            days: timeInfo.days,
+            hours: timeInfo.hours,
+            minutes: timeInfo.minutes,
+            seconds: timeInfo.seconds,
             consumedSwitch: consumedSwitch,
             newSwitch: newSwitch,
             tireOnsuranceStatus: "OFF",
@@ -291,7 +273,7 @@ export const onsuranceTireOff = async (variables: OnsuraceTiresVariables) => {
 
                 // Update Tire Item profile: update protection Data protected minutes and protection status
                 await updateDatabaseInfo(onsuranceData.tireDbPath.child('profile/protectionData'), {
-                    protectedMinutes: onsuranceData.protectionData.protectedMinutes + totalMinutes, 
+                    protectedMinutes: onsuranceData.protectionData.protectedMinutes + timeInfo.totalMinutes, 
                     protectionStatus: {
                         accident: false
                     }

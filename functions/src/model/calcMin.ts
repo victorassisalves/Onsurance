@@ -353,7 +353,7 @@ export const getTireMinuteValue = (tireTotalValue: number, vehicleType: String):
             case "caminhonete":
             case "vuc":
                 if (tireTotalValue > 800) {
-                    const minuteValueBase = parseFloat((tireTotalValue/800).toFixed(5));
+                    const minuteValueBase = parseFloat((tireTotalValue/800).toFixed(3));
                     return minuteValueBase;
                 } else {
                     const minuteValueBase = 1;
