@@ -12,7 +12,7 @@ interface quotationMock {
     thirdPartyCoverage: string;
     firstName: string;
     email: string;
-    motoCc?: boolean;
+    motoCc?: string;
 
 }
 
@@ -545,7 +545,7 @@ export const newQuotation = (userInput: quotationMock) => {
 
                     case "moto": {
 
-                        const motoCc = checkRequestVariables(`Moto CC`, userInput.motoCc, Boolean);
+                        const motoCc = checkRequestVariables(`Moto CC`, userInput.motoCc, String);
                         console.log(`TCL: motoCc`, motoCc);
 
                         const minuteValueBase = calcMinuteMoto(fipe);
@@ -578,7 +578,7 @@ export const newQuotation = (userInput: quotationMock) => {
                             creditDuration: yearInfo.duration,
                             anualCost: yearInfo.anualCost
                         }
-                        if (motoCc === false) {
+                        if (motoCc === "abaixode250cc") {
                             console.log(`TCL: motoCc`, motoCc);
                             const motoCounterDbPath = await motoCounterDbRef()
                             

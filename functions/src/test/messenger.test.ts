@@ -9,7 +9,6 @@ import { getDatabaseInfo } from "../model/databaseMethods";
 export const compareMessengerId = async (userEmail: string, messengerId: string) => {
     const userDbPath = await userProfileDbRefRoot(userEmail);
     const dbMessengerId = await getDatabaseInfo(userDbPath.child("/personal/messengerId"));
-    console.log(`TCL: dbMessengerId`, dbMessengerId);
     if (messengerId != dbMessengerId && dbMessengerId !== null) {
         throw {
             status: 401, // Unauthorized

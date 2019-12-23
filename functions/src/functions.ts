@@ -614,3 +614,10 @@ export const onsuranceTires = functions.https.onRequest(async (request, response
     const onsurance = require("./routes/onsurance.tires.routes");
     return await onsurance(request, response);
 });
+
+
+// -------------- ONSURANCE INDICATION --------------
+export const indication = functions.https.onRequest(async (req, res) => {
+    const indication = require("./routes/indication.routes");
+    return await indication(req, res);
+});

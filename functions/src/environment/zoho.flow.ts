@@ -50,7 +50,7 @@ export const sendWoocommerceZoho = async (woocommerceInfo) => {
     try {
         await axios({
             method: 'post',
-            url: 'https://flow.zoho.com/669296146/flow/webhook/incoming?zapikey=1001.40e010817af5e804017cab1a07d50c00.a9b61a039a01d7e832681fed4e763953&isdebug=false',
+            url: 'https://flow.zoho.com/669296146/flow/webhook/incoming?zapikey=1001.09fce5a77546f25e5bee96a95d574a13.138fa519fbb79600165eaab69328f9fe&isdebug=false',
             data: {
                 ...woocommerceInfo
             }
