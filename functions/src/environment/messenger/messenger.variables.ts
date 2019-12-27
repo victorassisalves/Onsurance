@@ -1,4 +1,4 @@
-import { databaseMethods } from "../../model/databaseMethods";
+import { databaseMethods, getDatabaseInfo } from "../../model/databaseMethods";
 import { userProfileDbRefPersonal } from "../../database/database";
 import { checkRequestVariables } from "../../model/errors";
 import { serverError } from "./messenger.responses";
@@ -380,6 +380,40 @@ export const getTiresInfoVariables = async (req, res) => {
 
 
 
+export const shareOnsuranceTireAccess = async (req, res) => {
+    try {
+        console.log(req.body);
+        
+        return {
+            userEmail: checkRequestVariables("User Email", req.body["userEmail"], String),
+            thirdPartyEmail: checkRequestVariables("Third Party Email", req.body["thirdPartyEmail"], String),
+            tireToAccess: checkRequestVariables("Tires to have Access", req.body["tireVehicleId"], String),
+            messengerId: checkRequestVariables("Messenger Id", req.body["messengerId"], String),
+        };
+    } catch (error) {
+        /*
+
+            TODO:
+                get the right block of messenger
+                - Block that share tire insurance
+
+        */
+        console.error(new Error(`Error getting variables. Error: ${JSON.stringify(error)}.`));
+
+        return res.json({
+            "messages": [
+                {
+                    "text": "Erro com varáveis. Verifique se os dados enviados estão corretos e tente novamente."
+                },
+            ],
+            "redirect_to_blocks": [
+                // `Informar Email` - Get Block
+            ]
+        });
+    }
+};
+
+
 /*
 
         SEND MESSAGE TO MESSENGER
@@ -415,7 +449,5 @@ export const sendMessage = variables =>{
     if (error) console.error(new Error(error));
 
     console.log(body);
-});
-
-               
+});           
 };

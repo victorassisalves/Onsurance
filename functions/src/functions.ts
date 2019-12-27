@@ -621,3 +621,8 @@ export const indication = functions.https.onRequest(async (req, res) => {
     const indication = require("./routes/indication.routes");
     return await indication(req, res);
 });
+
+// -------------- ONSURANCE SHARE ITEMS ------------
+export const share = functions.https.onRequest((req, res) => {
+    res.send('Shared.');
+});
