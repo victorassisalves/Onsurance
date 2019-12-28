@@ -1,6 +1,6 @@
 import { databaseMethods, getDatabaseInfo } from "../../model/databaseMethods";
 import { userProfileDbRefPersonal } from "../../database/database";
-import { checkRequestVariables } from "../../model/errors";
+import { checkRequestVariables, validateEmail } from "../../model/errors";
 import { serverError } from "./messenger.responses";
 
 // request.query comes from get
@@ -378,18 +378,24 @@ export const getTiresInfoVariables = async (req, res) => {
     };
 };
 
+export interface ShareOnsuranceTireVariables {
+    userEmail: string;
+    thirdPartyEmail: string;
+    tireVehicleId: string;
+    messengerId: string;
+};
 
-
-export const shareOnsuranceTireAccess = async (req, res) => {
+export const shareOnsuranceTireVariables = async (req, res) => {
     try {
         console.log(req.body);
         
-        return {
-            userEmail: checkRequestVariables("User Email", req.body["userEmail"], String),
-            thirdPartyEmail: checkRequestVariables("Third Party Email", req.body["thirdPartyEmail"], String),
-            tireToAccess: checkRequestVariables("Tires to have Access", req.body["tireVehicleId"], String),
+        const variables =  {
+            userEmail: validateEmail(req.body["userEmail"]),
+            thirdPartyEmail: validateEmail(req.body["thirdPartyEmail"]),
+            tireVehicleId: checkRequestVariables("Tires to have Access", req.body["tireVehicleId"], String),
             messengerId: checkRequestVariables("Messenger Id", req.body["messengerId"], String),
         };
+        return variables;
     } catch (error) {
         /*
 
@@ -399,17 +405,17 @@ export const shareOnsuranceTireAccess = async (req, res) => {
 
         */
         console.error(new Error(`Error getting variables. Error: ${JSON.stringify(error)}.`));
-
-        return res.json({
-            "messages": [
-                {
-                    "text": "Erro com varáveis. Verifique se os dados enviados estão corretos e tente novamente."
-                },
-            ],
-            "redirect_to_blocks": [
-                // `Informar Email` - Get Block
-            ]
-        });
+        return res.send(error);
+        // return res.json({
+        //     "messages": [
+        //         {
+        //             "text": "Erro com varáveis. Verifique se os dados enviados estão corretos e tente novamente."
+        //         },
+        //     ],
+        //     "redirect_to_blocks": [
+        //         // `Informar Email` - Get Block
+        //     ]
+        // });
     }
 };
 

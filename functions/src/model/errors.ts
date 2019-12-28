@@ -419,3 +419,21 @@ export const checkVehicleTireQtd = async (vehicleType, tireQtd) => {
     };
 };
 
+/**
+ * @description This function validates if user email is valid
+ * @param email User email to validate
+ */
+export const validateEmail = (email) => {
+    if (/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    .test(email)){
+        return checkRequestVariables("User Email", email, String);
+  } else {
+    console.error("You have entered an invalid email address!")
+    throw {
+        error: "Not a valid email",
+        Message: "Email inválido, por favor insira um email válido"
+    }
+  }
+    
+
+}

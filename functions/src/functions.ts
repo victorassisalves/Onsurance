@@ -624,5 +624,6 @@ export const indication = functions.https.onRequest(async (req, res) => {
 
 // -------------- ONSURANCE SHARE ITEMS ------------
 export const share = functions.https.onRequest((req, res) => {
-    res.send('Shared.');
+    const share = require("./routes/share.routes")
+    return share(req, res)
 });
