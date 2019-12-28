@@ -3,6 +3,8 @@ import * as cors from "cors";
 import { compareMessengerId } from "../test/messenger.test";
 
 import { shareOnsuranceTires } from "../controller/share.controller";
+import { shareOnsuranceTireVariables } from "../environment/messenger/messenger.variables";
+import { giveAccessMessenger, serverError } from "../environment/messenger/messenger.responses";
 
 const share = express();
 
@@ -15,17 +17,36 @@ share.post("/auto", async (req,res) => {
 share.post("/tires", async (req, res) => {
     try {
         console.log(req.path);
-        const variables = await require("../environment/messenger/messenger.variables").shareOnsuranceTireVariables(req, res);
+        const variables = await shareOnsuranceTireVariables(req, res);
         await compareMessengerId(variables.userEmail, variables.messengerId);
-        const result = await shareOnsuranceTires(variables);
-        return res.send(result);
+        shareOnsuranceTires(variables).then((result: any) => {
+            console.log(`TCL: result`, result);
+            const response = giveAccessMessenger(variables);
+            return res.send(response);
+        }).catch(async (error) => {
+            console.log(`TCL: error`, error);
+            const messenger = await require("../environment/messenger/messenger.responses");
+            const getResponse = await messenger[`${error.callback}`](error.variables);
+            console.log("TCL: getResponse", getResponse);
+            res.json(getResponse)
+        });
+        
     } catch (error) {
+        console.error(error);
+
         /**
          * @todo 
          *  adequade response
          */
-        console.error(error);
-        res.send(error);
+        if (error.calback) {
+            const messenger = await require("../environment/messenger/messenger.responses");
+            const getResponse = await messenger[`${error.callback}`](error.variables);
+            console.log("TCL: getResponse", getResponse);
+            
+            res.json(getResponse)
+        };
+        const response = serverError()
+        res.send(response);
     }
     
 });

@@ -59,7 +59,7 @@ export const shareOnsuranceTires = async (variables: ShareOnsuranceTireVariables
 
                 resolve({
                     status: 200,
-                    text: `Access granted. User ${variables.thirdPartyEmail} can now use protection on item ${variables.tireVehicleId}.`,
+                    text: `Access granted. User ${variables.thirdPartyEmail} can now use protection on item ${variables.itemToAccess}.`,
                     callback: 'giveAccessMessenger',
                     variables: {
                         thirdPartyEmail: variables.thirdPartyEmail
@@ -77,10 +77,9 @@ export const shareOnsuranceTires = async (variables: ShareOnsuranceTireVariables
 
         const doBackup = async () => {
             try {
-                console.log('Inside doBackup')
                 const ownerDbPath = await userProfileDbRefRoot(variables.userEmail)
                 const thirdPartyDbPath = await userProfileDbRefRoot(variables.thirdPartyEmail)
-                const itemId = await getItemId(variables.tireVehicleId);
+                const itemId = await getItemId(variables.itemToAccess);
                 const thirdPartyId = await getUserId(variables.thirdPartyEmail);
                 
                 if (variables.userEmail === variables.thirdPartyEmail){
@@ -96,7 +95,6 @@ export const shareOnsuranceTires = async (variables: ShareOnsuranceTireVariables
                         check if user have item in account and is owner of the item
 
                 */
-
                 
                 const userProfile: PersonalUserProfileInterface = await getDatabaseInfo(ownerDbPath.child(`personal`));
 
@@ -109,10 +107,10 @@ export const shareOnsuranceTires = async (variables: ShareOnsuranceTireVariables
                 // ERROR Check for item NOT exists on user account
                 if (itemToAccess === null || itemToAccess === undefined) throw {
                     status: 404, // Not Found
-                    text: `User don't have item ${variables.tireVehicleId} in account.`,
+                    text: `User don't have item ${variables.itemToAccess} in account.`,
                     callback:  'noItemToGiveAccess',
                     variables: {
-                        tireVehicleId: variables.tireVehicleId,
+                        itemToAccess: variables.itemToAccess,
                     }
                 };
 
@@ -123,30 +121,21 @@ export const shareOnsuranceTires = async (variables: ShareOnsuranceTireVariables
 
                 
                 const checkThirdPartyItem: TireInUserProfileInterface = await getDatabaseInfo(thirdPartyDbPath.child(`items/tires/${itemId}`));
-                console.log(`TCL: checkThirdPartyItem`, checkThirdPartyItem);
 
                 // ERROR Check: See if third party user have The requested item on profile
                 const checkItemAccess: boolean = await getDatabaseInfo(thirdPartyDbPath.child(`itemAuthorizations/thirdParty/tires/${itemId}`))
-                console.log(`TCL: checkItemAccess`, checkItemAccess);
                                 
                 // tslint:disable-next-line: triple-equals
-                if (checkThirdPartyItem !== null && checkThirdPartyItem.itemId == variables.tireVehicleId && checkItemAccess !== null) {
+                if (checkThirdPartyItem !== null && checkThirdPartyItem.itemId == variables.itemToAccess && checkItemAccess !== null) {
                     if (checkItemAccess && ownerItemAuthorizations[thirdPartyId]) throw {
                         status: 202, // Accepted but no action taken 
-                        text: `User ${variables.thirdPartyEmail} already have access to item ${variables.tireVehicleId}.`,
+                        text: `User ${variables.thirdPartyEmail} already have access to item ${variables.itemToAccess}.`,
                         callback: 'userAlreadyHavePermission',
                         variables: {
                             thirdPartyEmail: variables.thirdPartyEmail,
-                            tireVehicleId: variables.tireVehicleId
+                            itemToAccess: variables.itemToAccess
                         }
                     };
-
-                    // Error check for system inconsistencies
-                    if (!checkItemAccess && ownerItemAuthorizations[thirdPartyId]){
-                        console.error(new Error(`Third Party user don't have item access but owner gave access to item.`))
-                    }  else if (checkItemAccess && !ownerItemAuthorizations[thirdPartyId])  {
-                        console.error(new Error(`Third Party user have item access but owner didn't gave access to item.`))
-                    } 
                 };
 
                 const backup = {
@@ -160,13 +149,11 @@ export const shareOnsuranceTires = async (variables: ShareOnsuranceTireVariables
                     ownerDbPath: ownerDbPath,
                     thirdPartyDbPath: thirdPartyDbPath,
                 }
-                console.log(`TCL: backup`, JSON.stringify(backup));
-                
                 
                 return giveAccess(backup)  
             } catch (error) {
                 console.log("TCL: doBackup -> error", error)
-                reject(error)
+                return reject(error)
             }
         }
 

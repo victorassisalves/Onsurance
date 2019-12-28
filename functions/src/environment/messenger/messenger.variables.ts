@@ -381,7 +381,7 @@ export const getTiresInfoVariables = async (req, res) => {
 export interface ShareOnsuranceTireVariables {
     userEmail: string;
     thirdPartyEmail: string;
-    tireVehicleId: string;
+    itemToAccess: string;
     messengerId: string;
 };
 
@@ -392,7 +392,7 @@ export const shareOnsuranceTireVariables = async (req, res) => {
         const variables =  {
             userEmail: validateEmail(req.body["userEmail"]),
             thirdPartyEmail: validateEmail(req.body["thirdPartyEmail"]),
-            tireVehicleId: checkRequestVariables("Tires to have Access", req.body["tireVehicleId"], String),
+            itemToAccess: checkRequestVariables("Tires to have Access", req.body["itemToGiveAccess"], String),
             messengerId: checkRequestVariables("Messenger Id", req.body["messengerId"], String),
         };
         return variables;
