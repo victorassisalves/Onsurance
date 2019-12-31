@@ -44,7 +44,7 @@ export const getProtectionVariables = async (request, response) => {
         console.log("TCL: exports.getProtectionVariables -> statusProtection", statusProtection);
         
         const protectionVariables = {
-            userEmail:(request.body["userEmail"]).toLowerCase(),
+            userEmail: (request.body["userEmail"]).toLowerCase(),
             timezone:request.body["timezone"] || -3,
             itemInUse: request.body["itemInUse"].toLowerCase(),
             messengerId: request.body["messenger user id"],

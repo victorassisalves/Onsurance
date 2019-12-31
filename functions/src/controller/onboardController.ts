@@ -225,11 +225,10 @@ export const clientOnboard = async (variables: VehicleOnboardInterface) => {
  * @param {Object} variables Variables for tire Onboard
  */
 export const tireOnboard = (variables) => {
-
     return new Promise(async (resolve, reject) => {
         try {
             const onboardVariables = await tireOnboardVariables(variables);
-            console.log(`TCL: onboardVariables`, onboardVariables);
+            console.log(`TCL: onboardVariables`, JSON.stringify(onboardVariables));
 
             // ------------ DB PATHS --------
 
@@ -247,20 +246,20 @@ export const tireOnboard = (variables) => {
             const tireProfileBackup = await getDatabaseInfo(tireProfilePath);
             const tireItemBackup = await getDatabaseInfo(tireItemPath);
 
-            console.log(`TCL: tireItemBackup[onboardVariables.nfId]`, tireItemBackup[onboardVariables.nfId]);
-            if (tireItemBackup[onboardVariables.nfId]) {
-                throw {
-                    errorType: "Tires in NF already on profile",
-                    message:  `Tires with NF ${onboardVariables.nfId} already on profile.`
-                };
-            }
-
+            if (tireItemBackup) {
+                if (tireItemBackup[onboardVariables.nfId]) {
+                    console.log(`TCL: Already did onboard for this NFID`, JSON.stringify(tireItemBackup[onboardVariables.nfId]));
+                    throw {
+                        errorType: "Tires in NF already on profile",
+                        message:  `Tires with NF ${onboardVariables.nfId} already on profile.`
+                    };
+                }
+            };  
 
             // ------------ EXECUTE ONBOARD --------
             
             const onboard = async () => {
                 try {
-
                     switch (tireProfileBackup) {
                             /** Não existe perfil de pneus no DB
                              * @path Items/tires/vehicleId/
@@ -269,7 +268,8 @@ export const tireOnboard = (variables) => {
                         case null:
                         case undefined: {
 
-                            const minuteValue = await getTireMinuteValue(onboardVariables.totalValue, onboardVariables.vehicleType);
+                            const minuteValue = getTireMinuteValue(onboardVariables.totalValue, onboardVariables.vehicleType);
+
                             const protectionData = {
                                 ...onboardVariables.vehicleInfo,
                                 tireQtd: onboardVariables.tireQtd,
@@ -303,8 +303,6 @@ export const tireOnboard = (variables) => {
                             
                             
                             const itemInUserProfile = {
-
-                                [itemId]: {
                                     itemId: onboardVariables.plate,
                                     type: "tires",
                                     activationsCounter: {
@@ -312,10 +310,10 @@ export const tireOnboard = (variables) => {
                                     },
                                     owner: onboardVariables.userEmail,
                                     vehicleType: onboardVariables.vehicleType,
-                                }
                             };
 
-                            await updateDatabaseInfo(userProfilePath.child("items/tires"), itemInUserProfile);
+                            await updateDatabaseInfo(userProfilePath.child(`items/tires/${itemId}`), itemInUserProfile);
+
                             await updateDatabaseInfo(userProfilePath.child("personal"), {onboard: true});
 
                             const result = {
@@ -333,6 +331,7 @@ export const tireOnboard = (variables) => {
                             /*  Already have tires on db. 
                                 Check if this specific tire (group) is on db
                             */
+                            
 
                             const protectionData = {
                                 tireQtd: tireProfileBackup.protectionData.tireQtd + onboardVariables.tireQtd,
@@ -355,6 +354,7 @@ export const tireOnboard = (variables) => {
                             await updateDatabaseInfo(tireItemPath.child(`${tireProfile.nfId}`), tireProfile);
 
                             const newTireProfile = {
+                                message: `Added ${onboardVariables.tireQtd} tire to ${onboardVariables.plate} profile. New data...`,
                                 profile:{
                                     protectionData: protectionData,
                                 },
@@ -379,7 +379,7 @@ export const tireOnboard = (variables) => {
                 }  
             };
 
-            await onboard();
+            return await onboard();
         } catch (error) {
             console.error(new Error(`TCL: tireOnboard -> error: ${JSON.stringify(error)}`));
             reject(error)

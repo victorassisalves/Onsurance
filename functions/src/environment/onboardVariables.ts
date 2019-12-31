@@ -150,6 +150,7 @@ export const tireOnboardVariables = async (variables: tireOnboardVariablesInterf
         return treatedVariables;
         
     } catch (error) {
+        console.log(`TCL: error`, error);
         throw error;
     }
 };

@@ -118,7 +118,6 @@ export const shareOnsuranceTires = async (variables: ShareOnsuranceTireVariables
                 checkUserAccessPermission(variables, itemToAccess);
 
                 const thirdPartyProfile = await getDatabaseInfo(thirdPartyDbPath.child(`personal`));
-
                 
                 const checkThirdPartyItem: TireInUserProfileInterface = await getDatabaseInfo(thirdPartyDbPath.child(`items/tires/${itemId}`));
 

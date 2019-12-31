@@ -19,7 +19,8 @@ export const checkUserProfile = (userProfile, userEmail: string) => {
                 }
             };
         default:
-            break;
+            console.log('User profile exists.')
+            return true;
     };
 };
 

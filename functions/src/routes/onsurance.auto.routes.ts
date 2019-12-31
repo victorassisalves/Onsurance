@@ -16,7 +16,7 @@ onsurance.post("/messenger", async (req, res) => {
         onsuranceProtection(variables).then(async (result: any) => {
             const getResponse = await response[`${result.callback}`](result.variables);
 
-            res.status(result.status).json(getResponse)
+            return res.status(result.status).json(getResponse)
         }).catch(async error => {
             console.error(`${JSON.stringify(error)}`);
             console.error(new Error(`Description: ${error.text}`));
@@ -24,12 +24,12 @@ onsurance.post("/messenger", async (req, res) => {
             const getResponse = await response[`${error.callback}`](error.variables);
             console.log("TCL: getResponse", getResponse);
             
-            res.json(getResponse)
+            return res.json(getResponse)
         });
     } catch (error) {
         console.error(new Error(error))
         console.error(new Error(`Error in main function try catch. ${error}`))        
-        res.json({
+        return res.json({
             "messages": [
                 {
                     "text": "OOOoooppsss. Tivemos um pequeno erro em nosso servidor. Por favor verifique se está conectado à internet e tente novamente em 5 segundos."
