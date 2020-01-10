@@ -16,7 +16,7 @@ export interface TireQuoteVariables {
  * @description This function treates the variables that comes from auto quotation endpoint.
  * @param {TireQuoteVariables} request Payload of the request from auto quotation
  */
-export const autoQuoteVariables = async (request: TireQuoteVariables) => {
+export const autoQuoteVariables = async (request) => {
 
     try {
         const variables = {
@@ -29,6 +29,8 @@ export const autoQuoteVariables = async (request: TireQuoteVariables) => {
             vehiclePlate: checkRequestVariables('VehicleType', request.userEmail, String),
             dailyUsage: checkRequestVariables('VehicleType', request.dailyUsage, Number),
             phone: checkRequestVariables('VehicleType', request.phone, String, false),
+            truckTrunk: checkRequestVariables("Truck Trunk", request.truckTrunk, String, false),
+            truckTrunkValue: checkRequestVariables("Truck Trunk", request.truckTrunkValue, Number, false),
         };
 
         return variables;
@@ -52,10 +54,11 @@ export const tireQuoteVariables = async (request: TireQuoteVariables) => {
             firstName: checkRequestVariables('firstName', request.firstName, String),
             lastName: checkRequestVariables('lastName', request.lastName, String),
             userEmail: checkRequestVariables('userEmail', request.userEmail, String),
-            vehiclePlate: checkRequestVariables('VehicleType', request.userEmail, String),
+            vehiclePlate: checkRequestVariables('VehicleType', request.vehiclePlate, String),
             dailyUsage: checkRequestVariables('VehicleType', request.dailyUsage, Number),
             phone: checkRequestVariables('VehicleType', request.phone, String, false),
         };
+        console.log(`TCL: variables`, JSON.stringify(variables));
 
         return variables;
     } catch (error) {

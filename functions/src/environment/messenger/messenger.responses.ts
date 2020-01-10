@@ -8,7 +8,7 @@ export const activationFail = (protectionVariables) => {
         "set_attributes":
             {
                 "status-protecao": `OFF`,
-                "autoTitle": "Para Ligar o Onsurance auto clique em Onsurance ON/OFF" 
+                "autoTitle": "Clique para Ligar o Onsurance Auto." 
             },
         "redirect_to_blocks": [
             "protectionRouter"
@@ -27,7 +27,7 @@ export const deactivationFail = (protectionVariables, response) => {
         "set_attributes":
         {
             "status-protecao": "ON",
-            "autoTitle": "Para Desligar o Onsurance auto clique em Onsurance ON/OFF"
+            "autoTitle": "Clique para Desligar o Onsurance Auto."
         },
         "redirect_to_blocks": [
             "protectionRouter"
@@ -53,7 +53,7 @@ export const singleDeactivation = variables => {
                 "horas": variables.hours,
                 "minutos": variables.minutes,
                 "segundos": variables.seconds,
-                "autoTitle": "Para Ligar o Onsurance auto clique em Onsurance ON/OFF"
+                "autoTitle": "Clique para Ligar o Onsurance Auto."
         },
         "redirect_to_blocks": [
             `Pos Off`
@@ -67,7 +67,7 @@ export const deactivationSuccessful = variables => {
     const deactivationSuccessful = {
         "messages": [
             {
-                "text": "Sua proteção está desligada!"
+                "text": "Seu Onsurance Auto está Desligado!"
             }
         ],
         "set_attributes": {
@@ -78,7 +78,7 @@ export const deactivationSuccessful = variables => {
                 "horas": variables.hours,
                 "minutos": variables.minutes,
                 "segundos": variables.seconds,
-                "autoTitle": "Para Ligar o Onsurance auto clique em Onsurance ON/OFF"
+                "autoTitle": "Clique para Ligar o Onsurance Auto."
         },
         "redirect_to_blocks": [
             `Pos Off`
@@ -106,7 +106,7 @@ export const deactivationActivation = variables => {
                 "horas": variables.hours,
                 "minutos": variables.minutes,
                 "segundos": variables.seconds,
-                "autoTitle": "Para Ligar o Onsurance auto clique em Onsurance ON/OFF"
+                "autoTitle": "Clique para Ligar o Onsurance Auto."
         },
         "redirect_to_blocks": [
             `Pos Off`
@@ -117,20 +117,19 @@ export const deactivationActivation = variables => {
 
 export const activationSuccessful = variables => {
     
-    console.log("TCL: variables.protectionOn", variables.protectionOn)
     const activationSuccessful = {
         "messages": [
             {
-                "text": `Sua proteção está ligada!`
+                "text": `Seu Onsurance Auto está Ligado!`
             }
         ],
         "set_attributes":
             {
                 "status-protecao": variables.statusProtection,
-                "autoTitle": "Para Desligar o Onsurance auto clique em Onsurance ON/OFF"
+                "autoTitle": "Clique para Desligar o Onsurance Auto."
         },
         "redirect_to_blocks": [
-            `protectionRouter`
+            `posOn`
         ]
     }
     
@@ -151,7 +150,7 @@ export const firstActivation = async variables => {
         "set_attributes":
             {
                 "status-protecao": variables.statusProtection,
-                "autoTitle": "Para Desligar o Onsurance auto clique em Onsurance ON/OFF"
+                "autoTitle": "Clique para Desligar o Onsurance Auto."
         },
         "redirect_to_blocks": [
             `firstActivation`
@@ -170,7 +169,7 @@ export const noChangeAllOff = variables => {
         ],
         "set_attributes": {
             "status-protecao": "OFF",
-            "autoTitle": "Para Ligar o Onsurance auto clique em Onsurance ON/OFF"
+            "autoTitle": "Clique para Ligar o Onsurance Auto."
         },
         "redirect_to_blocks": [
             `protectionRouter`
@@ -189,7 +188,7 @@ export const noChangeAllOn = variables => {
         ],
         "set_attributes": {
             "status-protecao": "ON",
-            "autoTitle": "Para Desligar o Onsurance auto clique em Onsurance ON/OFF"
+            "autoTitle": "Clique para Desligar o Onsurance Auto."
         },
         "redirect_to_blocks": [
             `protectionRouter`
@@ -211,7 +210,7 @@ export const noChange = variables => {
         ],
         "set_attributes": {
             "status-protecao": "ON",
-            "autoTitle": "Para Desligar o Onsurance auto clique em Onsurance ON/OFF"
+            "autoTitle": "Clique para Desligar o Onsurance Auto."
         },
         "redirect_to_blocks": [
             `protectionRouter`
@@ -979,10 +978,10 @@ export const setVehicleInfo = variables => {
     try {
 
         let protectionStatus = "ON"
-        let autoTitle = "Para Desligar o Onsurance Auto clique em Onsurance ON - OFF";
+        let autoTitle = "Clique para Desligar o Onsurance Auto.";
         if (variables.itemProfile.protectionData.protectionStatus.theft === false) {
             protectionStatus = "OFF"
-            autoTitle = "Para Ligar o Onsurance Auto clique em Onsurance ON - OFF";
+            autoTitle = "Clique para Ligar o Onsurance Auto.";
         };
 
         const changeItemInfoResponse = {
@@ -1051,9 +1050,9 @@ export const setVehicleInfo = variables => {
 export const setTireInfo = (variables) => {
 
     let protectionStatus = "ON"
-    let tireTitle = "Para Desligar o Onsurance Pneus clique em Onsurance ON - OFF";
+    let tireTitle = "Clique para Desligar o Onsurance Pneus.";
     if (variables.protectionStatus === false) {
-        tireTitle = "Para Ligar o Onsurance Pneus clique em Onsurance ON - OFF";
+        tireTitle = "Clique para Ligar o Onsurance Pneus.";
         protectionStatus = "OFF"
     };
 
@@ -1217,7 +1216,7 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
         let atributtes = {}
         let autoStatusProtection = 'OFF';
         let tireStatusProtection = 'OFF';
-        let autoTitle = "Para Ligar o Onsurance Auto clique em Onsurance ON - OFF";
+        let autoTitle = "Clique para Ligar o Onsurance Auto.";
         let tireTitle = "Para Ligar o Onsurance Pneus clique Onsurance ON - OFF";
         let block = "protectionRouter";
         for (let i = 0; i < items.length; i++) {
@@ -1226,7 +1225,7 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
                 case "vehicle": {
                     if (items[i].protectionStatus === true) {
                         autoStatusProtection = "ON";
-                        autoTitle = "Para Desligar o Onsurance Auto clique em Onsurance ON - OFF";
+                        autoTitle = "Clique para Desligar o Onsurance Auto.";
                     }   
                 atributtes = {
                         ...atributtes,
@@ -1406,8 +1405,6 @@ export const noAccessToTire = (variables?) => {
 
 
 
-
-
 // ------------------ TIRES RESPONSES ---------------
 
 export const TireRes_NoChangeOnsuranceOn = (variables) => {
@@ -1420,7 +1417,7 @@ export const TireRes_NoChangeOnsuranceOn = (variables) => {
         ],
         "set_attributes": {
             "tireOnsuranceStatus": "ON",
-            "tireTitle": "Para Desligar o Onsurance Pneus clique em Onsurance ON - OFF"
+            "tireTitle": "Clique para Desligar o Onsurance Pneus."
         },
         "redirect_to_blocks": [
             `protectionRouter`
@@ -1437,7 +1434,7 @@ export const TireRes_NoChangeOnsuranceOff = (variables) => {
         ],
         "set_attributes": {
             "tireOnsuranceStatus": "OFF",
-            "tireTitle": "Para Ligar o Onsurance Pneus clique em Onsurance ON - OFF"
+            "tireTitle": "Clique para Ligar o Onsurance Pneus."
         },
         "redirect_to_blocks": [
             `protectionRouter`
@@ -1455,7 +1452,7 @@ export const TireRes_activationFail = (variables?) => {
         "set_attributes":
             {
                 "tireOnsuranceStatus": `OFF`,
-                "tireTitle": "Para Ligar o Onsurance Pneus clique em Onsurance ON - OFF"
+                "tireTitle": "Clique para Ligar o Onsurance Pneus."
             },
         "redirect_to_blocks": [
             "protectionRouter"
@@ -1473,7 +1470,7 @@ export const TireRes_deactivationFail = (variables?) => {
         "set_attributes":
         {
             "tireOnsuranceStatus": "ON",
-            "tireTitle": "Para Desligar o Onsurance Pneus clique em Onsurance ON - OFF"
+            "tireTitle": "Clique para Desligar o Onsurance Pneus."
         },
         "redirect_to_blocks": [
             "protectionRouter"
@@ -1501,7 +1498,7 @@ export const TireRes_deactivationSuccessful = (variables: TiresSuccessfulDeactiv
     return {
         "messages": [
             {
-                "text": "Seu Onsurance Pneus está desligado!"
+                "text": "Seu Onsurance Pneus está Desligado!"
             }
         ],
         "set_attributes": {
@@ -1512,7 +1509,7 @@ export const TireRes_deactivationSuccessful = (variables: TiresSuccessfulDeactiv
                 "minutos": variables.minutes,
                 "segundos": variables.seconds,
                 "tireOnsuranceStatus": variables.tireOnsuranceStatus,
-                "tireTitle": "Para Ligar o Onsurance Pneus clique em Onsurance ON/OFF" 
+                "tireTitle": "Clique para Ligar o Onsurance Pneus." 
         },
         "redirect_to_blocks": [
             `Pos Off`
@@ -1533,10 +1530,34 @@ export const TireRes_activationSuccessful = () => {
         ],
         "set_attributes": {
             "tireOnsuranceStatus": "ON",
-            "tireTitle": "Para Desligar o Onsurance Pneus clique em Onsurance ON - OFF" 
+            "tireTitle": "Clique para Desligar o Onsurance Pneus." 
         },
         "redirect_to_blocks": [
-            `protectionRouter`
+            `posOn`
         ]
+    };
+};
+
+
+
+
+// ------------------ QUOTATION ---------------------
+
+
+
+export const quote_autoResponse = (variables) => {
+    return {
+        "messages": [
+            {
+                "text": `Aqui está o resultado da sua cotação!`
+            }
+        ],
+        "set_attributes": {
+            "activationCreditCot": variables.activationCredit,
+            "anualCostCot": variables.anualCost,
+            "creditDurationCot": variables.creditDuration,
+            "minuteValueCot": variables.minuteValue,
+            "franchiseCot": variables.franchise,
+        },
     };
 };

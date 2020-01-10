@@ -75,30 +75,6 @@ exports.timezoneExperiment = functions.https.onRequest(async (request, response)
     
 });
 
-exports.quotation = functions.https.onRequest(async (request, response) => {
-    const newQuotation = require("./model/quotation.auto").newQuotation;
-
-
-    interface Result {
-        privateApi: Object;
-        publicApi: Object
-    }
-    
-    const userInput = request.body;
-    console.log(`TCL: userInput`, JSON.stringify(userInput));
-
-    await newQuotation(userInput).then(async (result: Result) => {
-        const zoho = await require("./environment/zoho.flow");
-        zoho.sendQuotationZoho(result.privateApi);
-        response.send(result.publicApi)
-    }).catch(error => {
-        response.send(error)
-    });
-    
-    
-});
-
-
 
 /*
 
@@ -604,7 +580,7 @@ export const items = functions.https.onRequest(async (request, response) => {
 
 // -------------- NEW QUOTE ------------------
 export const quote = functions.https.onRequest(async (request, response) => {
-    const quote = require("./routes/quotation.routes");
+    const quote = await require("./routes/quotation.routes");
     return await quote(request, response);
 });
 

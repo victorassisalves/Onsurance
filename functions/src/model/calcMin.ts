@@ -231,6 +231,7 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
                 console.log("TCL: executeCalculations -> Typo de veículo:", vehicleType);
 
                 switch (vehicleType) {
+                    case "carro": 
                     case "car": {
 
                         const usageVehicleValue = getFipeByUsage(usageType, fipe);
@@ -250,6 +251,7 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
                         resolve(minuteValue);
                     };
 
+                    case "moto": 
                     case "motorcycle": {
 
                         const minuteValueBase = calcMinuteMoto(fipe);
@@ -283,6 +285,7 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
                         resolve(minuteValue);
                     }
 
+                    case "caminhonete":
                     case "pickup": {
                         let minuteValueBase: number
                         if (usageType === "passeio") {
@@ -311,7 +314,7 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
                     default:
                         throw {
                             errorType: "Invalid vehicle type.",
-                            message: "Informe um veículo válido.",
+                            message: `Informe um veículo válido. ${vehicleType}`,
                         };
                 };
 
@@ -353,10 +356,10 @@ export const getTireMinuteValue = (tireTotalValue: number, vehicleType: String):
             case "caminhonete":
             case "vuc":
                 if (tireTotalValue > 800) {
-                    const minuteValueBase = parseFloat((tireTotalValue/800).toFixed(3));
+                    const minuteValueBase = parseFloat((tireTotalValue/800000).toFixed(5));
                     return minuteValueBase;
                 } else {
-                    const minuteValueBase = 1;
+                    const minuteValueBase = 0.001;
                     return minuteValueBase;
                 }
             

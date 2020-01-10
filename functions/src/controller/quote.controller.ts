@@ -20,7 +20,9 @@ export class executeTiresQuotation {
      * @param minuteValue Tire minute value of Onsurance
      */
     calcUsage () {
-        this.anualCost = this.minuteValue * 60 * this.variables.dailyUsage * 365;
+        console.log(`TCL: executeTiresQuotation -> this.minuteValue`, this.minuteValue);
+
+        this.anualCost = parseFloat((this.minuteValue * 60 * this.variables.dailyUsage * 365).toFixed(2));
         this.creditDuration = parseFloat((50/this.anualCost*12).toFixed(2));
         return {
             anualCost: this.anualCost,
@@ -37,12 +39,13 @@ export const executeTiresQuote = (variables: TireQuoteVariables) => {
     try {
         const tire = new executeTiresQuotation(variables);
         const minuteValue = tire.getMinuteValue();
+        console.log(`TCL: minuteValue`, minuteValue);
         const usageData = tire.calcUsage();
+        console.log(`TCL: usageData`, usageData);
         return {
             ...usageData,
             minuteValue: minuteValue
         }
-
     } catch (error) {
         throw error;
         
@@ -59,7 +62,8 @@ interface AutoQuoteInterface {
     thirdPartyCoverage: string;
     firstName: string;
     email: string;
-
+    truckTrunk?: string,
+    truckTrunkValue?: string,
 }
 
 /**
@@ -626,16 +630,18 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                     };
 
                     case "vuc": {
-
-
-                        const minuteValueBase = calcMinuteVuc(fipe);
+                        let vucValue = fipe;
+                        if (userInput.truckTrunk === "sim") {
+                            vucValue += parseFloat(userInput.truckTrunkValue);
+                        };
+                        const minuteValueBase = calcMinuteVuc(vucValue);
                         const minuteValueFactory = minuteByFactory(factory, minuteValueBase);
                         console.log("TCL: executeCalculations -> VUC minuteValueFactory", minuteValueFactory);
                         
-                        const baseActivationCredit = getActivationCredit_Vuc_Pickup(factory, fipe);
+                        const baseActivationCredit = getActivationCredit_Vuc_Pickup(factory, vucValue);
                         console.log("TCL: executeCalculations -> baseActivationCredit", baseActivationCredit);
 
-                        const franchise = getFranchise_Vuc_Pickup(factory, fipe);
+                        const franchise = getFranchise_Vuc_Pickup(factory, vucValue);
                         console.log("TCL: executeCalculations -> franchise", franchise);
 
                         const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory)
@@ -651,13 +657,13 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                         console.log("TCL: executeCalculations -> yearInfo", yearInfo);
 
                         const quotationData = {
-                            calcVehicleValue: fipe,
+                            calcVehicleValue: vucValue,
                             minuteValue: minuteValue,
                             activationCredit: activationCredit,
                             franchise: franchise,
                             creditDuration: yearInfo.duration,
                             anualCost: yearInfo.anualCost
-                        }
+                        };
 
                         return quotationResponse(userInput, quotationData);
                     }
@@ -668,7 +674,7 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                         if (userInput.usageType === "passeio") {
                             minuteValueBase = calcMinutePickup(fipe);
                         } else if (userInput.usageType === "utilitario") {
-                            minuteValueBase = calcMinuteVuc(fipe);;;
+                            minuteValueBase = calcMinuteVuc(fipe);
                         } else {
                             throw {
                                 errorType: "Tipo de uso inválido para caminhonete.",
