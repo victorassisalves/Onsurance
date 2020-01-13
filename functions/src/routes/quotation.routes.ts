@@ -4,6 +4,7 @@ import { tireQuoteVariables } from "../environment/quotation.variables";
 import { executeTiresQuote, executeAutoQuote } from "../controller/quote.controller";
 import { quote_autoResponse, quote_ErrorResponse, quote_ErrorDefaultResponse } from "../environment/messenger/messenger.responses";
 import { sendQuotationZoho } from "../environment/zoho.flow";
+import { checkRequestVariables } from "../model/errors";
 
 
 const quote = express();
@@ -75,25 +76,26 @@ router.post("/auto/messenger", async (request, response) => {
 
         await executeAutoQuote(userInput).then(async (result: Result) => {
             const zoho = sendQuotationZoho(result.privateApi);
-            const messengerResponse = quote_autoResponse(result.publicApi, result.privateApi);
-            response.json(messengerResponse);
+            const ass24h = checkRequestVariables("assistência 24 horas", userInput.ass24h, String, false)
+            const messengerResponse = quote_autoResponse(result.publicApi, ass24h);
+            return response.json(messengerResponse);
         }).catch(error => {
             console.error(new Error(`Erro ao executar cotação para messenger: ${JSON.stringify(error)}`));
             if (error.block) {
                 const messengerResponse = quote_ErrorResponse(error.message, error.block)
-                response.send(messengerResponse);
+                return response.send(messengerResponse);
             };
             
-            response.send(quote_ErrorDefaultResponse());
+            return response.send(quote_ErrorDefaultResponse());
         });
     } catch (error) {
         console.error(new Error(`Erro ao iniciar cotação para messenger: ${JSON.stringify(error)}`));
         if (error.block) {
             const messengerResponse = quote_ErrorResponse(error.message, error.block)
-            response.send(messengerResponse);
+            return response.send(messengerResponse);
         };
         
-        response.send(quote_ErrorDefaultResponse());
+        return response.send(quote_ErrorDefaultResponse());
     };
 });
 

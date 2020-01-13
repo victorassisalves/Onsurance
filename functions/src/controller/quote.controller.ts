@@ -85,7 +85,7 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
             const thirdPartyCoverage = parseFloat(userInput.thirdPartyCoverage);
             if (thirdPartyCoverage > 150 || thirdPartyCoverage < 30) {
                 throw {
-                    status: 500,
+                    status: 406, // Not Acceptable
                     error: "Cobertura para terceiros fora do limite.",
                     message: `${thirdPartyCoverage} está fora do limite permitido. Valores só podem ir de 30 até 150`,
                     block: "wrong3rdCoverage"
@@ -118,7 +118,7 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                     return parseFloat((minuteValue * 1.2).toFixed(5));
                 default:
                     throw {
-                        status: 400,
+                        status: 406, // Not Acceptable
                         error: "Fabricação inválida",
                         message:`Escolha uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`,
                         block: "initialDataEntry",
@@ -152,7 +152,7 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                     return vehicleValue + 10000;
                 default:
                     throw {
-                        status: 300,
+                        status: 406, // Not Acceptable
                         error: "Tipo de uso inválido para carro.",
                         message: `"${usageType}" não é um tipo de uso válido. Escolha uma das seguintes opções: app, taxi, passeio.`,
                         block: "chooseCarUsage",
@@ -386,7 +386,7 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                 };
                 default:
                     throw {
-                        status: 400,
+                        status: 406, // Not Acceptable
                         error: "Fabricação inválida",
                         message:`Escolha uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`,
                         block: "initialDataEntry",
@@ -468,7 +468,7 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
          * @function getFipeByUsage
          *
          */
-        const getActivationCredit_Vuc_Pickup = (factory: string, vehicleValue: number) => {
+        const getActivationCredit_Vuc_Pickup = (factory: string, vehicleValue: number): number => {
             
             if (factory === "nacional") {
                 if (vehicleValue <= 40000){
@@ -513,7 +513,7 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                 };
                 default:
                     throw {
-                        status: 400,
+                        status: 406, // Not Acceptable
                         error: "Fabricação inválida",
                         message:`Escolha uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`,
                         block: "initialDataEntry",
@@ -550,9 +550,6 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
             return resolve(quotationResponse);
         };
 
-
-
-
         /**
          * @description This functions execute all functions above
          * 
@@ -560,10 +557,10 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
          * 
          * Then we execute te functions
          */
-        const executeCalculations = async(vehicleType: string) => {
+        const executeCalculations = async (vehicleType: string) => {
             try {
 
-                console.log("TCL: executeCalculations -> Typo de veículo:", vehicleType);
+                console.log("TCL: executeCalculations -> Tipo de veículo:", vehicleType);
 
                 switch (vehicleType) {
                     case "car":
@@ -588,7 +585,6 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                          * @param anualCost that represents the total cost estimated for 365 days of usage
                          */
                         const yearInfo = yearCalculations(activationCredit, hoursUsedDaily, minuteValue);
-                        console.log("TCL: executeCalculations -> yearInfo", yearInfo);
 
                         const quotationData = {
                             calcVehicleValue: usageVehicleValue,
@@ -670,13 +666,10 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                         };
                         const minuteValueBase = calcMinuteVuc(vucValue);
                         const minuteValueFactory = minuteByFactory(factory, minuteValueBase);
-                        console.log("TCL: executeCalculations -> VUC minuteValueFactory", minuteValueFactory);
                         
                         const baseActivationCredit = getActivationCredit_Vuc_Pickup(factory, vucValue);
-                        console.log("TCL: executeCalculations -> baseActivationCredit", baseActivationCredit);
 
                         const franchise = getFranchise_Vuc_Pickup(factory, vucValue);
-                        console.log("TCL: executeCalculations -> franchise", franchise);
 
                         const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory)
                         const activationCredit = thirdPartyCoverageInfo.activationCredit;
@@ -688,7 +681,6 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                          * @param anualCost that represents the total cost estimated for 365 days of usage
                          */
                         const yearInfo = yearCalculations(activationCredit, hoursUsedDaily, minuteValue);
-                        console.log("TCL: executeCalculations -> yearInfo", yearInfo);
 
                         const quotationData = {
                             calcVehicleValue: vucValue,
@@ -712,22 +704,21 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                             minuteValueBase = calcMinuteVuc(fipe);
                         } else {
                             throw {
-                                errorType: "Tipo de uso inválido para caminhonete.",
-                                message: `${userInput.usageType} não é válido. Só pode ser passeio ou utilitário.`,
-                            };
-                            
+                                status: 406, // Not Acceptable
+                                error: "Tipo de uso inválido para caminhonete.",
+                                message: `${usageType} não é um tipo de uso válido. Escolha uma das seguintes opções: passeio ou utilitario.`,
+                                block: "choosePickupUsage",
+                                variables: {}
+                            }; 
                         };
 
                         const minuteValueFactory = minuteByFactory(factory, minuteValueBase);
-                        console.log("TCL: executeCalculations -> Caminhonete minuteValueFactory", minuteValueFactory);
                         
                         const baseActivationCredit = getActivationCredit_Vuc_Pickup(factory, fipe);
-                        console.log("TCL: executeCalculations -> baseActivationCredit", baseActivationCredit);
 
                         const franchise = getFranchise_Vuc_Pickup(factory, fipe);
-                        console.log("TCL: executeCalculations -> franchise", franchise);
 
-                        const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory)
+                        const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory);
                         const activationCredit = thirdPartyCoverageInfo.activationCredit;
                         const minuteValue = thirdPartyCoverageInfo.minuteValue;
 
@@ -737,7 +728,6 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                          * @param anualCost that represents the total cost estimated for 365 days of usage
                          */
                         const yearInfo = yearCalculations(activationCredit, hoursUsedDaily, minuteValue);
-                        console.log("TCL: executeCalculations -> yearInfo", yearInfo);
 
                         const quotationData = {
                             calcVehicleValue: fipe,
@@ -750,9 +740,10 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
 
                         return quotationResponse(userInput, quotationData);
                     }
+
                     default:
                         throw {
-                            status: 400,
+                            status: 406, // Not Acceptable
                             error: "Tipo de veículo inválido.",
                             message: `${userInput.vehicleType} não é válido. Escolha um tipo de veículo válido. Carro, moto, vuc ou caminhonete`,
                             block: 'chooseVehicle',
