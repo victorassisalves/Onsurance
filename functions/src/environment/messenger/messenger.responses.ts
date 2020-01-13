@@ -1599,3 +1599,22 @@ export const quote_ErrorResponse = (message: string, block: string) => {
         ]
     };
 }
+
+export const quote_ErrorDefaultResponse = () => {
+    return {
+        "messages": [
+            {
+                "text": `Desculpe, tivemos um erro ao realizar a cotação!`
+            },
+            {
+                "text": `Vou te direcionar para começar novamente.`
+            },
+            {
+                "text": `Caso o erro ocorra novamente, digite Falar com especialista que vamos te ajudar.`
+            },
+        ],
+        "redirect_to_blocks": [
+            `chooseVehicle`
+        ]
+    };
+}

@@ -118,10 +118,13 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                     return parseFloat((minuteValue * 1.2).toFixed(5));
                 default:
                     throw {
-                        errorType: "Invalid factory",
-                        message:`Informe uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`
-                    }
-            }
+                        status: 400,
+                        error: "Fabricação inválida",
+                        message:`Escolha uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`,
+                        block: "initialDataEntry",
+                        variables: {},
+                    };
+            };
         };
 
         /**
@@ -149,8 +152,11 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                     return vehicleValue + 10000;
                 default:
                     throw {
-                        errorType: "Tipo de uso inválido para carro.",
-                        message: `"${usageType}" Não é um tipo de uso válido. Escolha uma das seguintes opções: app, taxi, passeio.`
+                        status: 300,
+                        error: "Tipo de uso inválido para carro.",
+                        message: `"${usageType}" não é um tipo de uso válido. Escolha uma das seguintes opções: app, taxi, passeio.`,
+                        block: "chooseCarUsage",
+                        variables: {}
                     }
             }
         }
@@ -186,7 +192,6 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
          * @param {number} minuteValue Minute value, the cost per minute of use
          */
         const calcThirdPartyCoverage = (thirdPartyCoverage: number, activationCredit: number, minuteValue: number) => {
-            console.log(`TCL: calcThirdPartyCoverage -> thirdPartyCoverage`, thirdPartyCoverage)
             if (thirdPartyCoverage < 30) {
                 return {
                     activationCredit: activationCredit,
@@ -194,11 +199,11 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                 };
             } else {
                 const multiplier = parseFloat(((thirdPartyCoverage - 30)/10).toFixed(0));
-                console.log(`TCL: calcThirdPartyCoverage -> multiplier`, multiplier)
+
                 const newActivationCredit = parseFloat((activationCredit + (multiplier*28.5)).toFixed(2));
-                console.log(`TCL: calcThirdPartyCoverage -> newActivationCredit`, newActivationCredit)
+
                 const newMinuteValue = parseFloat((minuteValue + (multiplier*(minuteValue/18))).toFixed(5));
-                console.log(`TCL: calcThirdPartyCoverage -> newMinuteValue`, newMinuteValue)
+
                 return {
                     activationCredit: newActivationCredit,
                     minuteValue: newMinuteValue
@@ -285,18 +290,13 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                         return parseFloat((vehicleValue * 0.04).toFixed(2));
                     };
                 };
-                case "importado": {
+                default: {
                     if (vehicleValue <= 37500) {
                         return 3000;
                     } else {
                         return parseFloat((vehicleValue * 0.08).toFixed(2));
                     };
                 };
-                default:
-                    throw {
-                        errorType: "Invalid factory",
-                        message:`Informe uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`
-                    }
             }
         };
 
@@ -386,8 +386,11 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                 };
                 default:
                     throw {
-                        errorType: "Invalid factory",
-                        message:`Informe uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`
+                        status: 400,
+                        error: "Fabricação inválida",
+                        message:`Escolha uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`,
+                        block: "initialDataEntry",
+                        variables: {},
                     };
             }
         };
@@ -510,9 +513,12 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                 };
                 default:
                     throw {
-                        errorType: "Invalid factory",
-                        message:`Informe uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`
-                    }
+                        status: 400,
+                        error: "Fabricação inválida",
+                        message:`Escolha uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`,
+                        block: "initialDataEntry",
+                        variables: {},
+                    };
             }
         };
 
@@ -564,17 +570,14 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                     case "carro": {
 
                         const usageVehicleValue = getFipeByUsage(usageType, fipe);
-                        console.log("TCL: executeCalculations -> usageVehicleValue", usageVehicleValue)
                         
                         const minuteValueBase = calcMinuteCar(usageVehicleValue);
                         const minuteValueFactory = minuteByFactory(factory, minuteValueBase);
-                        console.log("TCL: executeCalculations -> Car minute value by factory", minuteValueFactory);
                         
                         const baseActivationCredit = getCarActivationCredit(factory, usageVehicleValue);
-                        console.log("TCL: executeCalculations -> baseActivationCredit", baseActivationCredit);
 
                         const franchise = getCarFranchise(factory, usageVehicleValue);
-                        console.log("TCL: executeCalculations -> franchise", franchise);
+
                         const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory)
                         const activationCredit = thirdPartyCoverageInfo.activationCredit;
                         const minuteValue = thirdPartyCoverageInfo.minuteValue;
@@ -749,8 +752,11 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                     }
                     default:
                         throw {
-                            errorType: "Tipo de veículo inválido.",
-                            message: `${userInput.vehicleType} não é válido. Informe um veículo válido. Carro, moto, vuc ou caminhonete`,
+                            status: 400,
+                            error: "Tipo de veículo inválido.",
+                            message: `${userInput.vehicleType} não é válido. Escolha um tipo de veículo válido. Carro, moto, vuc ou caminhonete`,
+                            block: 'chooseVehicle',
+                            variables: {}
                         };
                 };
 
