@@ -1545,19 +1545,57 @@ export const TireRes_activationSuccessful = () => {
 
 
 
-export const quote_autoResponse = (variables) => {
+export const quote_autoResponse = (variables, ass24h) => {
+    if (variables.motoCc) {
+        return {
+            "messages": [
+                {
+                    "text": `Desculpe, infelizmente ainda não temos Onsurance para motos abaixo de 250cc!`
+                },
+                {
+                    "text": `Estamos finalizando esse produto especialmente pra você. Acabamos de te colocar em uma lista de espera. você é o número ${variables.motoCounter}!`
+                },
+                {
+                    "text": `Quando atingirmos 3000 pessoas com esse perfil estaremos com o produto pronto e vamos te avisar! Enquanto isso, indique para seus amigos para que possar lançar isso mais rápido.`
+                },
+            ],
+            "redirect_to_blocks": [
+                `motoUnder250Cc`
+            ]
+        };
+    } else {
+        return {
+            "messages": [
+                {
+                    "text": `Aqui está o resultado da sua cotação!`
+                }
+            ],
+            "set_attributes": {
+                "activationCreditCot": variables.activationCredit,
+                "anualCostCot": variables.anualCost,
+                "creditDurationCot": variables.creditDuration,
+                "minuteValueCot": variables.minuteValue,
+                "franchiseCot": variables.franchise,
+            },
+        };
+    }
+    
+};
+
+/**
+ * 
+ * @param message Mensagem que o usuário recebe na interface do messenger em caso de erro.
+ * @param block Bloco do chatfuel para o qual o usuário vai ser direcionado
+ */
+export const quote_ErrorResponse = (message: string, block: string) => {
     return {
         "messages": [
             {
-                "text": `Aqui está o resultado da sua cotação!`
+                "text": `${message}`
             }
         ],
-        "set_attributes": {
-            "activationCreditCot": variables.activationCredit,
-            "anualCostCot": variables.anualCost,
-            "creditDurationCot": variables.creditDuration,
-            "minuteValueCot": variables.minuteValue,
-            "franchiseCot": variables.franchise,
-        },
+        "redirect_to_blocks": [
+            `${block}`
+        ]
     };
-};
+}

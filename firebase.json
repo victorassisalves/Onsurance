@@ -32,7 +32,7 @@
         "function": "onboard"
       },
       {
-        "source": "/quote/**",
+        "source": "/quotation/**",
         "function": "quote"
       },
       {
@@ -47,10 +47,6 @@
         "source": "/geofence",
         "function": "geofence"
       },
-      {
-        "source": "/quotation",
-        "function": "quotation"
-      }
     ],
     "ignore": [
       "firebase.json",

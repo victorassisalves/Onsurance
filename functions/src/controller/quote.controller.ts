@@ -1,5 +1,8 @@
 import { getTireMinuteValue } from "../model/calcMin";
 import { TireQuoteVariables } from "../environment/quotation.variables";
+import { motoCounterDbRef } from "../database/database";
+import { getDatabaseInfo, setDatabaseInfo } from "../model/databaseMethods";
+import { checkRequestVariables } from "../model/errors";
 
 export class executeTiresQuotation {
     minuteValue: number;
@@ -52,7 +55,6 @@ export const executeTiresQuote = (variables: TireQuoteVariables) => {
     }
 };
 
-
 interface AutoQuoteInterface {
     fipe: string;
     vehicleType: string;
@@ -64,6 +66,7 @@ interface AutoQuoteInterface {
     email: string;
     truckTrunk?: string,
     truckTrunkValue?: string,
+    motoCc?: string;
 }
 
 /**
@@ -82,8 +85,10 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
             const thirdPartyCoverage = parseFloat(userInput.thirdPartyCoverage);
             if (thirdPartyCoverage > 150 || thirdPartyCoverage < 30) {
                 throw {
-                    errorType: "Cobertura para terceiros fora do limite.",
-                    message: `${thirdPartyCoverage} está fora do limite permitido. Valores só podem ir de 30 até 150`
+                    status: 500,
+                    error: "Cobertura para terceiros fora do limite.",
+                    message: `${thirdPartyCoverage} está fora do limite permitido. Valores só podem ir de 30 até 150`,
+                    block: "wrong3rdCoverage"
                 };
                 
             }
@@ -555,6 +560,7 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                 console.log("TCL: executeCalculations -> Typo de veículo:", vehicleType);
 
                 switch (vehicleType) {
+                    case "car":
                     case "carro": {
 
                         const usageVehicleValue = getFipeByUsage(usageType, fipe);
@@ -593,19 +599,16 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                         return quotationResponse(userInput, quotationData);
                     };
 
+                    case "motorcylcle":
                     case "moto": {
 
+                        const motoCc = checkRequestVariables(`Moto CC`, userInput.motoCc, String);
                         const minuteValueBase = calcMinuteMoto(fipe);
                         const minuteValueFactory = minuteByFactory(factory, minuteValueBase)
-                        console.log("TCL: executeCalculations -> Moto minute Value by factory", minuteValueFactory);
-
                         const baseActivationCredit = getMotoActivationCredit(factory, fipe);
-                        console.log("TCL: executeCalculations -> Moto baseActivationCredit", baseActivationCredit);
-                        
                         const franchise = getMotoFranchise(factory, fipe);
-                        console.log("TCL: executeCalculations -> franchise", franchise);
+                        const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory);
 
-                        const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory)
                         const activationCredit = thirdPartyCoverageInfo.activationCredit;
                         const minuteValue = thirdPartyCoverageInfo.minuteValue;
 
@@ -615,7 +618,6 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                          * @param anualCost that represents the total cost estimated for 365 days of usage
                          */
                         const yearInfo = yearCalculations(activationCredit, hoursUsedDaily, minuteValue);
-                        console.log(`TCL: executeCalculations -> yearInfo`, yearInfo);
                         
                         const quotationData = {
                             calcVehicleValue: fipe,
@@ -625,6 +627,35 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                             creditDuration: yearInfo.duration,
                             anualCost: yearInfo.anualCost
                         }
+
+                        if (motoCc === "abaixode250cc") {
+                            console.log(`TCL: motoCc`, motoCc);
+                            const motoCounterDbPath = await motoCounterDbRef()
+                            
+                            const motoCounter: number = await getDatabaseInfo(motoCounterDbPath);
+
+                            const newMotoCounter:number = motoCounter + 1;
+
+
+                            await setDatabaseInfo(motoCounterDbPath, newMotoCounter);
+
+                            const quotationResponse = {
+                                publicApi: {
+                                    motoCc: motoCc,
+                                    info: 'Moto under 250 cc',
+                                    motoCounter: newMotoCounter
+                                },
+                                privateApi: {
+                                    ...userInput,
+                                    ...quotationData,
+                                    motoCc: motoCc,
+                                    motoCounter: newMotoCounter - 1500
+                                }
+                            };
+                
+                            return resolve(quotationResponse);
+
+                        };
 
                         return quotationResponse(userInput, quotationData);
                     };
@@ -668,6 +699,7 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
                         return quotationResponse(userInput, quotationData);
                     }
 
+                    case "pickup":
                     case "caminhonete": {
                     
                         let minuteValueBase = 0.00968

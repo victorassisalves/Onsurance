@@ -2,7 +2,7 @@ import * as express from "express";
 import * as cors from "cors";
 import { tireQuoteVariables } from "../environment/quotation.variables";
 import { executeTiresQuote, executeAutoQuote } from "../controller/quote.controller";
-import { quote_autoResponse } from "../environment/messenger/messenger.responses";
+import { quote_autoResponse, quote_ErrorResponse } from "../environment/messenger/messenger.responses";
 import { sendQuotationZoho } from "../environment/zoho.flow";
 
 
@@ -62,8 +62,9 @@ router.post("/auto/messenger", async (request, response) => {
             privateApi: Object;
             publicApi: Object
         }
-    
+        
         const userInput = request.body;
+
         if (userInput.thirdPartyCoverage < 100000){
             const thirdParty = ((userInput.thirdPartyCoverage).toString()).slice(0, 2);
             userInput.thirdPartyCoverage = parseInt(thirdParty);
@@ -72,14 +73,13 @@ router.post("/auto/messenger", async (request, response) => {
             userInput.thirdPartyCoverage = parseInt(thirdParty);
         }
 
-        console.log(`TCL: userInput`, JSON.stringify(userInput));
-
         await executeAutoQuote(userInput).then(async (result: Result) => {
             const zoho = sendQuotationZoho(result.privateApi);
-            console.log(result)
-            const messengerResponse = quote_autoResponse(result.publicApi);
+            const messengerResponse = quote_autoResponse(result.publicApi, result.privateApi);
             response.json(messengerResponse);
         }).catch(error => {
+            // const messengerResponse = quote_ErrorResponse(error.message, error.block)
+
             response.send(error)
         });
     } catch (error) {
