@@ -23,10 +23,9 @@ export class executeTiresQuotation {
      * @param minuteValue Tire minute value of Onsurance
      */
     calcUsage () {
-        console.log(`TCL: executeTiresQuotation -> this.minuteValue`, this.minuteValue);
 
         this.anualCost = parseFloat((this.minuteValue * 60 * this.variables.dailyUsage * 365).toFixed(2));
-        this.creditDuration = parseFloat((50/this.anualCost*12).toFixed(2));
+        this.creditDuration = parseFloat((99/this.anualCost*12).toFixed(2));
         return {
             anualCost: this.anualCost,
             creditDuration: this.creditDuration
@@ -42,9 +41,7 @@ export const executeTiresQuote = (variables: TireQuoteVariables) => {
     try {
         const tire = new executeTiresQuotation(variables);
         const minuteValue = tire.getMinuteValue();
-        console.log(`TCL: minuteValue`, minuteValue);
         const usageData = tire.calcUsage();
-        console.log(`TCL: usageData`, usageData);
         return {
             ...usageData,
             minuteValue: minuteValue
@@ -83,6 +80,7 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
             const factory = userInput.factory.toLowerCase();
             const hoursUsedDaily = parseFloat(userInput.hoursUsedDaily!);
             const thirdPartyCoverage = parseFloat(userInput.thirdPartyCoverage);
+            const truckTrunk = checkRequestVariables("Truck Trunk", userInput.truckTrunk, String, false)
             if (thirdPartyCoverage > 150 || thirdPartyCoverage < 30) {
                 throw {
                     status: 406, // Not Acceptable
@@ -661,7 +659,7 @@ export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
 
                     case "vuc": {
                         let vucValue = fipe;
-                        if (userInput.truckTrunk === "sim") {
+                        if (truckTrunk === "sim") {
                             vucValue += parseFloat(userInput.truckTrunkValue);
                         };
                         const minuteValueBase = calcMinuteVuc(vucValue);

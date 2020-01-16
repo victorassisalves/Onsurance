@@ -1556,7 +1556,7 @@ export const quote_autoResponse = (variables, ass24h) => {
                     "text": `Estamos finalizando esse produto especialmente pra você. Acabamos de te colocar em uma lista de espera. você é o número ${variables.motoCounter}!`
                 },
                 {
-                    "text": `Quando atingirmos 3000 pessoas com esse perfil estaremos com o produto pronto e vamos te avisar! Enquanto isso, indique para seus amigos para que possar lançar isso mais rápido.`
+                    "text": `Quando atingirmos 3000 pessoas com esse perfil estaremos com o produto pronto e vamos te avisar! Enquanto isso, indique para seus amigos para que possamos antecipar o laçamento.`
                 },
             ],
             "redirect_to_blocks": [
