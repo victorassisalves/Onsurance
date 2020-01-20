@@ -23,16 +23,16 @@ router.get("/tires", async (request, response) => {
     };
 });
 
-// router.get("/tires/messenger", async (request, response) => {
-//     // try {
-//     //     console.log(request.path)
-//     //     const variables = await tireQuoteVariables(request.query);
-//     //     const result = await executeTiresQuote(variables);
-//     //     response.send(result);
-//     // } catch (error) {
-//     //     response.send(error)
-//     // };
-// });
+router.post("/tires/messenger", async (request, response) => {
+    try {
+        console.log(request.path)
+        const variables = await tireQuoteVariables(request.body);
+        const result = executeTiresQuote(variables);
+        response.send(result);
+    } catch (error) {
+        response.send(error)
+    };
+});
 
 
 

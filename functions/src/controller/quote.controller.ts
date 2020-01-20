@@ -23,8 +23,10 @@ export class executeTiresQuotation {
      * @param minuteValue Tire minute value of Onsurance
      */
     calcUsage () {
-
-        this.anualCost = parseFloat((this.minuteValue * 60 * this.variables.dailyUsage * 365).toFixed(2));
+        let minutes: number;
+        minutes = parseFloat(this.variables.dailyUsage.hours) * 60;
+        minutes += parseFloat(this.variables.dailyUsage.minutes);
+        this.anualCost = parseFloat((this.minuteValue * minutes * 365).toFixed(2));
         this.creditDuration = parseFloat((99/this.anualCost*12).toFixed(2));
         return {
             anualCost: this.anualCost,

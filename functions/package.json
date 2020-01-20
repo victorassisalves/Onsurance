@@ -27,7 +27,8 @@
     "lodash": "^4.17.11",
     "nodemailer": "^6.3.1",
     "request": "^2.88.0",
-    "unirest": "^0.6.0"
+    "unirest": "^0.6.0",
+    "zcrmsdk": "0.0.16"
   },
   "devDependencies": {
     "tslint": "^5.18.0",
