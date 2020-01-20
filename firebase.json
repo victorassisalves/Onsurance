@@ -24,35 +24,42 @@
     ],
     "source": "functions"
   },
-  "hosting": {
-    "public": "public",
-    "rewrites": [
-      {
-        "source": "/onboard",
-        "function": "onboard"
-      },
-      {
-        "source": "/quote/**",
-        "function": "quote"
-      },
-      {
-        "source": "/firstAccess",
-        "function": "firstAccess"
-      },
-      {
-        "source": "/ignition",
-        "function": "ignition"
-      },
-      {
-        "source": "/geofence",
-        "function": "geofence"
-      }
-    ],
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ]
+  "hosting": 
+    // {
+    //   "public": "./public/tire-quote"
+    // },
+    // {
+    //   "public": "./public/auto-quote", 
+    // },
+    {
+      "public": "public",
+      "rewrites": [
+        {
+          "source": "/onboard",
+          "function": "onboard"
+        },
+        {
+          "source": "/quote/**",
+          "function": "quote"
+        },
+        {
+          "source": "/firstAccess",
+          "function": "firstAccess"
+        },
+        {
+          "source": "/ignition",
+          "function": "ignition"
+        },
+        {
+          "source": "/geofence",
+          "function": "geofence"
+        }
+      ],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
   },
   "storage": {
     "rules": "storage.rules"

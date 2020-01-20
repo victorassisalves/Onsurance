@@ -1,6 +1,6 @@
 import * as express from "express";
 import * as cors from "cors";
-import { tireQuoteVariables } from "../environment/quotation.variables";
+import { tireQuoteVariables, TireQuoteVariables } from "../environment/quotation.variables";
 import { executeTiresQuote, executeAutoQuote } from "../controller/quote.controller";
 import { quote_autoResponse, quote_ErrorResponse, quote_ErrorDefaultResponse } from "../environment/messenger/messenger.responses";
 import { sendQuotationZoho } from "../environment/zoho.flow";
@@ -15,8 +15,15 @@ router.get("/tires", async (request, response) => {
     try {
         console.log(request.path)
         console.log(`TCL: request.query`, request.query);
-        const variables = await tireQuoteVariables(request.query);
+        const variables: TireQuoteVariables = await tireQuoteVariables(request.query);
+        console.log(`TCL: variables`, variables);
         const result = executeTiresQuote(variables);
+        // const privateApi = {
+        //     ...variables,
+        //     ...result
+        // }
+        // console.log(`TCL: privateApi`, JSON.stringify(privateApi));
+
         response.send(result);
     } catch (error) {
         response.send(error)
@@ -26,7 +33,7 @@ router.get("/tires", async (request, response) => {
 router.post("/tires/messenger", async (request, response) => {
     try {
         console.log(request.path)
-        const variables = await tireQuoteVariables(request.body);
+        const variables: TireQuoteVariables = await tireQuoteVariables(request.body);
         const result = executeTiresQuote(variables);
         response.send(result);
     } catch (error) {

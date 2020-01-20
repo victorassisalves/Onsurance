@@ -2,5 +2,17 @@
   "projects": {
     "Onsurance": "onsurance-new",
     "default": "onsurance-new"
+  },
+  "targets": {
+    "onsurance-new": {
+      "hosting": {
+        "tire": [
+          "tire-quote"
+        ],
+        "auto": [
+          "./public/auto-quote"
+        ]
+      }
+    }
   }
 }

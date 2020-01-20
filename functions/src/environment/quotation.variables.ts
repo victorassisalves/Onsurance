@@ -1,4 +1,4 @@
-import { checkRequestVariables } from "../model/errors";
+import { checkRequestVariables, validateEmail } from "../model/errors";
 
 
 /**
@@ -39,6 +39,14 @@ export interface TireQuoteVariables {
     vehiclePlate: String,
     dailyUsage: any,
     phone: String,
+    tireBrand:string
+    tireFactory:string
+    insuranceOwner:string
+    insuranceValue:number
+    activeInsurance:string
+    insuranceCompany:string
+    insuranceExpiration:string
+    zip:string
 }
 
 /**
@@ -47,12 +55,8 @@ export interface TireQuoteVariables {
  */
 export const tireQuoteVariables = async (request: TireQuoteVariables) => {
     try {
-        console.log(`TCL: request.dailyUsage`, request.dailyUsage);
-        console.log(typeof(request.dailyUsage))
         const hours = parseInt(request.dailyUsage.slice(0,2));
-        console.log(`TCL: hours`, hours);
         const minutes = parseInt(request.dailyUsage.slice(3,5));
-        console.log(`TCL: minutes`, minutes);
 
         const variables = {
             totalValue: checkRequestVariables("price", request.totalValue, Number),
@@ -60,18 +64,27 @@ export const tireQuoteVariables = async (request: TireQuoteVariables) => {
             vehicleType: checkRequestVariables('VehicleType', request.vehicleType, String),
             firstName: checkRequestVariables('firstName', request.firstName, String),
             lastName: checkRequestVariables('lastName', request.lastName, String),
-            userEmail: checkRequestVariables('userEmail', request.userEmail, String),
+            userEmail: validateEmail(request.userEmail),
             vehiclePlate: checkRequestVariables('VehicleType', request.vehiclePlate, String),
             dailyUsage: {
                 hours: hours,
                 minutes: minutes
             },
-            phone: checkRequestVariables('VehicleType', request.phone, String, false),
+            tireBrand: checkRequestVariables("Tire Brand", request.tireBrand, String),
+            tireFactory: checkRequestVariables("Tire Factory", request.tireFactory, String),
+            insuranceOwner: checkRequestVariables("insurance Owner", request.insuranceOwner, String),
+            phone: checkRequestVariables('VehicleType', request.phone, String),
+
+            insuranceValue: checkRequestVariables("insurance Value", request.insuranceValue, Number, false),
+            insuranceCompany: checkRequestVariables("insurance Company", request.insuranceCompany, String, false),
+            activeInsurance: checkRequestVariables("Active insurance", request.activeInsurance, String, false),
+            insuranceExpiration: checkRequestVariables("insurance Expiration", request.insuranceExpiration, String, false),
+            zip: checkRequestVariables("Zip", request.zip, String, false),
         };
-        console.log(`TCL: variables`, JSON.stringify(variables));
 
         return variables;
     } catch (error) {
+        console.error(new Error(`${error}`));
         throw error;
         
     }
