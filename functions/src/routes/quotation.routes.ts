@@ -1,5 +1,6 @@
 import * as express from "express";
 import * as cors from "cors";
+import { sendQuoteToZoho } from "../zoho/zoho.api";
 import { tireQuoteVariables, TireQuoteVariables } from "../environment/quotation.variables";
 import { executeTiresQuote, executeAutoQuote } from "../controller/quote.controller";
 import { quote_autoResponse, quote_ErrorResponse, quote_ErrorDefaultResponse } from "../environment/messenger/messenger.responses";
@@ -35,6 +36,7 @@ router.post("/tires/messenger", async (request, response) => {
         console.log(request.path)
         const variables: TireQuoteVariables = await tireQuoteVariables(request.body);
         const result = executeTiresQuote(variables);
+        await sendQuoteToHoho(variables);
         response.send(result);
     } catch (error) {
         response.send(error)
