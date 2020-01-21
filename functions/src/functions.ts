@@ -610,3 +610,10 @@ export const share = functions.https.onRequest((req, res) => {
     const share = require("./routes/share.routes")
     return share(req, res)
 });
+
+
+// -------------- ZOHO CRM ------------------
+export const zoho = functions.https.onRequest(async (request, response) => {
+    const zoho = await require("./routes/zoho.routes");
+    return await zoho(request, response);
+});

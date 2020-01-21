@@ -17,7 +17,7 @@ let db = admin.firestore;
 
  export class sendQuoteToZoho {
      variables;
-     constructor(variables: TireQuoteVariables) {
+     constructor(variables) {
         this.variables = variables;
     };
 
@@ -42,7 +42,7 @@ let db = admin.firestore;
             const body = {
                 "data": [
                     {
-                        "Last_Name": "Lead_changed this time",
+                        "Last_Name": "Lead_changed Mother fuckin lead",
                         "Email": "newcrmapi@zoho.com",
                         "Company": "abc",
                         "Lead_Status": "Contacted"
@@ -62,7 +62,9 @@ let db = admin.firestore;
                 // "trigger":[ "workflow"]
             }
     
-            const response = await axios.post(`${baseUrl}`, {
+            const response = await axios({
+                method: 'post',
+                url: baseUrl,
                 headers: headers,
                 data: body,
             });
@@ -95,7 +97,7 @@ let db = admin.firestore;
                 });
 
             const access_token = await this.decipherToken(encriptedToken.access_token);
-            return access_token;
+            return encriptedToken;
         } catch (error) {
             console.error(new Error(`TCL: sendQuoteToZoho -> GetAccessToken -> Error: ${JSON.stringify(error)}`));
             throw error;
@@ -145,7 +147,7 @@ let db = admin.firestore;
         try {
 
             const algorithm = 'aes-192-cbc';
-            const password = 'Password used to generate key';
+            const password = 'New zoho api key generated.';
             // Use the async `crypto.scrypt()` instead.
             const key = crypto.scryptSync(password, 'salt', 24);
             // The IV is usually passed along with the ciphertext.
@@ -175,7 +177,7 @@ let db = admin.firestore;
         try {
             
             const algorithm = 'aes-192-cbc';
-            const password = 'Password used to generate key';
+            const password = 'New zoho api key generated.';
             // Use the async `crypto.scrypt()` instead.
             const key = crypto.scryptSync(password, 'salt', 24);
             // Use `crypto.randomBytes` to generate a random iv instead of the static iv
