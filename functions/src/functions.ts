@@ -9,13 +9,13 @@ exports.woocommerceRequest = functions.https.onRequest(async (request, response)
 	console.log("TCL: -> ", JSON.stringify(request.body))
 
 
-    const getPurchase = await require("./controller/woocommerceController");
+    const getPurchase = await require("./controller/woocommerce.controller");
     getPurchase.woocommercePurchase(request).then(async result => {
         const zoho = await require("./environment/zoho.flow");
         zoho.sendWoocommerceZoho(request.body);
         response.status(result.status).send(result.text)
     }).catch(error => {
-        response.status(error.status).send(error.text)
+        response.send(error.text)
     })
 });
 
