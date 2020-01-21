@@ -74,7 +74,6 @@ export const tireQuoteVariables = async (request: TireQuoteVariables) => {
             tireFactory: checkRequestVariables("Tire Factory", request.tireFactory, String),
             insuranceOwner: checkRequestVariables("insurance Owner", request.insuranceOwner, String),
             phone: checkRequestVariables('VehicleType', request.phone, String),
-
             insuranceValue: checkRequestVariables("insurance Value", request.insuranceValue, Number, false),
             insuranceCompany: checkRequestVariables("insurance Company", request.insuranceCompany, String, false),
             activeInsurance: checkRequestVariables("Active insurance", request.activeInsurance, String, false),

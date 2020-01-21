@@ -38,7 +38,7 @@ router.post("/tires/messenger", async (request, response) => {
         const result = executeTiresQuote(variables);
         console.log(`TCL: result`, result);
         const zoho = new sendQuoteToZoho(variables);
-        const res = await zoho.renewAccessToken();
+        const res = await zoho.upsertLead();
         console.log(`TCL: zoho`, res);
         // await zoho.renewAccessToken;
         return response.send(res);

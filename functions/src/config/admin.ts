@@ -36,7 +36,8 @@ export const admin = (() => {
     const enviroments = {
         customers: admin.database(customers),
         items: admin.database(items),
-        main: admin.database()
+        main: admin.database(),
+        firestore: admin.firestore(),
     };
 
     return enviroments
