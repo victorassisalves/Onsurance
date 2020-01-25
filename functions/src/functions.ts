@@ -393,33 +393,6 @@ exports.checkIndicationEmailMsg = functions.https.onRequest((request, response) 
 
 
 
-/* 
-
-
-        Upgrade Version
-
-
-*/
-
-// // Change system version to 2.0 - 
-// exports.systemUpgrade = functions.https.onRequest(async(request, response) => {
-//     try {
-//         const update = await require("./environment/systemUpgrade");
-//         update.systemUpgrade().then((result) => {
-//             response.status(200).send(result)
-//         }).catch((error) => {
-//             console.log("TCL: error", error)
-//             response.status(500).send(`Error on server. Check what happened.`)
-//         });
-//     } catch (error) {
-//         console.log("TCL: error", error)
-//         response.status(500).send(`Error on server. Check what happened.`)
-//     }
-// });
-
-
-
-
 /*
 
         HARDWARE FUNCTIONS
@@ -528,21 +501,6 @@ exports.billingObd = functions.https.onRequest(async (request, response) =>{
 // });
 
 
-exports.report = functions.https.onRequest(async (request, response) => {
-    const executeReport = await require("./controller/reportController");
-    
-    await executeReport.makeReport().then((result) => {
-        console.log("TCL: result", result)
-        response.send(result);
-    }).catch((err) => {
-        console.error(new Error (`Error in make report: ${err}`));
-        response.send("Erro na função");
-    });
-
-    
-});
-
-
 // Remember to always return the functions    **********
 
 
@@ -616,4 +574,12 @@ export const share = functions.https.onRequest((req, res) => {
 export const zoho = functions.https.onRequest(async (request, response) => {
     const zoho = await require("./routes/zoho.routes");
     return await zoho(request, response);
+});
+
+
+// -------------- ZOHO CRM ------------------
+
+export const report = functions.https.onRequest(async (request, response) => {
+    const executeReport = await require("./report/report.routes");
+    return await executeReport(request, response);
 });

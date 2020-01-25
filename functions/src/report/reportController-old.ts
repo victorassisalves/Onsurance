@@ -1,8 +1,8 @@
 'use strict';
 
 import { convertTimestamp } from "../model/timeToDateModel";
-import { vehicleData } from "../report/reportDataVehicles";
-import { customers} from "../report/reportDataCustomers";
+import { vehicleData } from "./data/reportDataVehicles";
+import { customers} from "./data/reportDataCustomers";
 
 interface customerInterface {
     [id: string] : {
@@ -142,7 +142,7 @@ async function olderDataTreatment (logUseSingle: OlderDataInterface, usagePeriod
 
     const timeStart = logUseSingle.inicioProtecao.slice(0, 10)
     const timeEnd = logUseSingle.finalProtecao.slice(0, 10)
-    const usageDateInfo = await convertTimestamp(timeStart);
+    const usageDateInfo = convertTimestamp(timeStart);
 
     const initialSwitch = parseFloat((parseFloat(logUseSingle.saldoInicial)/1000).toFixed(5));
     const finalSwitch = parseFloat((parseFloat(logUseSingle.saldoFinal)/1000).toFixed(5));
@@ -179,7 +179,7 @@ async function olderDataTreatment (logUseSingle: OlderDataInterface, usagePeriod
     const spent = parseFloat((parseFloat(logUseSingle.valorconsumido)/1000).toFixed(5));
     const protectedMinutes = (parseInt(timeEnd) - parseInt(timeStart))/60|0;
 
-    await saveGeneralReport(spent, protectedMinutes, month, customerGeneralReportData);
+    saveGeneralReport(spent, protectedMinutes, month, customerGeneralReportData);
 
     // monthData.activations += 1;
     monthData.spent = parseFloat(((monthData.spent + spent)).toFixed(5));
@@ -201,7 +201,7 @@ async function olderDataTreatment (logUseSingle: OlderDataInterface, usagePeriod
 
 // Treat the OLD log use data model for recieving data
 async function oldDataTreatment (logUseSingle: OldDataInterface, usagePeriods: Array<string>, monthlyUsage, customerGeneralReportData){
-    const usageDateInfo = await convertTimestamp(logUseSingle.timeStart);
+    const usageDateInfo = convertTimestamp(logUseSingle.timeStart);
 
     const month = `${usageDateInfo.year}/${usageDateInfo.month}`;
 
@@ -237,7 +237,7 @@ async function oldDataTreatment (logUseSingle: OldDataInterface, usagePeriods: A
     const spent = parseFloat((parseFloat(logUseSingle.valorConsumido)/1000).toFixed(5));
     const protectedMinutes = (parseInt(logUseSingle.timeEnd) - parseInt(logUseSingle.timeStart))/60|0;
 
-    await saveGeneralReport(spent, protectedMinutes, month, customerGeneralReportData);
+    saveGeneralReport(spent, protectedMinutes, month, customerGeneralReportData);
 
     // monthData.activations += 1;
     monthData.spent = parseFloat(((monthData.spent + spent)).toFixed(5));
@@ -257,7 +257,7 @@ async function oldDataTreatment (logUseSingle: OldDataInterface, usagePeriods: A
 
 // Treat the NEW log use data model for recieving data
 async function newDataTreatment(logUseSingle: NewDataInterface, usagePeriods: Array<string>, monthlyUsage, customerGeneralReportData){
-    const usageDateInfo = await convertTimestamp(logUseSingle.timeStart);
+    const usageDateInfo = convertTimestamp(logUseSingle.timeStart);
 
     const month = `${usageDateInfo.year}/${usageDateInfo.month}`;
 
@@ -296,7 +296,7 @@ async function newDataTreatment(logUseSingle: NewDataInterface, usagePeriods: Ar
     const protectedMinutes = logUseSingle.useTime/60|0;
 
     // ADD in the general report data 
-    await saveGeneralReport(spent, protectedMinutes, month, customerGeneralReportData);
+    saveGeneralReport(spent, protectedMinutes, month, customerGeneralReportData);
 
     // monthData.activations += 1;
     monthData.spent = parseFloat(((monthData.spent + spent)).toFixed(5));
@@ -346,60 +346,56 @@ async function iterateLogUseArray(logUse: Object, vehicleId) {
         };
 
         // Iterate in LogUse array to get data FROM EACH USE
-        await logUseArray.forEach(async element => {
-
+        logUseArray.forEach(async (element) => {
             // Separate the MODELS HERE. OLD vs NEW 
             if (logUse[`${element}`] === null) {
                 // customerGeneralReportData.general.activations += 0;
-                return 0
-            } else if (logUse[`${element}`].closed === null || logUse[`${element}`].closed === undefined) {
-
+                return 0;
+            }
+            else if (logUse[`${element}`].closed === null || logUse[`${element}`].closed === undefined) {
                 if (logUse[`${element}`].user === null || logUse[`${element}`].user === undefined) {
                     /** THIS IS THE OLDER DATA MODEL
-                     * @interface OlderDataInterface 
+                     * @interface OlderDataInterface
                      * Use the interface above for reference of the data moldel
                     */
-                   const logUseSingle: OlderDataInterface = logUse[`${element}`];
-                   const usageDataInfo = await olderDataTreatment(logUseSingle, usagePeriods, monthlyUsage, customerGeneralReportData);
-                   monthData = usageDataInfo.monthData;
-                   monthlyUsage[usageDataInfo.month] = monthData
-                } else {
+                    const logUseSingle: OlderDataInterface = logUse[`${element}`];
+                    const usageDataInfo = await olderDataTreatment(logUseSingle, usagePeriods, monthlyUsage, customerGeneralReportData);
+                    monthData = usageDataInfo.monthData;
+                    monthlyUsage[usageDataInfo.month] = monthData;
+                }
+                else {
                     /** THIS IS THE OLD DATA MODEL
-                     * @interface OldDataInterface 
+                     * @interface OldDataInterface
                      * Use the interface above for reference of the data moldel
                     */
-
                     const logUseSingle: OldDataInterface = logUse[`${element}`];
                     const usageDataInfo = await oldDataTreatment(logUseSingle, usagePeriods, monthlyUsage, customerGeneralReportData);
                     monthData = usageDataInfo.monthData;
-                    monthlyUsage[usageDataInfo.month] = monthData
-
+                    monthlyUsage[usageDataInfo.month] = monthData;
                 }
-                
-            } else{
+            }
+            else {
                 /** THIS IS THE NEW DATA MODEL
-                 * @param NewDataInterface 
+                 * @param NewDataInterface
                  * Use the interface above for reference of the data moldel
                  */
-
                 const logUseSingle: NewDataInterface = logUse[`${element}`];
                 if (!logUseSingle.closed) {
-                    logUseSingle.consumedValue = 0
-                };
+                    logUseSingle.consumedValue = 0;
+                }
+                ;
                 const usageDataInfo = await newDataTreatment(logUseSingle, usagePeriods, monthlyUsage, customerGeneralReportData);
-                
                 monthData = usageDataInfo.monthData;
-                monthlyUsage[usageDataInfo.month] = monthData
-
-            };
-
+                monthlyUsage[usageDataInfo.month] = monthData;
+            }
+            ;
         });
         
         let unordered = monthlyUsage
 
 
-        await Object.keys(customerGeneralReportData.monthly).sort().forEach(function(key) {
-          customerGeneralReportData.monthly[key] = unordered[key];
+        Object.keys(customerGeneralReportData.monthly).sort().forEach(function (key) {
+            customerGeneralReportData.monthly[key] = unordered[key];
         });
         return {
             general: customerGeneralReportData.general,
@@ -423,8 +419,8 @@ async function iterateLogUseArray(logUse: Object, vehicleId) {
 async function iterateVehicleArray(vehicleArray: Array<string>){
     try {
 
-        await vehicleArray.forEach(async element => {
-            const vehicleId = element
+        vehicleArray.forEach(async (element) => {
+            const vehicleId = element;
             let data;
             // Separate LogUse from the profile and Call the iterate LogUse function
             // Check if vehicle have LOGUSE in profile
@@ -439,8 +435,6 @@ async function iterateVehicleArray(vehicleArray: Array<string>){
                 };
                 // usageData = Object.assign(data, usageData);
                 usageData = Object.assign(usageData, data);
-
-
             }
         });
         return usageData;
@@ -481,13 +475,13 @@ export function makeReport() {
                 vehiclesClm: generalReportData.general.vehicles 
             };
 
-            await Object.keys(generalReportData.monthly).sort().forEach(function(key) {
+            Object.keys(generalReportData.monthly).sort().forEach(function (key) {
                 ordered[key] = unordered[key];
                 // Add row using key mapping to columns
                 worksheet.columns = [...worksheet.columns,
-                    {header: key, key: key}
+                { header: key, key: key }
                 ];
-                addRow[`${key}`] = generalReportData.monthly[key].spent 
+                addRow[`${key}`] = generalReportData.monthly[key].spent;
             });
             await worksheet.addRow(addRow);
             console.log(`General report ok!`)
@@ -527,71 +521,69 @@ export function makeReport() {
             const customerArray = Object.keys(customers);
             let customerRow = {};
             const customerFamily = {};
-            await customerArray.forEach(customer => {
+            customerArray.forEach(customer => {
                 // const customerEmail = customers[customer].personal.userEmail;
                 if (customers[customer].items === null || customers[customer].items === undefined) {
-                    console.log(`No items for customer ${customer}`)
+                    console.log(`No items for customer ${customer}`);
                     return null;
-                } else {
+                }
+                else {
                     if (customers[customer].itemAuthorizations === null || customers[customer].itemAuthorizations === undefined) {
-
                         if (Object.keys(customers[customer].items).length > 1) {
                             customerRow = {
                                 customerClm: Object.keys(customers[customer].items)[0],
                                 scdCarClm: Object.keys(customers[customer].items)[1],
                                 vehicleOwnerClm: `${customers[customer].personal.firstName} ${customers[customer].personal.lastName}`,
                                 emailClm: customers[customer].personal.userEmail,
-                                currentBalanceClm: parseFloat(((customers[customer].personal.wallet.switch)/1000).toFixed(5)),
+                                currentBalanceClm: parseFloat(((customers[customer].personal.wallet.switch) / 1000).toFixed(5)),
                                 cpfClm: customers[customer].personal.cpf
-                            }
-                        } else {
+                            };
+                        }
+                        else {
                             customerRow = {
                                 customerClm: Object.keys(customers[customer].items)[0],
                                 vehicleOwnerClm: `${customers[customer].personal.firstName} ${customers[customer].personal.lastName}`,
                                 emailClm: customers[customer].personal.userEmail,
-                                currentBalanceClm: parseFloat(((customers[customer].personal.wallet.switch)/1000).toFixed(5)),
+                                currentBalanceClm: parseFloat(((customers[customer].personal.wallet.switch) / 1000).toFixed(5)),
                                 cpfClm: customers[customer].personal.cpf
-                            }
+                            };
                         }
-                        customerWorksheet.addRow(customerRow)
-                    } else {
+                        customerWorksheet.addRow(customerRow);
+                    }
+                    else {
                         if (customers[customer].itemAuthorizations.myItems === null || customers[customer].itemAuthorizations.myItems === undefined) {
-                            console.log(`Third Party user ${customer}`)
+                            console.log(`Third Party user ${customer}`);
                             return null;
-                        } else {
+                        }
+                        else {
                             const values = Object.values(customers[customer].itemAuthorizations.myItems)[0];
                             const userId = Object.keys(values)[0];
-
                             if (Object.keys(customers[customer].items).length > 1) {
                                 customerRow = {
                                     customerClm: Object.keys(customers[customer].items)[0],
                                     scdCarClm: Object.keys(customers[customer].items)[1],
                                     vehicleOwnerClm: `${customers[customer].personal.firstName} ${customers[customer].personal.lastName}`,
                                     emailClm: customers[customer].personal.userEmail,
-                                    currentBalanceClm: parseFloat(((customers[customer].personal.wallet.switch)/1000).toFixed(5)),
+                                    currentBalanceClm: parseFloat(((customers[customer].personal.wallet.switch) / 1000).toFixed(5)),
                                     cpfClm: customers[customer].personal.cpf,
                                     trdClm: customers[userId].personal.userEmail,
-
-                                }
-                            } else {
-
+                                };
+                            }
+                            else {
                                 customerRow = {
                                     customerClm: Object.keys(customers[customer].items)[0],
                                     vehicleOwnerClm: `${customers[customer].personal.firstName} ${customers[customer].personal.lastName}`,
                                     emailClm: customers[customer].personal.userEmail,
-                                    currentBalanceClm: parseFloat(((customers[customer].personal.wallet.switch)/1000).toFixed(5)),
+                                    currentBalanceClm: parseFloat(((customers[customer].personal.wallet.switch) / 1000).toFixed(5)),
                                     cpfClm: customers[customer].personal.cpf,
                                     trdClm: customers[userId].personal.userEmail,
-
-                                }
+                                };
                             }
                             console.log("TCL: makeReport -> customerRow", JSON.stringify(customerRow));
-                            customerWorksheet.addRow(customerRow)
+                            customerWorksheet.addRow(customerRow);
                         }
-                        
                     }
                 }
-                
             });
 
             // save workbook to disk

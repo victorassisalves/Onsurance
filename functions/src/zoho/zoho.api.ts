@@ -16,9 +16,10 @@ let db = admin.firestore;
 
 
  export class sendQuoteToZoho {
-     variables;
-     constructor(variables) {
-        this.variables = variables;
+     privateApi: any;
+     counter = 0;
+     constructor(privateApi) {
+        this.privateApi = privateApi;
     };
 
     /**
@@ -31,11 +32,9 @@ let db = admin.firestore;
             console.log(`TCL: sendQuoteToZoho -> upsertLead -> access_token`, access_token);
 
             // Try to use zoho to upsert leads
-            const newToken = await this.renewAccessToken();
-            console.log(`TCL: sendQuoteToZoho -> upsertLead -> newToken`, newToken);
             const baseUrl: string = "https://www.zohoapis.com/crm/v2/leads/upsert";
             const headers = {
-                "Authorization":`Zoho-oauthtoken ${newToken}`,
+                "Authorization":`Zoho-oauthtoken ${access_token}`,
                 "Content-Type": "application/json"
             };
 
@@ -61,17 +60,42 @@ let db = admin.firestore;
                 ],
                 // "trigger":[ "workflow"]
             }
-    
-            const response = await axios({
+
+            console.log('before axios');
+
+            axios({
                 method: 'post',
                 url: baseUrl,
                 headers: headers,
                 data: body,
+            }).then(async (response) => {
+                console.log(`TCL: response: ${JSON.stringify(response)}`);
+
+                if (response.status === 200) {
+                    return response.data;
+                } else if (response.status === 401){
+                    this.counter++
+                    const newToken = await this.renewAccessToken();
+                    console.log(`TCL: sendQuoteToZoho -> upsertLead -> newToken`, newToken);
+                    await this.upsertLead();
+                    if (this.counter === 4){
+                        throw {
+                            status: 401,
+                            error: 'Failed to upsert lead',
+                            response: response
+                        }
+                    }
+                } else {
+                    throw response;
+                }
+            }).catch(error => {
+                console.error(`TCL: sendQuoteToZoho -> error`, error);
+                return error;
             });
-            console.log(`TCL: response: ${JSON.stringify(response.data)}`);
-            return newToken;
+            
+
         } catch (error) {
-            console.log(`TCL: sendQuoteToZoho -> error: ${JSON.stringify(error)}`);
+            console.error(`TCL: sendQuoteToZoho >-> UpsertLead >-> error: ${JSON.stringify(error)}`);
             throw error;
         }
         
@@ -88,16 +112,16 @@ let db = admin.firestore;
                     if (!doc.exists) {
                         console.log('No such document!');
                     } else {
-                        console.log('Document data:', doc.data());
                         return doc.data();
                     }
                 }).catch(err => {
-                    console.log('Error getting document', err);
+                    console.error('Error getting document', err);
                     throw err;
                 });
 
             const access_token = await this.decipherToken(encriptedToken.access_token);
-            return encriptedToken;
+            console.log(`TCL: sendQuoteToZoho -> getAccessToken -> access_token`, access_token);
+            return access_token;
         } catch (error) {
             console.error(new Error(`TCL: sendQuoteToZoho -> GetAccessToken -> Error: ${JSON.stringify(error)}`));
             throw error;
@@ -159,6 +183,7 @@ let db = admin.firestore;
             const encrypted = encriptedToken;
             let decrypted = decipher.update(encrypted, 'hex', 'utf8');
             decrypted += decipher.final('utf8');
+            console.log(`TCL: sendQuoteToZoho -> decrypted`, decrypted);
             // Prints: some clear text data
             
             return decrypted;
