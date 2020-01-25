@@ -57,14 +57,16 @@ class buildOnsuranceUsageReport  {
         try {
             let counter = 1;
             const logUseArray = Object.keys(logUse);
+            const usageArray = [];
             console.log(`TCL: 7.2.0.0 - buildOnsuranceUsageReport -> separeteLogUseVergions -> Before ForOF ${counter}.`);
 
             for await (const log of logUseArray) {
                 if (logUse[log].valorconsumido) {
                     let usage: Report_vehicleV1Interface = logUse[log];
                     console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> V1.`);
-                    this.generateV1UsageReport(usage)
-
+                    let thisUsage = this.generateV1UsageReport(usage)
+                    usageArray.push(thisUsage);
+                    counter++
 
                 } else if (logUse[log].valorConsumido) {
                     let usage: Report_vehicleV2Interface = logUse[log];
@@ -79,11 +81,10 @@ class buildOnsuranceUsageReport  {
                      */
                     console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> No Version founded.`);   
                 }
-                counter++
             }
             console.log(`TCL: 7.2.0.2 - buildOnsuranceUsageReport -> separeteLogUseVergions -> After For OF.counter ${counter}`);
-
-            return counter
+            usageArray.push(counter)
+            return usageArray
         } catch (error) {
             console.error(new Error(`buildOnsuranceUsageReport >-> separeteLogUseVergions >-> error: ${JSON.stringify(error)}`));
             if (!error.message) throw {
@@ -100,9 +101,24 @@ class buildOnsuranceUsageReport  {
             const timeEnd = usage.finalProtecao.slice(0, 10);
             const useTime = parseInt(timeEnd) - parseInt(timeStart);
             const usageDateInfo = convertTimestamp(timeEnd);
+            const days = (useTime/60/60/24|0)                         // TimeDiffDays - Tempo de uso em dias(totais) da protecão
+            const totalHours = (useTime/60/60|0)                     // TimeDiffHoursTotais - Tempo de uso da protecão em Horas
+            let totalMinutes = (useTime/60|0);                         // TimeDiffMinutesTotais - Tempo de uso em minutos da protecão
+            console.log(`TCL: buildOnsuranceUsageReport -> totalMinutes -> Before`, totalMinutes);
+            const seconds = (useTime - (totalMinutes*60)); 
+            if (seconds > 30 ) {
+                totalMinutes++
+                console.log(`TCL: buildOnsuranceUsageReport -> totalMinutes -> After`, totalMinutes);
+            }
 
             let spent: number = parseFloat(usage.valorconsumido);
-            return usageDateInfo;
+            const usageData = {
+                ...usageDateInfo,
+                spent: spent,
+                totalMinutes: totalMinutes,
+                useTime: useTime
+            };
+            return usageData;
         } catch (error) {
             console.error(new Error(`buildOnsuranceUsageReport >-> generateV1UsageReport >-> error: ${JSON.stringify(error)}`));
             if (!error.message) throw {
