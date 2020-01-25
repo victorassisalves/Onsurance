@@ -12,6 +12,7 @@ import { Report_UserProfileInterface,
 } from "./reportInterface";
 import { vehicleData } from "./data/reportDataVehicles";
 import * as crypto from "crypto";
+import { convertTimestamp } from "../model/timeToDateModel";
 
 const getItemId = (itemPlate) => {
     return crypto.createHash('md5').update(itemPlate).digest("hex");
@@ -62,14 +63,16 @@ class buildOnsuranceUsageReport  {
                 if (logUse[log].valorconsumido) {
                     let usage: Report_vehicleV1Interface = logUse[log];
                     console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> V1.`);
+                    this.generateV1UsageReport(usage)
+
 
                 } else if (logUse[log].valorConsumido) {
                     let usage: Report_vehicleV2Interface = logUse[log];
-                    console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> V2.`);
+                    // console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> V2.`);
 
                 } else if (logUse[log].closed) {
                     let usage: Report_vehicleV3Interface = logUse[log];
-                    console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> V3.`);
+                    // console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> V3.`);
                 } else {
                     /**
                      * @bug -> if log version is 1 and valorconsumido: 0 ends here.
@@ -91,7 +94,28 @@ class buildOnsuranceUsageReport  {
         }
     }
 
+    private generateV1UsageReport(usage: Report_vehicleV1Interface) {
+        try {
+            const timeStart = usage.inicioProtecao.slice(0, 10);
+            const timeEnd = usage.finalProtecao.slice(0, 10);
+            const useTime = parseInt(timeEnd) - parseInt(timeStart);
+            const usageDateInfo = convertTimestamp(timeEnd);
+
+            let spent: number = parseFloat(usage.valorconsumido);
+            return usageDateInfo;
+        } catch (error) {
+            console.error(new Error(`buildOnsuranceUsageReport >-> generateV1UsageReport >-> error: ${JSON.stringify(error)}`));
+            if (!error.message) throw {
+                error: error,
+                message: `Error in buildOnsuranceUsageReport -> generateV1UsageReport -> function.`
+            };
+            throw error; 
+        }
+    }
+
 }
+
+// Se o dia for maior que 25, contar o mes mais 1.
 
 
 /**

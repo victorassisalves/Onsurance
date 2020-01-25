@@ -158,7 +158,7 @@ export interface Report_vehicleV1Interface {
     "saldoFinal" : number, //"1235137.00" - string
     "saldoInicial" : number, //"1235200"
     "tempoUso" : string, //"0 dias : 0 horas : 8 minutos : 36 segundos",
-    "valorconsumido" : number, //63
+    "valorconsumido" : any, //63
 }
 
 
@@ -172,7 +172,7 @@ export interface Report_vehicleV2Interface {
     "timeEnd" : number, //"1561798559" - string
     "timeStart" : number, //"1561715442" - string
     "user" : string, //"pedro-rubio2503@hotmail.com" - string
-    "valorConsumido" : number, //"9695.00" - string
+    "valorConsumido" : string, //"9695.00" - string
 }
 
 
