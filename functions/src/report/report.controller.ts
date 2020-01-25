@@ -45,7 +45,7 @@ class buildOnsuranceUsageReport  {
             return useReport;
         } catch (error) {
             console.error(new Error(`buildOnsuranceUsageReport >-> generateAutoReportData >-> error: ${JSON.stringify(error)}`));
-            if (!error.message) throw {
+            if (error.message !== null) throw {
                 error: error,
                 message: `Error in buildOnsuranceUsageReport -> generateAutoReportData -> function.`
             };
@@ -82,12 +82,12 @@ class buildOnsuranceUsageReport  {
                     console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> No Version founded.`);   
                 }
             }
-            console.log(`TCL: 7.2.0.2 - buildOnsuranceUsageReport -> separeteLogUseVergions -> After For OF.counter ${counter}`);
+            console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> After ForOF.`);
             usageArray.push(counter)
             return usageArray
         } catch (error) {
             console.error(new Error(`buildOnsuranceUsageReport >-> separeteLogUseVergions >-> error: ${JSON.stringify(error)}`));
-            if (!error.message) throw {
+            if (error.message !== null) throw {
                 error: error,
                 message: `Error in buildOnsuranceUsageReport -> separeteLogUseVergions -> function.`
             };
@@ -101,14 +101,10 @@ class buildOnsuranceUsageReport  {
             const timeEnd = usage.finalProtecao.slice(0, 10);
             const useTime = parseInt(timeEnd) - parseInt(timeStart);
             const usageDateInfo = convertTimestamp(timeEnd);
-            const days = (useTime/60/60/24|0)                         // TimeDiffDays - Tempo de uso em dias(totais) da protecão
-            const totalHours = (useTime/60/60|0)                     // TimeDiffHoursTotais - Tempo de uso da protecão em Horas
             let totalMinutes = (useTime/60|0);                         // TimeDiffMinutesTotais - Tempo de uso em minutos da protecão
-            console.log(`TCL: buildOnsuranceUsageReport -> totalMinutes -> Before`, totalMinutes);
             const seconds = (useTime - (totalMinutes*60)); 
             if (seconds > 30 ) {
                 totalMinutes++
-                console.log(`TCL: buildOnsuranceUsageReport -> totalMinutes -> After`, totalMinutes);
             }
 
             let spent: number = parseFloat(usage.valorconsumido);
@@ -116,12 +112,11 @@ class buildOnsuranceUsageReport  {
                 ...usageDateInfo,
                 spent: spent,
                 totalMinutes: totalMinutes,
-                useTime: useTime
             };
             return usageData;
         } catch (error) {
             console.error(new Error(`buildOnsuranceUsageReport >-> generateV1UsageReport >-> error: ${JSON.stringify(error)}`));
-            if (!error.message) throw {
+            if (error.message !== null) throw {
                 error: error,
                 message: `Error in buildOnsuranceUsageReport -> generateV1UsageReport -> function.`
             };
@@ -160,7 +155,7 @@ export class buildUserProfileReport extends buildOnsuranceUsageReport {
             return this.userReportArray;   
         } catch (error) {
             console.error(new Error(`buildUserProfileReport >-> getProfile >-> error: ${JSON.stringify(error)}`));
-            if (!error.message) throw {
+            if (error.message !== null) throw {
                 error: error,
                 message: `Error in getProfile function.`
             };
@@ -205,7 +200,7 @@ export class buildUserProfileReport extends buildOnsuranceUsageReport {
             return this.userReportArray;
         } catch (error) {
             console.error(new Error(`buildUserProfileReport >-> iterateUsersArray >-> error: ${JSON.stringify(error)}`));
-            if (!error.message) throw {
+            if (error.message !== null) throw {
                 error: error,
                 message: `Error in iterateUsersArray function.`
             };
@@ -228,7 +223,7 @@ export class buildUserProfileReport extends buildOnsuranceUsageReport {
             return userBilling;
         } catch (error) {
             console.error(new Error(`buildUserProfileReport >-> useBillingInfo >-> error: ${JSON.stringify(error)}`));
-            if (!error.message) throw {
+            if (error.message !== null) throw {
                 error: error,
                 message: `Error in userBillingInfo function.`
             };
@@ -270,7 +265,7 @@ export class buildUserProfileReport extends buildOnsuranceUsageReport {
             return userUsageReport;
         } catch (error) {
             console.error(new Error(`buildUserProfileReport >-> userItemsInfo >-> error: ${JSON.stringify(error)}`));
-            if (!error.message) throw {
+            if (error.message !== null) throw {
                 error: error,
                 message: `Error in userItemsInfo function.`
             };
