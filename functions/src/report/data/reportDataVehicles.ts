@@ -4796,1679 +4796,1679 @@ export const vehicleData = {
           }
         }
       },
-      // "120bfdebb39a0ecd44f43d48cee0dae1" : {
-      //   "logUse" : {
-      //     "-LvHMWxE1isC8nlPHLth" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3252949.22,
-      //       "initialSwitch" : 3252965.19,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1575476663,
-      //       "timeStart" : 1575476614,
-      //       "useTime" : 49
-      //     },
-      //     "-LvLIW74K91q5havqXOF" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3252933.25,
-      //       "initialSwitch" : 3252949.22,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1575542738,
-      //       "timeStart" : 1575542670,
-      //       "useTime" : 68
-      //     },
-      //     "-LvMg_FzDT-zK2AEX1lJ" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 111.79,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3252789.52,
-      //       "initialSwitch" : 3252901.31,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1575566455,
-      //       "timeStart" : 1575566018,
-      //       "useTime" : 437
-      //     },
-      //     "-LvMiYwf-k05nKMCFhAa" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 16033.88,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3196855.64,
-      //       "initialSwitch" : 3212889.52,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1575626754,
-      //       "timeStart" : 1575566537,
-      //       "useTime" : 60217
-      //     },
-      //     "-Lvm4M59aj7zgpu98Sim" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3495839.67,
-      //       "initialSwitch" : 3495839.67,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576008736,
-      //       "timeStart" : 1576008722,
-      //       "useTime" : 14
-      //     },
-      //     "-Lvm5Ywq4Bu-UmpEKpCC" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 1405.36,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3494434.31,
-      //       "initialSwitch" : 3495839.67,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576014331,
-      //       "timeStart" : 1576009037,
-      //       "useTime" : 5294
-      //     },
-      //     "-LxEgYDwemuX1nbC1lXU" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3335375.02,
-      //       "initialSwitch" : 3335390.99,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577579349,
-      //       "timeStart" : 1577579276,
-      //       "useTime" : 73
-      //     },
-      //     "-LxEh1Efgt5pq6CoYaYK" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 9326.48,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3326048.54,
-      //       "initialSwitch" : 3335375.02,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577614435,
-      //       "timeStart" : 1577579403,
-      //       "useTime" : 35032
-      //     },
-      //     "-LxJMHjV16ME8bhlt6TR" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3326048.54,
-      //       "initialSwitch" : 3326048.54,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577657598,
-      //       "timeStart" : 1577657589,
-      //       "useTime" : 9
-      //     },
-      //     "-LxO3xSdafpu-eN_0_BW" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3326048.54,
-      //       "initialSwitch" : 3326048.54,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577736681,
-      //       "timeStart" : 1577736670,
-      //       "useTime" : 11
-      //     },
-      //     "-LxSRg9CEzYVjSYtcH7N" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3297990.91,
-      //       "initialSwitch" : 3297990.91,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577810012,
-      //       "timeStart" : 1577810000,
-      //       "useTime" : 12
-      //     },
-      //     "-LxSVvecyxMTLdW3pr7L" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3297990.91,
-      //       "initialSwitch" : 3297990.91,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577811118,
-      //       "timeStart" : 1577811111,
-      //       "useTime" : 7
-      //     },
-      //     "-LxbdGALteo-SwGlT7Tg" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3291669.12,
-      //       "initialSwitch" : 3291669.12,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577981075,
-      //       "timeStart" : 1577981069,
-      //       "useTime" : 6
-      //     },
-      //     "-Lxc4C2E4qMhsSr13yM9" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 79.85,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3291570.67,
-      //       "initialSwitch" : 3291650.52,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577988675,
-      //       "timeStart" : 1577988392,
-      //       "useTime" : 283
-      //     },
-      //     "-Lxc5KNdddahnlmDF0JC" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3291570.67,
-      //       "initialSwitch" : 3291570.67,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577988696,
-      //       "timeStart" : 1577988688,
-      //       "useTime" : 8
-      //     },
-      //     "-Lxc5mSewgki32aJ1Tmu" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3291570.67,
-      //       "initialSwitch" : 3291570.67,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577988818,
-      //       "timeStart" : 1577988807,
-      //       "useTime" : 11
-      //     },
-      //     "-Lxc6vJbubQjl4faWeax" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3291554.7,
-      //       "initialSwitch" : 3291570.67,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577989148,
-      //       "timeStart" : 1577989106,
-      //       "useTime" : 42
-      //     },
-      //     "-Lxc8OO5Qr6VBtJRXv59" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 399.25,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3290788.79,
-      //       "initialSwitch" : 3291188.04,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577990999,
-      //       "timeStart" : 1577989491,
-      //       "useTime" : 1508
-      //     },
-      //     "-LxcEBgoCKHI0W-19w0w" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 542.98,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3290245.81,
-      //       "initialSwitch" : 3290788.79,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577993028,
-      //       "timeStart" : 1577991012,
-      //       "useTime" : 2016
-      //     },
-      //     "-LxcLx0cb2bYK-ss8xwV" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 63.88,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3290181.93,
-      //       "initialSwitch" : 3290245.81,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577993261,
-      //       "timeStart" : 1577993045,
-      //       "useTime" : 216
-      //     },
-      //     "-LxcScpAeujk2DdUj81M" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3290076.91,
-      //       "initialSwitch" : 3290076.91,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577994811,
-      //       "timeStart" : 1577994797,
-      //       "useTime" : 14
-      //     },
-      //     "-LxwJbN57h_geLWlqtME" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3245572.95,
-      //       "initialSwitch" : 3245572.95,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1578327984,
-      //       "timeStart" : 1578327976,
-      //       "useTime" : 8
-      //     },
-      //     "-LxwJptxmrWhy1ifCKQe" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3245572.95,
-      //       "initialSwitch" : 3245572.95,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1578328045,
-      //       "timeStart" : 1578328036,
-      //       "useTime" : 9
-      //     },
-      //     "-LxwK3R0v0BU6sG-UI8u" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3245572.95,
-      //       "initialSwitch" : 3245572.95,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1578328101,
-      //       "timeStart" : 1578328095,
-      //       "useTime" : 6
-      //     },
-      //     "-Ly-T-OkhbsTr8pyFgTR" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : false,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeStart" : 1578397547
-      //     }
-      //   },
-      //   "profile" : {
-      //     "brand" : "Ford",
-      //     "chassi" : "123edd456ggt",
-      //     "factory" : "nacional",
-      //     "hasAssistance" : {
-      //       "_status" : false,
-      //       "finishDate" : 1607109724,
-      //       "startDate" : 1575487328
-      //     },
-      //     "itemPrice" : 68900,
-      //     "model" : "Fusion Hibrid",
-      //     "plate" : "ons2020",
-      //     "protectionData" : {
-      //       "access" : [ "pron" ],
-      //       "activationsCounter" : {
-      //         "accident" : 15,
-      //         "theft" : 15,
-      //         "thirdParty" : 15
-      //       },
-      //       "minuteValue" : 15.97,
-      //       "protectionStatus" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       }
-      //     },
-      //     "thirdPartyCoverage" : 60,
-      //     "typeOfUse" : "app",
-      //     "year" : "2019"
-      //   }
-      // },
-      // "6f4d85bab4ff861432a565539d9b8334" : {
-      //   "logUse" : {
-      //     "-LvHI0Tj-exzkT9U5jo0" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 31.94,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3253204.74,
-      //       "initialSwitch" : 3253236.68,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1575475580,
-      //       "timeStart" : 1575475432,
-      //       "useTime" : 148
-      //     },
-      //     "-LvHIm609_YjtW7QblrF" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 239.55,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3252965.19,
-      //       "initialSwitch" : 3253204.74,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1575476545,
-      //       "timeStart" : 1575475631,
-      //       "useTime" : 914
-      //     },
-      //     "-LvHQ3rK-MOx0fHLu15_" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3252949.22,
-      //       "initialSwitch" : 3252949.22,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1575477551,
-      //       "timeStart" : 1575477543,
-      //       "useTime" : 8
-      //     },
-      //     "-LvLIbmhhMdpbQhoygBk" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 31.94,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3252901.31,
-      //       "initialSwitch" : 3252933.25,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1575542808,
-      //       "timeStart" : 1575542698,
-      //       "useTime" : 110
-      //     },
-      //     "-Lvm-NkbL9iMwjj5E75H" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3495839.67,
-      //       "initialSwitch" : 3495855.64,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576007448,
-      //       "timeStart" : 1576007418,
-      //       "useTime" : 30
-      //     },
-      //     "-Lvm2W5oCtdHXdJTVcmi" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 1628.94,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3492805.37,
-      //       "initialSwitch" : 3494434.31,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576014363,
-      //       "timeStart" : 1576008239,
-      //       "useTime" : 6124
-      //     },
-      //     "-LvpZ2nb72uy45H3C_3V" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 3721.01,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3489084.36,
-      //       "initialSwitch" : 3492805.37,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576081091,
-      //       "timeStart" : 1576067101,
-      //       "useTime" : 13990
-      //     },
-      //     "-LvqTb22hs9bP83OAeun" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 31.94,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3489052.42,
-      //       "initialSwitch" : 3489084.36,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576082546,
-      //       "timeStart" : 1576082449,
-      //       "useTime" : 97
-      //     },
-      //     "-Lw-gOdRQaH5ph0dHbQW" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3489052.42,
-      //       "initialSwitch" : 3489052.42,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576253852,
-      //       "timeStart" : 1576253837,
-      //       "useTime" : 15
-      //     },
-      //     "-Lw-iDJotISFXJVlmJ_P" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3489036.45,
-      //       "initialSwitch" : 3489052.42,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576254360,
-      //       "timeStart" : 1576254315,
-      //       "useTime" : 45
-      //     },
-      //     "-Lw-j62lGJyfWS2ejtgB" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3489036.45,
-      //       "initialSwitch" : 3489036.45,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576254556,
-      //       "timeStart" : 1576254547,
-      //       "useTime" : 9
-      //     },
-      //     "-Lw-jfKhviacuJxSA7h8" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 383.28,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3488653.17,
-      //       "initialSwitch" : 3489036.45,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576256119,
-      //       "timeStart" : 1576254696,
-      //       "useTime" : 1423
-      //     },
-      //     "-Lw-p9cQ-iLoexWNm8lr" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3488653.17,
-      //       "initialSwitch" : 3488653.17,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576256156,
-      //       "timeStart" : 1576256135,
-      //       "useTime" : 21
-      //     },
-      //     "-Lw0DgY6KA7tlXXF5YW4" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 255.52,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3488397.65,
-      //       "initialSwitch" : 3488653.17,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576263795,
-      //       "timeStart" : 1576262827,
-      //       "useTime" : 968
-      //     },
-      //     "-Lw17qecfjlQqdeEgXsN" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 798.5,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3487599.15,
-      //       "initialSwitch" : 3488397.65,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576281100,
-      //       "timeStart" : 1576278073,
-      //       "useTime" : 3027
-      //     },
-      //     "-Lw1JX5Srm5OxDOLBFrq" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3487583.18,
-      //       "initialSwitch" : 3487599.15,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576281183,
-      //       "timeStart" : 1576281134,
-      //       "useTime" : 49
-      //     },
-      //     "-Lw1eRGVhYkAWC1MmQdG" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 51215.79,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3436367.39,
-      //       "initialSwitch" : 3487583.18,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576479303,
-      //       "timeStart" : 1576286878,
-      //       "useTime" : 192425
-      //     },
-      //     "-LwD7bOvkXfdbNre6J6h" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 11690.04,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3424677.35,
-      //       "initialSwitch" : 3436367.39,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576523243,
-      //       "timeStart" : 1576479337,
-      //       "useTime" : 43906
-      //     },
-      //     "-LwFkcOz2VNZYnCjzPSg" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 958.2,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3423719.15,
-      //       "initialSwitch" : 3424677.35,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576527006,
-      //       "timeStart" : 1576523381,
-      //       "useTime" : 3625
-      //     },
-      //     "-LwFyUJVPuzJU4QnXIRs" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 63.88,
-      //       "deactivationUser" : "ricardo@tripshop.com.br",
-      //       "finalSwitch" : 3423655.27,
-      //       "initialSwitch" : 3423719.15,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576527238,
-      //       "timeStart" : 1576527014,
-      //       "useTime" : 224
-      //     },
-      //     "-LwG1ANFJxnL_WPbnr48" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3423655.27,
-      //       "initialSwitch" : 3423655.27,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576528000,
-      //       "timeStart" : 1576527981,
-      //       "useTime" : 19
-      //     },
-      //     "-LwJ0_t6YqU4J-0PZl7B" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 3545.34,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3420109.93,
-      //       "initialSwitch" : 3423655.27,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576591469,
-      //       "timeStart" : 1576578159,
-      //       "useTime" : 13310
-      //     },
-      //     "-LwJoUUH3K-C-7MXGSIw" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3420109.93,
-      //       "initialSwitch" : 3420109.93,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576591518,
-      //       "timeStart" : 1576591502,
-      //       "useTime" : 16
-      //     },
-      //     "-LwKk9lwOtq-ik48IWPe" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 3114.15,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3416995.78,
-      //       "initialSwitch" : 3420109.93,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576618831,
-      //       "timeStart" : 1576607146,
-      //       "useTime" : 11685
-      //     },
-      //     "-LwLedo9Keo7p-I6Xaoq" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 39238.29,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3375363.16,
-      //       "initialSwitch" : 3414601.45,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1576769888,
-      //       "timeStart" : 1576622478,
-      //       "useTime" : 147410
-      //     },
-      //     "-LxEYma3YTnEaA2ukL3r" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3335406.96,
-      //       "initialSwitch" : 3335406.96,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577576993,
-      //       "timeStart" : 1577576980,
-      //       "useTime" : 13
-      //     },
-      //     "-LxEgAqIN5yyk3ovYLG8" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3335390.99,
-      //       "initialSwitch" : 3335406.96,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577579216,
-      //       "timeStart" : 1577579180,
-      //       "useTime" : 36
-      //     },
-      //     "-LxO4OjR4D2smSDZYbOl" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 1293.57,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3297990.91,
-      //       "initialSwitch" : 3299284.48,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577741646,
-      //       "timeStart" : 1577736786,
-      //       "useTime" : 4860
-      //     },
-      //     "-LxYfXZjkuvceThYm_gD" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3297974.94,
-      //       "initialSwitch" : 3297990.91,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577914601,
-      //       "timeStart" : 1577914555,
-      //       "useTime" : 46
-      //     },
-      //     "-LxbeVmeC-8XZscMVue6" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3291669.12,
-      //       "initialSwitch" : 3291669.12,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577981402,
-      //       "timeStart" : 1577981395,
-      //       "useTime" : 7
-      //     },
-      //     "-LxbizTFhSYeWk-tTJSs" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3291669.12,
-      //       "initialSwitch" : 3291669.12,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577982585,
-      //       "timeStart" : 1577982569,
-      //       "useTime" : 16
-      //     },
-      //     "-Lxc3FYNZiaBnWiGHqYb" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3291653.15,
-      //       "initialSwitch" : 3291669.12,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577988232,
-      //       "timeStart" : 1577988144,
-      //       "useTime" : 88
-      //     },
-      //     "-Lxc6xhnTpcvcNFYrLfV" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 351.34,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3291192.42,
-      //       "initialSwitch" : 3291543.76,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577990415,
-      //       "timeStart" : 1577989115,
-      //       "useTime" : 1300
-      //     },
-      //     "-LxcCLM4ZvZvyvGG0Nkq" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 0,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3291190.23,
-      //       "initialSwitch" : 3291190.23,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577990549,
-      //       "timeStart" : 1577990527,
-      //       "useTime" : 22
-      //     },
-      //     "-LxcCTQ92mRltZCt6P6O" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 1149.84,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3288927.07,
-      //       "initialSwitch" : 3290076.91,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1577994876,
-      //       "timeStart" : 1577990560,
-      //       "useTime" : 4316
-      //     },
-      //     "-LxcTKNTsGYA0RSVHwsA" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 1916.4,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3286958.16,
-      //       "initialSwitch" : 3288874.56,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1578002188,
-      //       "timeStart" : 1577994980,
-      //       "useTime" : 7208
-      //     },
-      //     "-LxdGxV4HKlOjnq0arve" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3286942.19,
-      //       "initialSwitch" : 3286958.16,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1578008546,
-      //       "timeStart" : 1578008513,
-      //       "useTime" : 33
-      //     },
-      //     "-LxdHVvckFoLE2QG7TCv" : {
-      //       "activationUser" : "adilasjr@hotmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "adilasjr@hotmail.com",
-      //       "finalSwitch" : 3286926.22,
-      //       "initialSwitch" : 3286942.19,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1578008713,
-      //       "timeStart" : 1578008658,
-      //       "useTime" : 55
-      //     },
-      //     "-LxvpBZlK8hNmc7BMYRP" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 15.97,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3247010.25,
-      //       "initialSwitch" : 3247026.22,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1578319806,
-      //       "timeStart" : 1578319740,
-      //       "useTime" : 66
-      //     },
-      //     "-Lxvq3j0E9AZ_I5HNNe0" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 1437.3,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3245572.95,
-      //       "initialSwitch" : 3247010.25,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1578325366,
-      //       "timeStart" : 1578319970,
-      //       "useTime" : 5396
-      //     },
-      //     "-Ly02RS8rX73k7TmkEK7" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 3305.79,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3242267.16,
-      //       "initialSwitch" : 3245572.95,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1578419771,
-      //       "timeStart" : 1578407361,
-      //       "useTime" : 12410
-      //     },
-      //     "-Ly1AiAaCg72vn9f1ZkR" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 140871.37,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3101395.79,
-      //       "initialSwitch" : 3242267.16,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1578955592,
-      //       "timeStart" : 1578426309,
-      //       "useTime" : 529283
-      //     },
-      //     "-LyWixQnnYeCmepaaEjB" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 1117.9,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 3100277.89,
-      //       "initialSwitch" : 3101395.79,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1578959846,
-      //       "timeStart" : 1578955639,
-      //       "useTime" : 4207
-      //     },
-      //     "-LyZacJo2Uow3OvKvp32" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 25248.57,
-      //       "deactivationUser" : "victor.assis.alves@gmail.com",
-      //       "finalSwitch" : 7273029.32,
-      //       "initialSwitch" : 7298277.89,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1579098654,
-      //       "timeStart" : 1579003787,
-      //       "useTime" : 94867
-      //     },
-      //     "-LyfC1SHLWu8pWgWSw2u" : {
-      //       "activationUser" : "victor.assis.alves@gmail.com",
-      //       "closed" : false,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeStart" : 1579114519
-      //     }
-      //   },
-      //   "profile" : {
-      //     "brand" : "Tesla",
-      //     "chassi" : "123edd456ggt",
-      //     "factory" : "nacional",
-      //     "hasAssistance" : {
-      //       "_status" : false,
-      //       "finishDate" : 1607108546,
-      //       "startDate" : 1575486150
-      //     },
-      //     "itemPrice" : 68900,
-      //     "model" : "Model S",
-      //     "plate" : "ons2019",
-      //     "protectionData" : {
-      //       "access" : [ "pron" ],
-      //       "activationsCounter" : {
-      //         "accident" : 25,
-      //         "theft" : 25,
-      //         "thirdParty" : 25
-      //       },
-      //       "minuteValue" : 15.97,
-      //       "protectionStatus" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       }
-      //     },
-      //     "thirdPartyCoverage" : 60,
-      //     "typeOfUse" : "app",
-      //     "year" : "2019"
-      //   }
-      // },
-      // "0f7cbc12587503c8cbece21ab3b5e455" : {
-      //   "logUse" : {
-      //     "1" : {
-      //       "finalSwitch" : 1380000,
-      //       "initialSwitch" : 1380000,
-      //       "tempoUso" : "0 dias : 0 horas : 0 minutos : 9 segundos",
-      //       "timeEnd" : "1559559712",
-      //       "timeStart" : "1559559703",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "0.00"
-      //     },
-      //     "2" : {
-      //       "finalSwitch" : 1379597.52,
-      //       "initialSwitch" : 1380000,
-      //       "tempoUso" : "0 dias : 0 horas : 51 minutos : 34 segundos",
-      //       "timeEnd" : "1559644350",
-      //       "timeStart" : "1559641256",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "402.48"
-      //     },
-      //     "3" : {
-      //       "finalSwitch" : 1379373.06,
-      //       "initialSwitch" : 1379597.52,
-      //       "tempoUso" : "0 dias : 0 horas : 29 minutos : 22 segundos",
-      //       "timeEnd" : "1559648639",
-      //       "timeStart" : "1559646877",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "224.46"
-      //     },
-      //     "4" : {
-      //       "finalSwitch" : 1378660.98,
-      //       "initialSwitch" : 1379373.06,
-      //       "tempoUso" : "0 dias : 1 horas : 31 minutos : 36 segundos",
-      //       "timeEnd" : "1559655422",
-      //       "timeStart" : "1559649926",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "712.08"
-      //     },
-      //     "5" : {
-      //       "finalSwitch" : 1378645.5,
-      //       "initialSwitch" : 1378660.98,
-      //       "tempoUso" : "0 dias : 0 horas : 2 minutos : 12 segundos",
-      //       "timeEnd" : "1559659974",
-      //       "timeStart" : "1559659842",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "15.48"
-      //     },
-      //     "6" : {
-      //       "finalSwitch" : 1378575.84,
-      //       "initialSwitch" : 1378645.5,
-      //       "tempoUso" : "0 dias : 0 horas : 8 minutos : 37 segundos",
-      //       "timeEnd" : "1559670183",
-      //       "timeStart" : "1559669666",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "69.66"
-      //     },
-      //     "7" : {
-      //       "finalSwitch" : 1378142.4,
-      //       "initialSwitch" : 1378575.84,
-      //       "tempoUso" : "0 dias : 0 horas : 56 minutos : 17 segundos",
-      //       "timeEnd" : "1559678920",
-      //       "timeStart" : "1559675543",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "433.44"
-      //     },
-      //     "8" : {
-      //       "finalSwitch" : 1376354.46,
-      //       "initialSwitch" : 1378142.4,
-      //       "tempoUso" : "0 dias : 3 horas : 51 minutos : 10 segundos",
-      //       "timeEnd" : "1559855299",
-      //       "timeStart" : "1559841429",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "1787.94"
-      //     },
-      //     "9" : {
-      //       "finalSwitch" : 1374667.14,
-      //       "initialSwitch" : 1376354.46,
-      //       "tempoUso" : "0 dias : 3 horas : 38 minutos : 15 segundos",
-      //       "timeEnd" : "1559905299",
-      //       "timeStart" : "1559892204",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "1687.32"
-      //     },
-      //     "10" : {
-      //       "finalSwitch" : 1373227.5,
-      //       "initialSwitch" : 1374667.14,
-      //       "tempoUso" : "0 dias : 3 horas : 6 minutos : 11 segundos",
-      //       "timeEnd" : "1559948751",
-      //       "timeStart" : "1559937580",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "1439.64"
-      //     },
-      //     "11" : {
-      //       "finalSwitch" : 1370340.48,
-      //       "initialSwitch" : 1373227.5,
-      //       "tempoUso" : "0 dias : 6 horas : 12 minutos : 39 segundos",
-      //       "timeEnd" : "1560049924",
-      //       "timeStart" : "1560027565",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "2887.02"
-      //     },
-      //     "12" : {
-      //       "finalSwitch" : 1366160.88,
-      //       "initialSwitch" : 1370340.48,
-      //       "tempoUso" : "0 dias : 9 horas : 0 minutos : 24 segundos",
-      //       "timeEnd" : "1560149006",
-      //       "timeStart" : "1560116582",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "4179.60"
-      //     },
-      //     "13" : {
-      //       "finalSwitch" : 1364759.94,
-      //       "initialSwitch" : 1366160.88,
-      //       "tempoUso" : "0 dias : 3 horas : 1 minutos : 23 segundos",
-      //       "timeEnd" : "1560301647",
-      //       "timeStart" : "1560290764",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "1400.94"
-      //     },
-      //     "14" : {
-      //       "finalSwitch" : 1363351.26,
-      //       "initialSwitch" : 1364759.94,
-      //       "tempoUso" : "0 dias : 3 horas : 2 minutos : 25 segundos",
-      //       "timeEnd" : "1560467631",
-      //       "timeStart" : "1560456686",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "1408.68"
-      //     },
-      //     "15" : {
-      //       "finalSwitch" : 1362468.9,
-      //       "initialSwitch" : 1363351.26,
-      //       "tempoUso" : "0 dias : 1 horas : 54 minutos : 1 segundos",
-      //       "timeEnd" : "1560544767",
-      //       "timeStart" : "1560537926",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "882.36"
-      //     },
-      //     "16" : {
-      //       "finalSwitch" : 1360998.3,
-      //       "initialSwitch" : 1362468.9,
-      //       "tempoUso" : "0 dias : 3 horas : 10 minutos : 14 segundos",
-      //       "timeEnd" : "1560641365",
-      //       "timeStart" : "1560629951",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "1470.60"
-      //     },
-      //     "17" : {
-      //       "finalSwitch" : 1358235.12,
-      //       "initialSwitch" : 1360998.3,
-      //       "tempoUso" : "0 dias : 5 horas : 56 minutos : 31 segundos",
-      //       "timeEnd" : "1560724617",
-      //       "timeStart" : "1560703226",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "2763.18"
-      //     },
-      //     "18" : {
-      //       "finalSwitch" : 1355773.8,
-      //       "initialSwitch" : 1358235.12,
-      //       "tempoUso" : "0 dias : 5 horas : 18 minutos : 3 segundos",
-      //       "timeEnd" : "1560809456",
-      //       "timeStart" : "1560790373",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "2461.32"
-      //     },
-      //     "19" : {
-      //       "finalSwitch" : 1355773.8,
-      //       "initialSwitch" : 1355773.8,
-      //       "tempoUso" : "0 dias : 0 horas : 0 minutos : 7 segundos",
-      //       "timeEnd" : "1560897175",
-      //       "timeStart" : "1560897168",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "0.00"
-      //     },
-      //     "20" : {
-      //       "finalSwitch" : 1353645.3,
-      //       "initialSwitch" : 1355773.8,
-      //       "tempoUso" : "0 dias : 4 horas : 35 minutos : 24 segundos",
-      //       "timeEnd" : "1560984036",
-      //       "timeStart" : "1560967512",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "2128.50"
-      //     },
-      //     "21" : {
-      //       "finalSwitch" : 1352646.84,
-      //       "initialSwitch" : 1353645.3,
-      //       "tempoUso" : "0 dias : 2 horas : 9 minutos : 21 segundos",
-      //       "timeEnd" : "1561068373",
-      //       "timeStart" : "1561060612",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "998.46"
-      //     },
-      //     "22" : {
-      //       "finalSwitch" : 1351245.9,
-      //       "initialSwitch" : 1352646.84,
-      //       "tempoUso" : "0 dias : 3 horas : 0 minutos : 47 segundos",
-      //       "timeEnd" : "1561150424",
-      //       "timeStart" : "1561139577",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "1400.94"
-      //     },
-      //     "23" : {
-      //       "finalSwitch" : 1347422.34,
-      //       "initialSwitch" : 1351245.9,
-      //       "tempoUso" : "0 dias : 8 horas : 14 minutos : 3 segundos",
-      //       "timeEnd" : "1561258714",
-      //       "timeStart" : "1561229071",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "3823.56"
-      //     },
-      //     "24" : {
-      //       "finalSwitch" : 1346957.94,
-      //       "initialSwitch" : 1347422.34,
-      //       "tempoUso" : "0 dias : 1 horas : 0 minutos : 23 segundos",
-      //       "timeEnd" : "1561465628",
-      //       "timeStart" : "1561462005",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "464.40"
-      //     },
-      //     "25" : {
-      //       "finalSwitch" : 1345688.58,
-      //       "initialSwitch" : 1346957.94,
-      //       "tempoUso" : "0 dias : 2 horas : 43 minutos : 48 segundos",
-      //       "timeEnd" : "1561497350",
-      //       "timeStart" : "1561487522",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "1269.36"
-      //     },
-      //     "26" : {
-      //       "finalSwitch" : 1344078.66,
-      //       "initialSwitch" : 1345688.58,
-      //       "tempoUso" : "0 dias : 3 horas : 27 minutos : 35 segundos",
-      //       "timeEnd" : "1561679224",
-      //       "timeStart" : "1561666769",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "1609.92"
-      //     },
-      //     "27" : {
-      //       "finalSwitch" : 1343443.98,
-      //       "initialSwitch" : 1344078.66,
-      //       "tempoUso" : "0 dias : 1 horas : 22 minutos : 28 segundos",
-      //       "timeEnd" : "1561721061",
-      //       "timeStart" : "1561716113",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "634.68"
-      //     },
-      //     "28" : {
-      //       "finalSwitch" : 1341501.24,
-      //       "initialSwitch" : 1343443.98,
-      //       "tempoUso" : "0 dias : 4 horas : 10 minutos : 43 segundos",
-      //       "timeEnd" : "1561768865",
-      //       "timeStart" : "1561753822",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "1942.74"
-      //     },
-      //     "29" : {
-      //       "finalSwitch" : 1341152.94,
-      //       "initialSwitch" : 1341501.24,
-      //       "tempoUso" : "0 dias : 0 horas : 45 minutos : 12 segundos",
-      //       "timeEnd" : "1561849756",
-      //       "timeStart" : "1561847044",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "348.30"
-      //     },
-      //     "30" : {
-      //       "finalSwitch" : 1337964.06,
-      //       "initialSwitch" : 1341152.94,
-      //       "tempoUso" : "0 dias : 6 horas : 51 minutos : 45 segundos",
-      //       "timeEnd" : "1562110451",
-      //       "timeStart" : "1562085746",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "3188.88"
-      //     },
-      //     "31" : {
-      //       "finalSwitch" : 1334837.1,
-      //       "initialSwitch" : 1337964.06,
-      //       "tempoUso" : "0 dias : 6 horas : 44 minutos : 29 segundos",
-      //       "timeEnd" : "1562201071",
-      //       "timeStart" : "1562176802",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "3126.96"
-      //     },
-      //     "32" : {
-      //       "finalSwitch" : 1331029.02,
-      //       "initialSwitch" : 1334837.1,
-      //       "tempoUso" : "0 dias : 8 horas : 12 minutos : 6 segundos",
-      //       "timeEnd" : "1562291478",
-      //       "timeStart" : "1562261952",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "3808.08"
-      //     },
-      //     "33" : {
-      //       "finalSwitch" : 1330556.88,
-      //       "initialSwitch" : 1331029.02,
-      //       "tempoUso" : "0 dias : 1 horas : 0 minutos : 39 segundos",
-      //       "timeEnd" : "1562319508",
-      //       "timeStart" : "1562315869",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "472.14"
-      //     },
-      //     "34" : {
-      //       "finalSwitch" : 1328289.06,
-      //       "initialSwitch" : 1330556.88,
-      //       "tempoUso" : "0 dias : 4 horas : 53 minutos : 8 segundos",
-      //       "timeEnd" : "1562377465",
-      //       "timeStart" : "1562359877",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "2267.82"
-      //     },
-      //     "35" : {
-      //       "finalSwitch" : 1327646.64,
-      //       "initialSwitch" : 1328289.06,
-      //       "tempoUso" : "0 dias : 1 horas : 23 minutos : 0 segundos",
-      //       "timeEnd" : "1562418721",
-      //       "timeStart" : "1562413741",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "642.42"
-      //     },
-      //     "36" : {
-      //       "finalSwitch" : 1324519.68,
-      //       "initialSwitch" : 1327646.64,
-      //       "tempoUso" : "0 dias : 6 horas : 43 minutos : 42 segundos",
-      //       "timeEnd" : "1562442944",
-      //       "timeStart" : "1562418722",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "3126.96"
-      //     },
-      //     "37" : {
-      //       "finalSwitch" : 1323645.06,
-      //       "initialSwitch" : 1324519.68,
-      //       "tempoUso" : "0 dias : 1 horas : 52 minutos : 30 segundos",
-      //       "timeEnd" : "1562449712",
-      //       "timeStart" : "1562442962",
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : "874.62"
-      //     },
-      //     "38" : {
-      //       "consumedValue" : 21424.32,
-      //       "deactivationUser" : "eksanches@gmail.com",
-      //       "finalSwitch" : 1300363.14,
-      //       "initialSwitch" : 1321787.46,
-      //       "tempoUso" : "0 dias : 3 horas : 59 minutos : 53 segundos",
-      //       "timeEnd" : 1562619112,
-      //       "timeStart" : "1562453019",
-      //       "useTime" : 166093,
-      //       "user" : "eksanches@gmail.com",
-      //       "valorConsumido" : 21424.32
-      //     },
-      //     "-LjJ-2NsBgmyRIeGQiJq" : {
-      //       "activationUser" : "eksanches@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 1408.68,
-      //       "deactivationUser" : "eksanches@gmail.com",
-      //       "finalSwitch" : 1298954.46,
-      //       "initialSwitch" : 1300363.14,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1562630016,
-      //       "timeStart" : 1562619112,
-      //       "useTime" : 10904
-      //     },
-      //     "-LjOchAIgQlCeSEtqjhv" : {
-      //       "activationUser" : "eksanches@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 3568.14,
-      //       "deactivationUser" : "eksanches@gmail.com",
-      //       "finalSwitch" : 1295386.32,
-      //       "initialSwitch" : 1298954.46,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1562741318,
-      //       "timeStart" : 1562713655,
-      //       "useTime" : 27663
-      //     },
-      //     "-LjTYHH6SUQG6pyFlKEM" : {
-      //       "activationUser" : "eksanches@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 936.54,
-      //       "deactivationUser" : "eksanches@gmail.com",
-      //       "finalSwitch" : 1294449.78,
-      //       "initialSwitch" : 1295386.32,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1562803393,
-      //       "timeStart" : 1562796120,
-      //       "useTime" : 7273
-      //     },
-      //     "-LjYaIbnYUKgqon128tm" : {
-      //       "activationUser" : "eksanches@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 1408.68,
-      //       "deactivationUser" : "eksanches@gmail.com",
-      //       "finalSwitch" : 1293041.1,
-      //       "initialSwitch" : 1294449.78,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1562891693,
-      //       "timeStart" : 1562880798,
-      //       "useTime" : 10895
-      //     },
-      //     "-LjiZqrpTX6JHCFQFJJq" : {
-      //       "activationUser" : "eksanches@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 897.84,
-      //       "deactivationUser" : "eksanches@gmail.com",
-      //       "finalSwitch" : 1292143.26,
-      //       "initialSwitch" : 1293041.1,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1563071917,
-      //       "timeStart" : 1563064967,
-      //       "useTime" : 6950
-      //     },
-      //     "-Lk1PX5gWTDlspbNumIH" : {
-      //       "activationUser" : "eksanches@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 657.9,
-      //       "deactivationUser" : "eksanches@gmail.com",
-      //       "finalSwitch" : 1291485.36,
-      //       "initialSwitch" : 1292143.26,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1563402916,
-      //       "timeStart" : 1563397805,
-      //       "useTime" : 5111
-      //     },
-      //     "-Lk6MmRsvkg7ternGKhR" : {
-      //       "activationUser" : "eksanches@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 4744.62,
-      //       "deactivationUser" : "eksanches@gmail.com",
-      //       "finalSwitch" : 1286740.74,
-      //       "initialSwitch" : 1291485.36,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1563517730,
-      //       "timeStart" : 1563480972,
-      //       "useTime" : 36758
-      //     },
-      //     "-LkAeZJ5yPKPz69_eLPx" : {
-      //       "activationUser" : "eksanches@gmail.com",
-      //       "closed" : true,
-      //       "consumedValue" : 464.4,
-      //       "deactivationUser" : "eksanches@gmail.com",
-      //       "finalSwitch" : 1286276.34,
-      //       "initialSwitch" : 1286740.74,
-      //       "policies" : {
-      //         "accident" : true,
-      //         "theft" : true,
-      //         "thirdParty" : true
-      //       },
-      //       "timeEnd" : 1563556619,
-      //       "timeStart" : 1563553004,
-      //       "useTime" : 3615
-      //     }
-      //   },
-      //   "profile" : {
-      //     "brand" : "Renault",
-      //     "itemPrice" : "46000",
-      //     "model" : "Logan Expression  1.0 12V completo",
-      //     "plate" : "pzz2796",
-      //     "protectionData" : {
-      //       "access" : [ "pron" ],
-      //       "activationsCounter" : {
-      //         "accident" : 46,
-      //         "theft" : 46,
-      //         "thirdParty" : 46
-      //       },
-      //       "minuteValue" : 7.74,
-      //       "protectionStatus" : {
-      //         "accident" : false,
-      //         "theft" : false,
-      //         "thirdParty" : false
-      //       }
-      //     }
-      //   }
-      // },
+      "120bfdebb39a0ecd44f43d48cee0dae1" : {
+        "logUse" : {
+          "-LvHMWxE1isC8nlPHLth" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3252949.22,
+            "initialSwitch" : 3252965.19,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1575476663,
+            "timeStart" : 1575476614,
+            "useTime" : 49
+          },
+          "-LvLIW74K91q5havqXOF" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3252933.25,
+            "initialSwitch" : 3252949.22,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1575542738,
+            "timeStart" : 1575542670,
+            "useTime" : 68
+          },
+          "-LvMg_FzDT-zK2AEX1lJ" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 111.79,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3252789.52,
+            "initialSwitch" : 3252901.31,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1575566455,
+            "timeStart" : 1575566018,
+            "useTime" : 437
+          },
+          "-LvMiYwf-k05nKMCFhAa" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 16033.88,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3196855.64,
+            "initialSwitch" : 3212889.52,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1575626754,
+            "timeStart" : 1575566537,
+            "useTime" : 60217
+          },
+          "-Lvm4M59aj7zgpu98Sim" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3495839.67,
+            "initialSwitch" : 3495839.67,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576008736,
+            "timeStart" : 1576008722,
+            "useTime" : 14
+          },
+          "-Lvm5Ywq4Bu-UmpEKpCC" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 1405.36,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3494434.31,
+            "initialSwitch" : 3495839.67,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576014331,
+            "timeStart" : 1576009037,
+            "useTime" : 5294
+          },
+          "-LxEgYDwemuX1nbC1lXU" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3335375.02,
+            "initialSwitch" : 3335390.99,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577579349,
+            "timeStart" : 1577579276,
+            "useTime" : 73
+          },
+          "-LxEh1Efgt5pq6CoYaYK" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 9326.48,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3326048.54,
+            "initialSwitch" : 3335375.02,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577614435,
+            "timeStart" : 1577579403,
+            "useTime" : 35032
+          },
+          "-LxJMHjV16ME8bhlt6TR" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3326048.54,
+            "initialSwitch" : 3326048.54,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577657598,
+            "timeStart" : 1577657589,
+            "useTime" : 9
+          },
+          "-LxO3xSdafpu-eN_0_BW" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3326048.54,
+            "initialSwitch" : 3326048.54,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577736681,
+            "timeStart" : 1577736670,
+            "useTime" : 11
+          },
+          "-LxSRg9CEzYVjSYtcH7N" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3297990.91,
+            "initialSwitch" : 3297990.91,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577810012,
+            "timeStart" : 1577810000,
+            "useTime" : 12
+          },
+          "-LxSVvecyxMTLdW3pr7L" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3297990.91,
+            "initialSwitch" : 3297990.91,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577811118,
+            "timeStart" : 1577811111,
+            "useTime" : 7
+          },
+          "-LxbdGALteo-SwGlT7Tg" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3291669.12,
+            "initialSwitch" : 3291669.12,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577981075,
+            "timeStart" : 1577981069,
+            "useTime" : 6
+          },
+          "-Lxc4C2E4qMhsSr13yM9" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 79.85,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3291570.67,
+            "initialSwitch" : 3291650.52,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577988675,
+            "timeStart" : 1577988392,
+            "useTime" : 283
+          },
+          "-Lxc5KNdddahnlmDF0JC" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3291570.67,
+            "initialSwitch" : 3291570.67,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577988696,
+            "timeStart" : 1577988688,
+            "useTime" : 8
+          },
+          "-Lxc5mSewgki32aJ1Tmu" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3291570.67,
+            "initialSwitch" : 3291570.67,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577988818,
+            "timeStart" : 1577988807,
+            "useTime" : 11
+          },
+          "-Lxc6vJbubQjl4faWeax" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3291554.7,
+            "initialSwitch" : 3291570.67,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577989148,
+            "timeStart" : 1577989106,
+            "useTime" : 42
+          },
+          "-Lxc8OO5Qr6VBtJRXv59" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 399.25,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3290788.79,
+            "initialSwitch" : 3291188.04,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577990999,
+            "timeStart" : 1577989491,
+            "useTime" : 1508
+          },
+          "-LxcEBgoCKHI0W-19w0w" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 542.98,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3290245.81,
+            "initialSwitch" : 3290788.79,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577993028,
+            "timeStart" : 1577991012,
+            "useTime" : 2016
+          },
+          "-LxcLx0cb2bYK-ss8xwV" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 63.88,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3290181.93,
+            "initialSwitch" : 3290245.81,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577993261,
+            "timeStart" : 1577993045,
+            "useTime" : 216
+          },
+          "-LxcScpAeujk2DdUj81M" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3290076.91,
+            "initialSwitch" : 3290076.91,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577994811,
+            "timeStart" : 1577994797,
+            "useTime" : 14
+          },
+          "-LxwJbN57h_geLWlqtME" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3245572.95,
+            "initialSwitch" : 3245572.95,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1578327984,
+            "timeStart" : 1578327976,
+            "useTime" : 8
+          },
+          "-LxwJptxmrWhy1ifCKQe" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3245572.95,
+            "initialSwitch" : 3245572.95,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1578328045,
+            "timeStart" : 1578328036,
+            "useTime" : 9
+          },
+          "-LxwK3R0v0BU6sG-UI8u" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3245572.95,
+            "initialSwitch" : 3245572.95,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1578328101,
+            "timeStart" : 1578328095,
+            "useTime" : 6
+          },
+          "-Ly-T-OkhbsTr8pyFgTR" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : false,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeStart" : 1578397547
+          }
+        },
+        "profile" : {
+          "brand" : "Ford",
+          "chassi" : "123edd456ggt",
+          "factory" : "nacional",
+          "hasAssistance" : {
+            "_status" : false,
+            "finishDate" : 1607109724,
+            "startDate" : 1575487328
+          },
+          "itemPrice" : 68900,
+          "model" : "Fusion Hibrid",
+          "plate" : "ons2020",
+          "protectionData" : {
+            "access" : [ "pron" ],
+            "activationsCounter" : {
+              "accident" : 15,
+              "theft" : 15,
+              "thirdParty" : 15
+            },
+            "minuteValue" : 15.97,
+            "protectionStatus" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            }
+          },
+          "thirdPartyCoverage" : 60,
+          "typeOfUse" : "app",
+          "year" : "2019"
+        }
+      },
+      "6f4d85bab4ff861432a565539d9b8334" : {
+        "logUse" : {
+          "-LvHI0Tj-exzkT9U5jo0" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 31.94,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3253204.74,
+            "initialSwitch" : 3253236.68,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1575475580,
+            "timeStart" : 1575475432,
+            "useTime" : 148
+          },
+          "-LvHIm609_YjtW7QblrF" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 239.55,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3252965.19,
+            "initialSwitch" : 3253204.74,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1575476545,
+            "timeStart" : 1575475631,
+            "useTime" : 914
+          },
+          "-LvHQ3rK-MOx0fHLu15_" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3252949.22,
+            "initialSwitch" : 3252949.22,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1575477551,
+            "timeStart" : 1575477543,
+            "useTime" : 8
+          },
+          "-LvLIbmhhMdpbQhoygBk" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 31.94,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3252901.31,
+            "initialSwitch" : 3252933.25,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1575542808,
+            "timeStart" : 1575542698,
+            "useTime" : 110
+          },
+          "-Lvm-NkbL9iMwjj5E75H" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3495839.67,
+            "initialSwitch" : 3495855.64,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576007448,
+            "timeStart" : 1576007418,
+            "useTime" : 30
+          },
+          "-Lvm2W5oCtdHXdJTVcmi" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 1628.94,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3492805.37,
+            "initialSwitch" : 3494434.31,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576014363,
+            "timeStart" : 1576008239,
+            "useTime" : 6124
+          },
+          "-LvpZ2nb72uy45H3C_3V" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 3721.01,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3489084.36,
+            "initialSwitch" : 3492805.37,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576081091,
+            "timeStart" : 1576067101,
+            "useTime" : 13990
+          },
+          "-LvqTb22hs9bP83OAeun" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 31.94,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3489052.42,
+            "initialSwitch" : 3489084.36,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576082546,
+            "timeStart" : 1576082449,
+            "useTime" : 97
+          },
+          "-Lw-gOdRQaH5ph0dHbQW" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3489052.42,
+            "initialSwitch" : 3489052.42,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576253852,
+            "timeStart" : 1576253837,
+            "useTime" : 15
+          },
+          "-Lw-iDJotISFXJVlmJ_P" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3489036.45,
+            "initialSwitch" : 3489052.42,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576254360,
+            "timeStart" : 1576254315,
+            "useTime" : 45
+          },
+          "-Lw-j62lGJyfWS2ejtgB" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3489036.45,
+            "initialSwitch" : 3489036.45,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576254556,
+            "timeStart" : 1576254547,
+            "useTime" : 9
+          },
+          "-Lw-jfKhviacuJxSA7h8" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 383.28,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3488653.17,
+            "initialSwitch" : 3489036.45,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576256119,
+            "timeStart" : 1576254696,
+            "useTime" : 1423
+          },
+          "-Lw-p9cQ-iLoexWNm8lr" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3488653.17,
+            "initialSwitch" : 3488653.17,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576256156,
+            "timeStart" : 1576256135,
+            "useTime" : 21
+          },
+          "-Lw0DgY6KA7tlXXF5YW4" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 255.52,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3488397.65,
+            "initialSwitch" : 3488653.17,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576263795,
+            "timeStart" : 1576262827,
+            "useTime" : 968
+          },
+          "-Lw17qecfjlQqdeEgXsN" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 798.5,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3487599.15,
+            "initialSwitch" : 3488397.65,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576281100,
+            "timeStart" : 1576278073,
+            "useTime" : 3027
+          },
+          "-Lw1JX5Srm5OxDOLBFrq" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3487583.18,
+            "initialSwitch" : 3487599.15,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576281183,
+            "timeStart" : 1576281134,
+            "useTime" : 49
+          },
+          "-Lw1eRGVhYkAWC1MmQdG" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 51215.79,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3436367.39,
+            "initialSwitch" : 3487583.18,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576479303,
+            "timeStart" : 1576286878,
+            "useTime" : 192425
+          },
+          "-LwD7bOvkXfdbNre6J6h" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 11690.04,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3424677.35,
+            "initialSwitch" : 3436367.39,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576523243,
+            "timeStart" : 1576479337,
+            "useTime" : 43906
+          },
+          "-LwFkcOz2VNZYnCjzPSg" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 958.2,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3423719.15,
+            "initialSwitch" : 3424677.35,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576527006,
+            "timeStart" : 1576523381,
+            "useTime" : 3625
+          },
+          "-LwFyUJVPuzJU4QnXIRs" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 63.88,
+            "deactivationUser" : "ricardo@tripshop.com.br",
+            "finalSwitch" : 3423655.27,
+            "initialSwitch" : 3423719.15,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576527238,
+            "timeStart" : 1576527014,
+            "useTime" : 224
+          },
+          "-LwG1ANFJxnL_WPbnr48" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3423655.27,
+            "initialSwitch" : 3423655.27,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576528000,
+            "timeStart" : 1576527981,
+            "useTime" : 19
+          },
+          "-LwJ0_t6YqU4J-0PZl7B" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 3545.34,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3420109.93,
+            "initialSwitch" : 3423655.27,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576591469,
+            "timeStart" : 1576578159,
+            "useTime" : 13310
+          },
+          "-LwJoUUH3K-C-7MXGSIw" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3420109.93,
+            "initialSwitch" : 3420109.93,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576591518,
+            "timeStart" : 1576591502,
+            "useTime" : 16
+          },
+          "-LwKk9lwOtq-ik48IWPe" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 3114.15,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3416995.78,
+            "initialSwitch" : 3420109.93,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576618831,
+            "timeStart" : 1576607146,
+            "useTime" : 11685
+          },
+          "-LwLedo9Keo7p-I6Xaoq" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 39238.29,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3375363.16,
+            "initialSwitch" : 3414601.45,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1576769888,
+            "timeStart" : 1576622478,
+            "useTime" : 147410
+          },
+          "-LxEYma3YTnEaA2ukL3r" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3335406.96,
+            "initialSwitch" : 3335406.96,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577576993,
+            "timeStart" : 1577576980,
+            "useTime" : 13
+          },
+          "-LxEgAqIN5yyk3ovYLG8" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3335390.99,
+            "initialSwitch" : 3335406.96,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577579216,
+            "timeStart" : 1577579180,
+            "useTime" : 36
+          },
+          "-LxO4OjR4D2smSDZYbOl" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 1293.57,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3297990.91,
+            "initialSwitch" : 3299284.48,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577741646,
+            "timeStart" : 1577736786,
+            "useTime" : 4860
+          },
+          "-LxYfXZjkuvceThYm_gD" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3297974.94,
+            "initialSwitch" : 3297990.91,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577914601,
+            "timeStart" : 1577914555,
+            "useTime" : 46
+          },
+          "-LxbeVmeC-8XZscMVue6" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3291669.12,
+            "initialSwitch" : 3291669.12,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577981402,
+            "timeStart" : 1577981395,
+            "useTime" : 7
+          },
+          "-LxbizTFhSYeWk-tTJSs" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3291669.12,
+            "initialSwitch" : 3291669.12,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577982585,
+            "timeStart" : 1577982569,
+            "useTime" : 16
+          },
+          "-Lxc3FYNZiaBnWiGHqYb" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3291653.15,
+            "initialSwitch" : 3291669.12,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577988232,
+            "timeStart" : 1577988144,
+            "useTime" : 88
+          },
+          "-Lxc6xhnTpcvcNFYrLfV" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 351.34,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3291192.42,
+            "initialSwitch" : 3291543.76,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577990415,
+            "timeStart" : 1577989115,
+            "useTime" : 1300
+          },
+          "-LxcCLM4ZvZvyvGG0Nkq" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 0,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3291190.23,
+            "initialSwitch" : 3291190.23,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577990549,
+            "timeStart" : 1577990527,
+            "useTime" : 22
+          },
+          "-LxcCTQ92mRltZCt6P6O" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 1149.84,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3288927.07,
+            "initialSwitch" : 3290076.91,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1577994876,
+            "timeStart" : 1577990560,
+            "useTime" : 4316
+          },
+          "-LxcTKNTsGYA0RSVHwsA" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 1916.4,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3286958.16,
+            "initialSwitch" : 3288874.56,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1578002188,
+            "timeStart" : 1577994980,
+            "useTime" : 7208
+          },
+          "-LxdGxV4HKlOjnq0arve" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3286942.19,
+            "initialSwitch" : 3286958.16,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1578008546,
+            "timeStart" : 1578008513,
+            "useTime" : 33
+          },
+          "-LxdHVvckFoLE2QG7TCv" : {
+            "activationUser" : "adilasjr@hotmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "adilasjr@hotmail.com",
+            "finalSwitch" : 3286926.22,
+            "initialSwitch" : 3286942.19,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1578008713,
+            "timeStart" : 1578008658,
+            "useTime" : 55
+          },
+          "-LxvpBZlK8hNmc7BMYRP" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 15.97,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3247010.25,
+            "initialSwitch" : 3247026.22,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1578319806,
+            "timeStart" : 1578319740,
+            "useTime" : 66
+          },
+          "-Lxvq3j0E9AZ_I5HNNe0" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 1437.3,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3245572.95,
+            "initialSwitch" : 3247010.25,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1578325366,
+            "timeStart" : 1578319970,
+            "useTime" : 5396
+          },
+          "-Ly02RS8rX73k7TmkEK7" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 3305.79,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3242267.16,
+            "initialSwitch" : 3245572.95,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1578419771,
+            "timeStart" : 1578407361,
+            "useTime" : 12410
+          },
+          "-Ly1AiAaCg72vn9f1ZkR" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 140871.37,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3101395.79,
+            "initialSwitch" : 3242267.16,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1578955592,
+            "timeStart" : 1578426309,
+            "useTime" : 529283
+          },
+          "-LyWixQnnYeCmepaaEjB" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 1117.9,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 3100277.89,
+            "initialSwitch" : 3101395.79,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1578959846,
+            "timeStart" : 1578955639,
+            "useTime" : 4207
+          },
+          "-LyZacJo2Uow3OvKvp32" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : true,
+            "consumedValue" : 25248.57,
+            "deactivationUser" : "victor.assis.alves@gmail.com",
+            "finalSwitch" : 7273029.32,
+            "initialSwitch" : 7298277.89,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1579098654,
+            "timeStart" : 1579003787,
+            "useTime" : 94867
+          },
+          "-LyfC1SHLWu8pWgWSw2u" : {
+            "activationUser" : "victor.assis.alves@gmail.com",
+            "closed" : false,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeStart" : 1579114519
+          }
+        },
+        "profile" : {
+          "brand" : "Tesla",
+          "chassi" : "123edd456ggt",
+          "factory" : "nacional",
+          "hasAssistance" : {
+            "_status" : false,
+            "finishDate" : 1607108546,
+            "startDate" : 1575486150
+          },
+          "itemPrice" : 68900,
+          "model" : "Model S",
+          "plate" : "ons2019",
+          "protectionData" : {
+            "access" : [ "pron" ],
+            "activationsCounter" : {
+              "accident" : 25,
+              "theft" : 25,
+              "thirdParty" : 25
+            },
+            "minuteValue" : 15.97,
+            "protectionStatus" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            }
+          },
+          "thirdPartyCoverage" : 60,
+          "typeOfUse" : "app",
+          "year" : "2019"
+        }
+      },
+      "0f7cbc12587503c8cbece21ab3b5e455" : {
+        "logUse" : {
+          "1" : {
+            "finalSwitch" : 1380000,
+            "initialSwitch" : 1380000,
+            "tempoUso" : "0 dias : 0 horas : 0 minutos : 9 segundos",
+            "timeEnd" : "1559559712",
+            "timeStart" : "1559559703",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "0.00"
+          },
+          "2" : {
+            "finalSwitch" : 1379597.52,
+            "initialSwitch" : 1380000,
+            "tempoUso" : "0 dias : 0 horas : 51 minutos : 34 segundos",
+            "timeEnd" : "1559644350",
+            "timeStart" : "1559641256",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "402.48"
+          },
+          "3" : {
+            "finalSwitch" : 1379373.06,
+            "initialSwitch" : 1379597.52,
+            "tempoUso" : "0 dias : 0 horas : 29 minutos : 22 segundos",
+            "timeEnd" : "1559648639",
+            "timeStart" : "1559646877",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "224.46"
+          },
+          "4" : {
+            "finalSwitch" : 1378660.98,
+            "initialSwitch" : 1379373.06,
+            "tempoUso" : "0 dias : 1 horas : 31 minutos : 36 segundos",
+            "timeEnd" : "1559655422",
+            "timeStart" : "1559649926",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "712.08"
+          },
+          "5" : {
+            "finalSwitch" : 1378645.5,
+            "initialSwitch" : 1378660.98,
+            "tempoUso" : "0 dias : 0 horas : 2 minutos : 12 segundos",
+            "timeEnd" : "1559659974",
+            "timeStart" : "1559659842",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "15.48"
+          },
+          "6" : {
+            "finalSwitch" : 1378575.84,
+            "initialSwitch" : 1378645.5,
+            "tempoUso" : "0 dias : 0 horas : 8 minutos : 37 segundos",
+            "timeEnd" : "1559670183",
+            "timeStart" : "1559669666",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "69.66"
+          },
+          "7" : {
+            "finalSwitch" : 1378142.4,
+            "initialSwitch" : 1378575.84,
+            "tempoUso" : "0 dias : 0 horas : 56 minutos : 17 segundos",
+            "timeEnd" : "1559678920",
+            "timeStart" : "1559675543",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "433.44"
+          },
+          "8" : {
+            "finalSwitch" : 1376354.46,
+            "initialSwitch" : 1378142.4,
+            "tempoUso" : "0 dias : 3 horas : 51 minutos : 10 segundos",
+            "timeEnd" : "1559855299",
+            "timeStart" : "1559841429",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "1787.94"
+          },
+          "9" : {
+            "finalSwitch" : 1374667.14,
+            "initialSwitch" : 1376354.46,
+            "tempoUso" : "0 dias : 3 horas : 38 minutos : 15 segundos",
+            "timeEnd" : "1559905299",
+            "timeStart" : "1559892204",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "1687.32"
+          },
+          "10" : {
+            "finalSwitch" : 1373227.5,
+            "initialSwitch" : 1374667.14,
+            "tempoUso" : "0 dias : 3 horas : 6 minutos : 11 segundos",
+            "timeEnd" : "1559948751",
+            "timeStart" : "1559937580",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "1439.64"
+          },
+          "11" : {
+            "finalSwitch" : 1370340.48,
+            "initialSwitch" : 1373227.5,
+            "tempoUso" : "0 dias : 6 horas : 12 minutos : 39 segundos",
+            "timeEnd" : "1560049924",
+            "timeStart" : "1560027565",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "2887.02"
+          },
+          "12" : {
+            "finalSwitch" : 1366160.88,
+            "initialSwitch" : 1370340.48,
+            "tempoUso" : "0 dias : 9 horas : 0 minutos : 24 segundos",
+            "timeEnd" : "1560149006",
+            "timeStart" : "1560116582",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "4179.60"
+          },
+          "13" : {
+            "finalSwitch" : 1364759.94,
+            "initialSwitch" : 1366160.88,
+            "tempoUso" : "0 dias : 3 horas : 1 minutos : 23 segundos",
+            "timeEnd" : "1560301647",
+            "timeStart" : "1560290764",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "1400.94"
+          },
+          "14" : {
+            "finalSwitch" : 1363351.26,
+            "initialSwitch" : 1364759.94,
+            "tempoUso" : "0 dias : 3 horas : 2 minutos : 25 segundos",
+            "timeEnd" : "1560467631",
+            "timeStart" : "1560456686",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "1408.68"
+          },
+          "15" : {
+            "finalSwitch" : 1362468.9,
+            "initialSwitch" : 1363351.26,
+            "tempoUso" : "0 dias : 1 horas : 54 minutos : 1 segundos",
+            "timeEnd" : "1560544767",
+            "timeStart" : "1560537926",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "882.36"
+          },
+          "16" : {
+            "finalSwitch" : 1360998.3,
+            "initialSwitch" : 1362468.9,
+            "tempoUso" : "0 dias : 3 horas : 10 minutos : 14 segundos",
+            "timeEnd" : "1560641365",
+            "timeStart" : "1560629951",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "1470.60"
+          },
+          "17" : {
+            "finalSwitch" : 1358235.12,
+            "initialSwitch" : 1360998.3,
+            "tempoUso" : "0 dias : 5 horas : 56 minutos : 31 segundos",
+            "timeEnd" : "1560724617",
+            "timeStart" : "1560703226",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "2763.18"
+          },
+          "18" : {
+            "finalSwitch" : 1355773.8,
+            "initialSwitch" : 1358235.12,
+            "tempoUso" : "0 dias : 5 horas : 18 minutos : 3 segundos",
+            "timeEnd" : "1560809456",
+            "timeStart" : "1560790373",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "2461.32"
+          },
+          "19" : {
+            "finalSwitch" : 1355773.8,
+            "initialSwitch" : 1355773.8,
+            "tempoUso" : "0 dias : 0 horas : 0 minutos : 7 segundos",
+            "timeEnd" : "1560897175",
+            "timeStart" : "1560897168",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "0.00"
+          },
+          "20" : {
+            "finalSwitch" : 1353645.3,
+            "initialSwitch" : 1355773.8,
+            "tempoUso" : "0 dias : 4 horas : 35 minutos : 24 segundos",
+            "timeEnd" : "1560984036",
+            "timeStart" : "1560967512",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "2128.50"
+          },
+          "21" : {
+            "finalSwitch" : 1352646.84,
+            "initialSwitch" : 1353645.3,
+            "tempoUso" : "0 dias : 2 horas : 9 minutos : 21 segundos",
+            "timeEnd" : "1561068373",
+            "timeStart" : "1561060612",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "998.46"
+          },
+          "22" : {
+            "finalSwitch" : 1351245.9,
+            "initialSwitch" : 1352646.84,
+            "tempoUso" : "0 dias : 3 horas : 0 minutos : 47 segundos",
+            "timeEnd" : "1561150424",
+            "timeStart" : "1561139577",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "1400.94"
+          },
+          "23" : {
+            "finalSwitch" : 1347422.34,
+            "initialSwitch" : 1351245.9,
+            "tempoUso" : "0 dias : 8 horas : 14 minutos : 3 segundos",
+            "timeEnd" : "1561258714",
+            "timeStart" : "1561229071",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "3823.56"
+          },
+          "24" : {
+            "finalSwitch" : 1346957.94,
+            "initialSwitch" : 1347422.34,
+            "tempoUso" : "0 dias : 1 horas : 0 minutos : 23 segundos",
+            "timeEnd" : "1561465628",
+            "timeStart" : "1561462005",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "464.40"
+          },
+          "25" : {
+            "finalSwitch" : 1345688.58,
+            "initialSwitch" : 1346957.94,
+            "tempoUso" : "0 dias : 2 horas : 43 minutos : 48 segundos",
+            "timeEnd" : "1561497350",
+            "timeStart" : "1561487522",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "1269.36"
+          },
+          "26" : {
+            "finalSwitch" : 1344078.66,
+            "initialSwitch" : 1345688.58,
+            "tempoUso" : "0 dias : 3 horas : 27 minutos : 35 segundos",
+            "timeEnd" : "1561679224",
+            "timeStart" : "1561666769",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "1609.92"
+          },
+          "27" : {
+            "finalSwitch" : 1343443.98,
+            "initialSwitch" : 1344078.66,
+            "tempoUso" : "0 dias : 1 horas : 22 minutos : 28 segundos",
+            "timeEnd" : "1561721061",
+            "timeStart" : "1561716113",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "634.68"
+          },
+          "28" : {
+            "finalSwitch" : 1341501.24,
+            "initialSwitch" : 1343443.98,
+            "tempoUso" : "0 dias : 4 horas : 10 minutos : 43 segundos",
+            "timeEnd" : "1561768865",
+            "timeStart" : "1561753822",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "1942.74"
+          },
+          "29" : {
+            "finalSwitch" : 1341152.94,
+            "initialSwitch" : 1341501.24,
+            "tempoUso" : "0 dias : 0 horas : 45 minutos : 12 segundos",
+            "timeEnd" : "1561849756",
+            "timeStart" : "1561847044",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "348.30"
+          },
+          "30" : {
+            "finalSwitch" : 1337964.06,
+            "initialSwitch" : 1341152.94,
+            "tempoUso" : "0 dias : 6 horas : 51 minutos : 45 segundos",
+            "timeEnd" : "1562110451",
+            "timeStart" : "1562085746",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "3188.88"
+          },
+          "31" : {
+            "finalSwitch" : 1334837.1,
+            "initialSwitch" : 1337964.06,
+            "tempoUso" : "0 dias : 6 horas : 44 minutos : 29 segundos",
+            "timeEnd" : "1562201071",
+            "timeStart" : "1562176802",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "3126.96"
+          },
+          "32" : {
+            "finalSwitch" : 1331029.02,
+            "initialSwitch" : 1334837.1,
+            "tempoUso" : "0 dias : 8 horas : 12 minutos : 6 segundos",
+            "timeEnd" : "1562291478",
+            "timeStart" : "1562261952",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "3808.08"
+          },
+          "33" : {
+            "finalSwitch" : 1330556.88,
+            "initialSwitch" : 1331029.02,
+            "tempoUso" : "0 dias : 1 horas : 0 minutos : 39 segundos",
+            "timeEnd" : "1562319508",
+            "timeStart" : "1562315869",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "472.14"
+          },
+          "34" : {
+            "finalSwitch" : 1328289.06,
+            "initialSwitch" : 1330556.88,
+            "tempoUso" : "0 dias : 4 horas : 53 minutos : 8 segundos",
+            "timeEnd" : "1562377465",
+            "timeStart" : "1562359877",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "2267.82"
+          },
+          "35" : {
+            "finalSwitch" : 1327646.64,
+            "initialSwitch" : 1328289.06,
+            "tempoUso" : "0 dias : 1 horas : 23 minutos : 0 segundos",
+            "timeEnd" : "1562418721",
+            "timeStart" : "1562413741",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "642.42"
+          },
+          "36" : {
+            "finalSwitch" : 1324519.68,
+            "initialSwitch" : 1327646.64,
+            "tempoUso" : "0 dias : 6 horas : 43 minutos : 42 segundos",
+            "timeEnd" : "1562442944",
+            "timeStart" : "1562418722",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "3126.96"
+          },
+          "37" : {
+            "finalSwitch" : 1323645.06,
+            "initialSwitch" : 1324519.68,
+            "tempoUso" : "0 dias : 1 horas : 52 minutos : 30 segundos",
+            "timeEnd" : "1562449712",
+            "timeStart" : "1562442962",
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : "874.62"
+          },
+          "38" : {
+            "consumedValue" : 21424.32,
+            "deactivationUser" : "eksanches@gmail.com",
+            "finalSwitch" : 1300363.14,
+            "initialSwitch" : 1321787.46,
+            "tempoUso" : "0 dias : 3 horas : 59 minutos : 53 segundos",
+            "timeEnd" : 1562619112,
+            "timeStart" : "1562453019",
+            "useTime" : 166093,
+            "user" : "eksanches@gmail.com",
+            "valorConsumido" : 21424.32
+          },
+          "-LjJ-2NsBgmyRIeGQiJq" : {
+            "activationUser" : "eksanches@gmail.com",
+            "closed" : true,
+            "consumedValue" : 1408.68,
+            "deactivationUser" : "eksanches@gmail.com",
+            "finalSwitch" : 1298954.46,
+            "initialSwitch" : 1300363.14,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1562630016,
+            "timeStart" : 1562619112,
+            "useTime" : 10904
+          },
+          "-LjOchAIgQlCeSEtqjhv" : {
+            "activationUser" : "eksanches@gmail.com",
+            "closed" : true,
+            "consumedValue" : 3568.14,
+            "deactivationUser" : "eksanches@gmail.com",
+            "finalSwitch" : 1295386.32,
+            "initialSwitch" : 1298954.46,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1562741318,
+            "timeStart" : 1562713655,
+            "useTime" : 27663
+          },
+          "-LjTYHH6SUQG6pyFlKEM" : {
+            "activationUser" : "eksanches@gmail.com",
+            "closed" : true,
+            "consumedValue" : 936.54,
+            "deactivationUser" : "eksanches@gmail.com",
+            "finalSwitch" : 1294449.78,
+            "initialSwitch" : 1295386.32,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1562803393,
+            "timeStart" : 1562796120,
+            "useTime" : 7273
+          },
+          "-LjYaIbnYUKgqon128tm" : {
+            "activationUser" : "eksanches@gmail.com",
+            "closed" : true,
+            "consumedValue" : 1408.68,
+            "deactivationUser" : "eksanches@gmail.com",
+            "finalSwitch" : 1293041.1,
+            "initialSwitch" : 1294449.78,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1562891693,
+            "timeStart" : 1562880798,
+            "useTime" : 10895
+          },
+          "-LjiZqrpTX6JHCFQFJJq" : {
+            "activationUser" : "eksanches@gmail.com",
+            "closed" : true,
+            "consumedValue" : 897.84,
+            "deactivationUser" : "eksanches@gmail.com",
+            "finalSwitch" : 1292143.26,
+            "initialSwitch" : 1293041.1,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1563071917,
+            "timeStart" : 1563064967,
+            "useTime" : 6950
+          },
+          "-Lk1PX5gWTDlspbNumIH" : {
+            "activationUser" : "eksanches@gmail.com",
+            "closed" : true,
+            "consumedValue" : 657.9,
+            "deactivationUser" : "eksanches@gmail.com",
+            "finalSwitch" : 1291485.36,
+            "initialSwitch" : 1292143.26,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1563402916,
+            "timeStart" : 1563397805,
+            "useTime" : 5111
+          },
+          "-Lk6MmRsvkg7ternGKhR" : {
+            "activationUser" : "eksanches@gmail.com",
+            "closed" : true,
+            "consumedValue" : 4744.62,
+            "deactivationUser" : "eksanches@gmail.com",
+            "finalSwitch" : 1286740.74,
+            "initialSwitch" : 1291485.36,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1563517730,
+            "timeStart" : 1563480972,
+            "useTime" : 36758
+          },
+          "-LkAeZJ5yPKPz69_eLPx" : {
+            "activationUser" : "eksanches@gmail.com",
+            "closed" : true,
+            "consumedValue" : 464.4,
+            "deactivationUser" : "eksanches@gmail.com",
+            "finalSwitch" : 1286276.34,
+            "initialSwitch" : 1286740.74,
+            "policies" : {
+              "accident" : true,
+              "theft" : true,
+              "thirdParty" : true
+            },
+            "timeEnd" : 1563556619,
+            "timeStart" : 1563553004,
+            "useTime" : 3615
+          }
+        },
+        "profile" : {
+          "brand" : "Renault",
+          "itemPrice" : "46000",
+          "model" : "Logan Expression  1.0 12V completo",
+          "plate" : "pzz2796",
+          "protectionData" : {
+            "access" : [ "pron" ],
+            "activationsCounter" : {
+              "accident" : 46,
+              "theft" : 46,
+              "thirdParty" : 46
+            },
+            "minuteValue" : 7.74,
+            "protectionStatus" : {
+              "accident" : false,
+              "theft" : false,
+              "thirdParty" : false
+            }
+          }
+        }
+      },
     },
     "motorcycle" : {
       "1f7b7ddf6659e5df153d5becfc940114" : {

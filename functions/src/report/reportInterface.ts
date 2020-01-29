@@ -201,6 +201,8 @@ export interface Report_UserFinalReportProfile {
     userId: string,
     billing: any;
     items: any;
+    cpf: any;
+    email: string;
 }
 
 export interface Report_CustomersData {

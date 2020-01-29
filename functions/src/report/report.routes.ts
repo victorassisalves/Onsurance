@@ -1,7 +1,8 @@
 
 import * as express from "express";
 import * as cors from "cors";
-import { buildUserProfileReport } from "../report/report.controller";
+import { BuildUserProfileReport } from "../report/report.controller";
+import { SendEmail } from "../email/sendEmail";
 
 
 const report = express();
@@ -10,8 +11,10 @@ report.use(cors({origin: true}));
 
 router.get("/usage", async (request, response) => {
     try {
-        console.log(request.path)
-        const report = new buildUserProfileReport();
+        console.log(request.path);
+        // const email = new SendEmail()
+        // email.sendQuoteAutoResult();
+        const report = new BuildUserProfileReport();
         const result = await report.getProfile();
         console.log(`TCL: result >-> Before response.`);
     

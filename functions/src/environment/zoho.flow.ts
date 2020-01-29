@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { nodemailer } from "nodemailer";
+import * as nodemailer from "nodemailer";
 const failSafe = 3;
 let count = 0;
 export const sendQuotationZoho = async (quotationInfo) => {

@@ -26,12 +26,15 @@
   },
   "hosting": 
     // {
-    //   "public": "./public/tire-quote"
+        // "target": "cotacao.onsurance.me/pneus",
+      //   "public": "./public/tire-quote"
     // },
     // {
+      // "target": "cotacao.onsurance.me/auto",
     //   "public": "./public/auto-quote", 
     // },
     {
+      "target": "api",
       "public": "public",
       "rewrites": [
         {

@@ -25,3 +25,7 @@ export const getCustomerId = userEmail => {
     // const userDbId = crypto.createHmac('sha256', getSecretCustomer.userSecret).update(userEmail).digest('hex');
     return userDbId;
 };
+
+export const customersProfilesDbRoot = () => {
+    return customers.ref(`/profiles/`);
+};
