@@ -161,7 +161,6 @@ export interface Report_vehicleV1Interface {
     "valorconsumido" : any, //63
 }
 
-
 /**
  * @description Second version of log use data base model
  */
@@ -239,4 +238,9 @@ export interface Report_VehicleAutoLogUse {
     ['useId1']?: Report_vehicleV1Interface,
     ['useId2']?: Report_vehicleV2Interface,
     ['useId3']?: Report_vehicleV3Interface,
+}
+
+export interface Report_vehicleReport {
+    totalMinutes: 0,
+    usageArray: []
 }

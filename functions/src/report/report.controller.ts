@@ -9,7 +9,8 @@ import { Report_UserProfileInterface,
     Report_vehicleV1Interface,
     Report_vehicleV2Interface,
     Report_vehicleV3Interface,
-    Report_VehicleAutoLogUse, 
+    Report_VehicleAutoLogUse,
+    Report_vehicleReport, 
 } from "./reportInterface";
 import { vehicleData } from "./data/reportDataVehicles";
 import * as crypto from "crypto";
@@ -23,6 +24,8 @@ const generalReport = {
     spent: 0,
     monthlyUsage: {},
 }
+
+let reportFile;
 
 /**
  * @description This Class is responsible for generating the report for Onsurance usage (Tires and Auto)
@@ -43,11 +46,18 @@ class BuildOnsuranceUsageReport  {
          *      
          */
         try {
-            console.log(`TCL: 7.2.0 - buildOnsuranceUsageReport -> generateAutoReportData -> item Profile.`);
+            // console.log(`TCL: 7.2.0 - buildOnsuranceUsageReport -> generateAutoReportData -> item Profile.`);
             const itemId = getItemId(itemProfile.itemId);
             const vehicleInfo: Report_VehicleData = vehicleData[itemProfile.type][itemProfile.innerType][itemId];
-            const useReport = await this.separeteLogUseVergions(vehicleInfo.logUse);
-            console.log(`TCL: 7.2.1 - buildOnsuranceUsageReport -> generateAutoReportData -> After separeteLogUseVergions.`);
+            let useReport;
+            const keys = Object.keys(vehicleInfo)
+            if (keys.includes("logUse")) {
+                useReport = await this.separeteLogUseVergions(vehicleInfo.logUse);
+                console.log(`TCL: 7.2.1 - buildOnsuranceUsageReport -> generateAutoReportData -> After separeteLogUseVergions.`);
+            } else {
+                console.log(`TCL: 7.2.1 - buildOnsuranceUsageReport -> generateAutoReportData -> separeteLogUseVergions -> Dont have log use ${itemProfile.owner}.`);
+                useReport = null
+            }
 
             return useReport;
         } catch (error) {
@@ -66,117 +76,118 @@ class BuildOnsuranceUsageReport  {
             let minutes = 0;
             const logUseArray = Object.keys(logUse);
             const usageArray = [];
-            console.log(`TCL: 7.2.0.0 - buildOnsuranceUsageReport -> separeteLogUseVergions -> Before ForOF ${counter}.`);
+            // console.log(`TCL: 7.2.0.0 - buildOnsuranceUsageReport -> separeteLogUseVergions -> Before ForOF ${counter}.`);
 
             let allUsage = {};
             for await (const log of logUseArray) {
 
-                if (logUse[log].valorconsumido) { // V1
+                if (logUse[log] !== null && logUse[log] !== undefined){
+                    if (logUse[log].valorconsumido) { // V1
 
-                    const usage: Report_vehicleV1Interface = logUse[log];
+                        const usage: Report_vehicleV1Interface = logUse[log];
 
-                    // console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> V1.`);
+                        // console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> V1.`);
 
-                    const thisUsage = this.generateV1UsageReport(usage);
-                    const month = `${thisUsage.month}/${thisUsage.year}`;
+                        const thisUsage = this.generateV1UsageReport(usage);
+                        const month = `${thisUsage.month}/${thisUsage.year}`;
 
-                    if (allUsage[month] !== null && allUsage[month] !== undefined){ // Já tem o mês de faturamento
-                        allUsage[month].spent += thisUsage.spent; 
-                        allUsage[month].totalMinutes += thisUsage.totalMinutes;
-                        allUsage[month].activations += 1; 
+                        if (allUsage[month] !== null && allUsage[month] !== undefined){ // Já tem o mês de faturamento
+                            allUsage[month].spent += thisUsage.spent; 
+                            allUsage[month].totalMinutes += thisUsage.totalMinutes;
+                            allUsage[month].activations += 1; 
 
-                    } else { // Não tem o mês de faturamento
+                        } else { // Não tem o mês de faturamento
 
-                        allUsage = {
-                            ...allUsage,
-                            [month]: {
-                                spent: thisUsage.spent,
-                                totalMinutes: thisUsage.totalMinutes,
-                                activations: 1,
+                            allUsage = {
+                                ...allUsage,
+                                [month]: {
+                                    spent: thisUsage.spent,
+                                    totalMinutes: thisUsage.totalMinutes,
+                                    activations: 1,
+                                }
                             }
-                        }
-                    }  
-                    this.generateGeneralReport(month, thisUsage);
-                    minutes += thisUsage.totalMinutes;
-                    allUsage[month].spent = parseFloat((allUsage[month].spent).toFixed(3));
-                    counter++
+                        }  
+                        this.generateGeneralReport(month, thisUsage);
+                        minutes += thisUsage.totalMinutes;
+                        allUsage[month].spent = parseFloat((allUsage[month].spent).toFixed(3));
+                        counter++
 
-                } else if (logUse[log].valorConsumido) { // V2
-                    const usage: Report_vehicleV2Interface = logUse[log];
-                    // console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> V2.`);
-
-
-                    const thisUsage = this.generateV2UsageReport(usage);
-                    const month = `${thisUsage.month}/${thisUsage.year}`;
-
-                    if (allUsage[month] !== null && allUsage[month] !== undefined){ // Já tem o mês de faturamento
-                        // console.log(`TCL: buildOnsuranceUsageReport -> v2Usage[month]`);
-                        allUsage[month].spent += thisUsage.spent; 
-                        allUsage[month].totalMinutes += thisUsage.totalMinutes; 
-                        allUsage[month].activations += 1; 
+                    } else if (logUse[log].valorConsumido) { // V2
+                        const usage: Report_vehicleV2Interface = logUse[log];
+                        // console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> V2.`);
 
 
-                    } else { // Não tem o mês de faturamento
-                        // console.log(`TCL: buildOnsuranceUsageReport -> v2Usage[month]`);
+                        const thisUsage = this.generateV2UsageReport(usage);
+                        const month = `${thisUsage.month}/${thisUsage.year}`;
 
-                        allUsage = {
-                            ...allUsage,
-                            [month]: {
-                                spent: thisUsage.spent,
-                                totalMinutes: thisUsage.totalMinutes,
-                                activations: 1,
+                        if (allUsage[month] !== null && allUsage[month] !== undefined){ // Já tem o mês de faturamento
+                            // console.log(`TCL: buildOnsuranceUsageReport -> v2Usage[month]`);
+                            allUsage[month].spent += thisUsage.spent; 
+                            allUsage[month].totalMinutes += thisUsage.totalMinutes; 
+                            allUsage[month].activations += 1; 
+
+
+                        } else { // Não tem o mês de faturamento
+                            // console.log(`TCL: buildOnsuranceUsageReport -> v2Usage[month]`);
+
+                            allUsage = {
+                                ...allUsage,
+                                [month]: {
+                                    spent: thisUsage.spent,
+                                    totalMinutes: thisUsage.totalMinutes,
+                                    activations: 1,
+                                }
                             }
-                        }
-                        // console.log(`TCL: buildOnsuranceUsageReport -> v2Usage[month]`);
+                            // console.log(`TCL: buildOnsuranceUsageReport -> v2Usage[month]`);
 
-                    } 
-                    this.generateGeneralReport(month, thisUsage);
-                    minutes += thisUsage.totalMinutes;
-                    allUsage[month].spent = parseFloat((allUsage[month].spent).toFixed(3));
-                    counter++
+                        } 
+                        this.generateGeneralReport(month, thisUsage);
+                        minutes += thisUsage.totalMinutes;
+                        allUsage[month].spent = parseFloat((allUsage[month].spent).toFixed(3));
+                        counter++
 
-                } else if (logUse[log].closed) { // V3
-                    const usage: Report_vehicleV3Interface = logUse[log];
-                    // console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> V3.`);
+                    } else if (logUse[log].closed) { // V3
+                        const usage: Report_vehicleV3Interface = logUse[log];
+                        // console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> V3.`);
 
-                    const thisUsage = this.generateV3UsageReport(usage);
-                    const month = `${thisUsage.month}/${thisUsage.year}`;
+                        const thisUsage = this.generateV3UsageReport(usage);
+                        const month = `${thisUsage.month}/${thisUsage.year}`;
 
-                    if (allUsage[month] !== null && allUsage[month] !== undefined){ // Já tem o mês de faturamento
+                        if (allUsage[month] !== null && allUsage[month] !== undefined){ // Já tem o mês de faturamento
 
-                        allUsage[month].spent += thisUsage.spent; 
-                        allUsage[month].totalMinutes += thisUsage.totalMinutes; 
-                        allUsage[month].activations += 1; 
+                            allUsage[month].spent += thisUsage.spent; 
+                            allUsage[month].totalMinutes += thisUsage.totalMinutes; 
+                            allUsage[month].activations += 1; 
 
-                    } else { // Não tem o mês de faturamento
+                        } else { // Não tem o mês de faturamento
 
-                        allUsage = {
-                            ...allUsage,
-                            [month]: {
-                                spent: thisUsage.spent,
-                                totalMinutes: thisUsage.totalMinutes,
-                                activations: 1
+                            allUsage = {
+                                ...allUsage,
+                                [month]: {
+                                    spent: thisUsage.spent,
+                                    totalMinutes: thisUsage.totalMinutes,
+                                    activations: 1
+                                }
                             }
-                        }
 
-                    }  
-                    this.generateGeneralReport(month, thisUsage);
-                    minutes += thisUsage.totalMinutes;
-                    allUsage[month].spent = parseFloat((allUsage[month].spent).toFixed(3));
-                    counter++
-                } else { // V?
-                    /**
-                     * @bug -> if log version is 1 and valorconsumido: 0 ends here.
-                     */
-                    console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> No Version founded.`);   
-                    counter++
+                        }  
+                        this.generateGeneralReport(month, thisUsage);
+                        minutes += thisUsage.totalMinutes;
+                        allUsage[month].spent = parseFloat((allUsage[month].spent).toFixed(3));
+                        counter++
+                    } else { // V?
+                        /**
+                         * @bug -> if log version is 1 and valorconsumido: 0 ends here.
+                         */
+                        // console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> No Version founded.`);   
+                        counter++
+                    }
                 }
-
             }
-            console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> After ForOF.`);
+            // console.log(`TCL: 7.2.0.${counter} - buildOnsuranceUsageReport -> separeteLogUseVergions -> After ForOF.`);
             usageArray.push(allUsage);
 
-            console.log(`TCL: 7.2.0.END -> buildOnsuranceUsageReport -> usageArray`);
+            // console.log(`TCL: 7.2.0.END -> buildOnsuranceUsageReport -> usageArray`);
             return {
                 usageArray: usageArray,
                 totalMinutes: minutes,
@@ -193,7 +204,7 @@ class BuildOnsuranceUsageReport  {
     }
 
     /**
-     * @description This functions treats the data in the fisrt verios of the log use.
+     * @description This functions treats the data in the first version of the log use.
      * @param {Report_vehicleV1Interface} usage Is the log use representing 1 usage
      */
     private generateV1UsageReport(usage: Report_vehicleV1Interface) {
@@ -226,6 +237,10 @@ class BuildOnsuranceUsageReport  {
         }
     }
 
+    /**
+     * @description This functions treats the data in the Second version of the log use.
+     * @param {Report_vehicleV2Interface} usage Is the log use representing 1 usage
+     */
     private generateV2UsageReport(usage: Report_vehicleV2Interface) {
         try {
             const timeStart = usage.timeStart;
@@ -257,6 +272,10 @@ class BuildOnsuranceUsageReport  {
         }
     }
 
+     /**
+     * @description This functions treats the data in the third version of the log use.
+     * @param {Report_vehicleV3Interface} usage Is the log use representing 1 usage
+     */
     private generateV3UsageReport(usage: Report_vehicleV3Interface) {
         try {
             const timeStart = usage.timeStart;
@@ -313,11 +332,18 @@ class BuildOnsuranceUsageReport  {
                         activations: 1,
                     }
                 };
-
-                generalReport.monthlyUsage[month].spent = parseFloat((generalReport.monthlyUsage[month].spent).toFixed(3));
             } 
+            generalReport.monthlyUsage[month].spent = parseFloat((generalReport.monthlyUsage[month].spent).toFixed(3));
+            generalReport.spent += parseFloat((usageData.spent).toFixed(3));
+            generalReport.spent = parseFloat((generalReport.spent).toFixed(3));
+
         } catch (error) {
-            
+            console.error(new Error(`buildOnsuranceUsageReport >-> generateGeneralReport >-> error: ${JSON.stringify(error)}`));
+            if (error.message === undefined) throw {
+                error: error,
+                message: `Error in buildOnsuranceUsageReport -> generateGeneralReport -> function.`
+            };
+            throw error; 
         }
     }
 
@@ -351,16 +377,21 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
     public async getProfile() {
         try {
             const usersArray = Object.keys(this.customersObj);
-            console.info(`TCL: 1 -buildUserProfileReport -> getProfile >-> After TurnProfileInArray`);
             await this.iterateUsersArray(usersArray);
-            console.log(`TCL: Last of Class - buildUserProfileReport -> getProfile >-> After iterateUsersArray`);
+            console.log(`TCL: END - buildUserProfileReport -> getProfile >-> After iterateUsersArray`);
             const usageMedia = (this.usageTimeMedia.hourMedia/this.usageTimeMedia.users);
             console.log(`TCL: buildUserProfileReport -> usageMedia Months`, usageMedia);
             console.log(`TCL: buildUserProfileReport -> General Report`, JSON.stringify(generalReport));
             console.log(`TCL: buildUserProfileReport -> number of Users`, this.usageTimeMedia.users);
             console.log(`TCL: buildUserProfileReport -> total of hours`, this.usageTimeMedia.hourMedia);
-            
-            return this.userReportArray;   
+
+
+            const report = {
+                generalReport: generalReport,
+                usersReport: this.userReportArray,
+
+            }
+            return report;   
         } catch (error) {
             console.error(new Error(`buildUserProfileReport >-> getProfile >-> error: ${JSON.stringify(error)}`));
             if (error.message === undefined) throw {
@@ -374,7 +405,7 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
     private async iterateUsersArray(usersArray: Array<string>){
         try {
 
-            console.log(`TCL: 2 - buildUserProfileReport -> iterateUsersArray >-> Before For of`);
+            // console.log(`TCL: 2 - buildUserProfileReport -> iterateUsersArray >-> Before For of`);
 
             for await ( let user of usersArray) {
 
@@ -389,9 +420,9 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
                 };
 
                 const userProfile: Report_UserProfileInterface = this.customersObj[user];
-                console.log(`TCL: 4 - buildUserProfileReport -> iterateUsersArray >-> userProfile`);
+                // console.log(`TCL: 4 - buildUserProfileReport -> iterateUsersArray >-> userProfile`);
                 switch (userProfile.personal.userEmail) {
-                    // case 'victor.assis.alves@gmail.com':
+                    case 'victor.assis.alves@gmail.com':
                     case 'victor.assis@onsurance.me':
                     case 'victor@onsurance.me':
                     case 'ricardo@onsurance.me':
@@ -402,25 +433,32 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
                     case "adilair@gmail.com":
                         break;
                 
-                    default:
+                    default: {
+
                         if (userProfile.personal.clientId !== null && userProfile.personal.clientId !== undefined){
 
                             userInfo.cpf = userProfile.personal.cpf;
                             userInfo.email = userProfile.personal.userEmail;
-        
-                            userInfo.billing = await this.userBillingInfo(userProfile.billing); // 5 step
-                            console.log(`TCL: 6 - buildUserProfileReport -> iterateUsersArray >-> After userBillingInfo`);
+                            this.usageTimeMedia.users += 1;
+
+                            if (userProfile.billing !== null && userProfile.billing !== undefined){
+                                userInfo.billing = await this.userBillingInfo(userProfile.billing); // 5 step
+                            }
+                                // console.log(`TCL: 6 - buildUserProfileReport -> iterateUsersArray >-> After userBillingInfo`);
                             
-                            userInfo.items  = await this.userItemsInfo(userProfile.items, userProfile.personal.userEmail); // 7 step
-                            console.log(`TCL: 8 - buildUserProfileReport -> iterateUsersArray >-> After userItemsInfo`);
+                            if (userProfile.items !== null && userProfile.items !== undefined){
+                                userInfo.items  = await this.userItemsInfo(userProfile.items, userProfile.personal.userEmail); // 7 step
+                            }
+                                
+                            // console.log(`TCL: 8 - buildUserProfileReport -> iterateUsersArray >-> After userItemsInfo`);
                             
                             this.userReportArray.push(userInfo);
         
                         } else {
                             console.log(`TCL: 5 - 6 - 7 - 8 - buildUserProfileReport -> iterateUsersArray >-> Not a buying client`);
                         }
+                    };
                 }
-                
             };
 
             console.log(`TCL: 9 - buildUserProfileReport -> iterateUsersArray >-> Before return.`);
@@ -446,7 +484,6 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
          */
         try {
             console.log(`TCL: 5.0 - buildUserProfileReport -> userBillingInfo >-> userBilling`);
-
             return userBilling;
         } catch (error) {
             console.error(new Error(`buildUserProfileReport >-> useBillingInfo >-> error: ${JSON.stringify(error)}`));
@@ -457,7 +494,7 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
             throw error;  
         }
     };
-
+    
     private async userItemsInfo(userItems: Report_ItemsInUserProfile, userEmail: string) {
         /**
          * @Todo
@@ -469,30 +506,34 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
          */
         try {
 
-            console.log(`TCL: 7.0 - buildUserProfileReport -> userItemsInfo -> Start`);
+            // console.log(`TCL: 7.0 - buildUserProfileReport -> userItemsInfo -> Start`);
             const items = Object.keys(userItems);
             const userUsageReport = []; //Usage report for all items
             for await (const vehicle of items) {
-                console.log(`TCL: 7.1 - buildUserProfileReport -> userItemsInfo -> Inside for of. Vehicle:`, vehicle);
+                // console.log(`TCL: 7.1 - buildUserProfileReport -> userItemsInfo -> Inside for of. Vehicle:`, vehicle);
 
                 if (vehicle === 'tires'){
                     console.log(`TCL: 7.2 - buildUserProfileReport -> userItemsInfo -> Inside for of -> Onsurance Tires.`);
                     userUsageReport.push(vehicle);
                 } else {
-                    console.log(`TCL: 7.2 - buildUserProfileReport -> userItemsInfo -> Inside for of -> Onsurance Auto.`);
+                    // console.log(`TCL: 7.2 - buildUserProfileReport -> userItemsInfo -> Inside for of -> Onsurance Auto.`);
                     const autoInfo: Report_VehicleInUserProfileInterface = userItems[vehicle];
                     if (userEmail === autoInfo.owner){
-                        const vehicleReport = await this.generateAutoReportData(userItems[vehicle]) // Returns the usage report for 1 item
-                        const months = vehicleReport.usageArray.length;
-                        const hours = vehicleReport.totalMinutes/60;
-                        const media = parseFloat((hours/months).toFixed(1));
-                        this.usageTimeMedia.hourMedia += media;
-
-                        const itemReport = {
-                            [vehicle]: vehicleReport.usageArray,
+                        const vehicleReport: Report_vehicleReport = await this.generateAutoReportData(userItems[vehicle]) // Returns the usage report for 1 item
+                        if (vehicleReport !== null) {
+                            const months = Object.keys(vehicleReport.usageArray).length;
+                            console.log(`TCL: months`, months);
+                            const hours = vehicleReport.totalMinutes/60;
+                            const media = parseFloat((hours/months).toFixed(1));
+                            this.usageTimeMedia.hourMedia += media;
+    
+                            const itemReport = {
+                                [vehicle]: vehicleReport.usageArray,
+                            };
+                            // console.log(`TCL: 7.3 - buildUserProfileReport -> userItemsInfo >-> itemReport`);
+                            userUsageReport.push(itemReport);
                         };
-                        console.log(`TCL: 7.3 - buildUserProfileReport -> userItemsInfo >-> itemReport`);
-                        userUsageReport.push(itemReport);
+                        
                     };
                 }     
             };
