@@ -25,8 +25,7 @@ export const convertTimestamp = (timestamp): returnedDateInterface => {
     if (month.length === 1) {
         month = `0${month}`
     }
-
-
+    
     return {
         month: month,
         weekDay: weekDay,

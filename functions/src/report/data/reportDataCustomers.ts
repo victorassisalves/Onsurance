@@ -13,7 +13,129 @@ export const customersData = async () => {
     }
   }
 }
+ 
 
+// export const customers = {
+//   "7430dd1c65deb12ccd1d247f76b0eb63" : {
+//     "billing" : {
+//       "6f4d85bab4ff861432a565539d9b8334" : {
+//         "billingDay" : 6,
+//         "billingTimes" : 7,
+//         "plan" : "smart"
+//       }
+//     },
+//     "itemAuthorizations" : {
+//       "myItems" : {
+//         "120bfdebb39a0ecd44f43d48cee0dae1" : {
+//           "9bd4939d281c66251104c6d563cbeaca" : true
+//         },
+//         "6f4d85bab4ff861432a565539d9b8334" : {
+//           "1b89e81cb10f6e2e7dd522bf4627afa8" : true,
+//           "9bd4939d281c66251104c6d563cbeaca" : true,
+//           "c4eba5431065522de119910eaf946c5e" : true
+//         },
+//         "tires" : {
+//           "120bfdebb39a0ecd44f43d48cee0dae1" : {
+//             "9bd4939d281c66251104c6d563cbeaca" : true
+//           },
+//           "6f4d85bab4ff861432a565539d9b8334" : {
+//             "9bd4939d281c66251104c6d563cbeaca" : true
+//           }
+//         }
+//       }
+//     },
+//     "items" : {
+//       "120bfdebb39a0ecd44f43d48cee0dae1" : {
+//         "activationsCounter" : {
+//           "accident" : 15,
+//           "theft" : 15,
+//           "thirdParty" : 15
+//         },
+//         "innerType" : "car",
+//         "itemId" : "ons2020",
+//         "owner" : "victor.assis.alves@gmail.com",
+//         "type" : "vehicle"
+//       },
+//       "6f4d85bab4ff861432a565539d9b8334" : {
+//         "activationsCounter" : {
+//           "accident" : 25,
+//           "theft" : 25,
+//           "thirdParty" : 25
+//         },
+//         "innerType" : "car",
+//         "itemId" : "ons2019",
+//         "owner" : "victor.assis.alves@gmail.com",
+//         "type" : "vehicle"
+//       },
+//       "tires" : {
+//         "120bfdebb39a0ecd44f43d48cee0dae1" : {
+//           "activationsCounter" : {
+//             "accident" : 10
+//           },
+//           "itemId" : "ons2020",
+//           "owner" : "victor.assis.alves@gmail.com",
+//           "type" : "tires",
+//           "vehicleType" : "car"
+//         },
+//         "6f4d85bab4ff861432a565539d9b8334" : {
+//           "activationsCounter" : {
+//             "accident" : 9
+//           },
+//           "itemId" : "ons2019",
+//           "owner" : "victor.assis.alves@gmail.com",
+//           "type" : "tires",
+//           "vehicleType" : "car"
+//         }
+//       }
+//     },
+//     "personal" : {
+//       "activationsCounter" : 171,
+//       "clientId" : 3,
+//       "cpf" : "02222471188",
+//       "firstName" : "Victor",
+//       "lastName" : "Assis",
+//       "lastOrder" : 219,
+//       "messengerId" : 725997604191041,
+//       "mssId" : 2016539558419152,
+//       "onboard" : true,
+//       "userEmail" : "victor.assis.alves@gmail.com",
+//       "wallet" : {
+//         "switch" : 7233129.32
+//       }
+//     },
+//     "purchaseHistory" : {
+//       "-LnNOVvoarA672jPu7hg" : {
+//         "fundsToWallet" : 4198,
+//         "orderId" : 208,
+//         "purchaseDate" : 1566998662,
+//         "purchasedItems" : [ 1513, 386, 485 ],
+//         "totalFunds" : 4447
+//       },
+//       "-LtRv_g9VFN-agoJ1cKr" : {
+//         "fundsToWallet" : 0,
+//         "orderId" : 6588,
+//         "purchaseDate" : 1573517154,
+//         "purchasedItems" : [ 386 ],
+//         "totalFunds" : 249
+//       },
+//       "-LvgIU5YdhvEvwwWHqkT" : {
+//         "fundsToWallet" : 299,
+//         "orderId" : 8006,
+//         "purchaseDate" : 1575922561,
+//         "purchasedItems" : [ 485 ],
+//         "totalFunds" : 299
+//       },
+//       "-Ly_oWgC-s9PH110S9Qm" : {
+//         "fundsToWallet" : 4198,
+//         "orderId" : 219,
+//         "purchaseDate" : 1579035007,
+//         "purchasedItems" : [ 1513, 386, 485 ],
+//         "totalFunds" : 4447
+//       },
+//       "lastOrder" : 219
+//     }
+//   }, 
+// }
 
 export const customers = {
   "00a95c9cd05d7b346d6f877afe14fcc4" : {

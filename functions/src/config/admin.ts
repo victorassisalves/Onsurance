@@ -38,6 +38,7 @@ export const admin = (() => {
         items: admin.database(items),
         main: admin.database(),
         firestore: admin.firestore(),
+        storage: admin.storage(),
     };
 
     return enviroments

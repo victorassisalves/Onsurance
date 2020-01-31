@@ -202,6 +202,7 @@ export interface Report_UserFinalReportProfile {
     items: any;
     cpf: any;
     email: string;
+    spent: number;
 }
 
 export interface Report_CustomersData {
@@ -241,6 +242,7 @@ export interface Report_VehicleAutoLogUse {
 }
 
 export interface Report_vehicleReport {
-    totalMinutes: 0,
-    usageArray: []
+    totalMinutes: number,
+    usageArray: any,
+    spent: number
 }
