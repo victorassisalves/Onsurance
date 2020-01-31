@@ -59,7 +59,7 @@ export const tireQuoteVariables = async (request: TireQuoteVariables) => {
         const minutes = parseInt(request.dailyUsage.slice(3,5));
 
         const variables = {
-            totalValue: checkRequestVariables("price", request.totalValue, Number),
+            totalValue: checkRequestVariables("Total Value", request.totalValue, Number),
             qtd: checkRequestVariables("qtd", request.qtd, Number),
             vehicleType: checkRequestVariables('VehicleType', request.vehicleType, String),
             firstName: checkRequestVariables('firstName', request.firstName, String),

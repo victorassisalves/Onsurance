@@ -1545,6 +1545,31 @@ export const TireRes_activationSuccessful = () => {
 
 
 
+export const quote_TireResponse = (variables, ass24h) => {
+    let extraText = ""
+    if (ass24h === "sim") {
+        const total = variables.activationCredit + 249
+        extraText = `A assistência 24 horas não está inclusa nos créditos de ativação. O valor total (Assistência 24h + Crédito de ativação) é de R$ ${total}.`
+    }
+    return {
+        "messages": [
+            {
+                "text": `Aqui está o resultado da sua cotação!`
+            },
+            {
+                "text": extraText, 
+            }
+        ],
+        "set_attributes": {
+            "activationCreditCot": variables.activationCredit,
+            "anualCostCot": variables.anualCost,
+            "creditDurationCot": variables.creditDuration,
+            "minuteValueCot": variables.minuteValue,
+            "franchiseCot": variables.franchise,
+        },
+    };
+    
+};
 export const quote_autoResponse = (variables, ass24h) => {
     if (variables.motoCc) {
         return {

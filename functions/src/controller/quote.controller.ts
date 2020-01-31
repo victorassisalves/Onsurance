@@ -46,7 +46,8 @@ export const executeTiresQuote = (variables: TireQuoteVariables) => {
         const usageData = tire.calcUsage();
         return {
             ...usageData,
-            minuteValue: minuteValue
+            minuteValue: minuteValue,
+            activationCredit: 99,
         }
     } catch (error) {
         throw error;

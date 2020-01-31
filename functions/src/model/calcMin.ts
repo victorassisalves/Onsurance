@@ -1,4 +1,3 @@
-import { TireCalcMinute } from "../database/tires.module";
 import { invalidVehicleType } from "./errors";
 
 interface Vehicle {

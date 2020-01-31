@@ -1,150 +1,27 @@
-import { getDatabaseInfo } from "../../model/databaseMethods"
-import { customersProfilesDbRoot } from "../../database/customer.database"
+// import { getDatabaseInfo } from "../../model/databaseMethods"
+// import { customersProfilesDbRoot } from "../../database/customer.database"
 
-export const customersData = async () => {
-  try {
-      const customersDbPath = customersProfilesDbRoot;
-      const customers = await getDatabaseInfo(customersDbPath);
-      return customers;
-  } catch (error) {
-    throw {
-      error: error,
-      message: `Failed to get customers profiles.`
-    }
-  }
-}
- 
-
-// export const customers = {
-//   "7430dd1c65deb12ccd1d247f76b0eb63" : {
-//     "billing" : {
-//       "6f4d85bab4ff861432a565539d9b8334" : {
-//         "billingDay" : 6,
-//         "billingTimes" : 7,
-//         "plan" : "smart"
-//       }
-//     },
-//     "itemAuthorizations" : {
-//       "myItems" : {
-//         "120bfdebb39a0ecd44f43d48cee0dae1" : {
-//           "9bd4939d281c66251104c6d563cbeaca" : true
-//         },
-//         "6f4d85bab4ff861432a565539d9b8334" : {
-//           "1b89e81cb10f6e2e7dd522bf4627afa8" : true,
-//           "9bd4939d281c66251104c6d563cbeaca" : true,
-//           "c4eba5431065522de119910eaf946c5e" : true
-//         },
-//         "tires" : {
-//           "120bfdebb39a0ecd44f43d48cee0dae1" : {
-//             "9bd4939d281c66251104c6d563cbeaca" : true
-//           },
-//           "6f4d85bab4ff861432a565539d9b8334" : {
-//             "9bd4939d281c66251104c6d563cbeaca" : true
-//           }
-//         }
-//       }
-//     },
-//     "items" : {
-//       "120bfdebb39a0ecd44f43d48cee0dae1" : {
-//         "activationsCounter" : {
-//           "accident" : 15,
-//           "theft" : 15,
-//           "thirdParty" : 15
-//         },
-//         "innerType" : "car",
-//         "itemId" : "ons2020",
-//         "owner" : "victor.assis.alves@gmail.com",
-//         "type" : "vehicle"
-//       },
-//       "6f4d85bab4ff861432a565539d9b8334" : {
-//         "activationsCounter" : {
-//           "accident" : 25,
-//           "theft" : 25,
-//           "thirdParty" : 25
-//         },
-//         "innerType" : "car",
-//         "itemId" : "ons2019",
-//         "owner" : "victor.assis.alves@gmail.com",
-//         "type" : "vehicle"
-//       },
-//       "tires" : {
-//         "120bfdebb39a0ecd44f43d48cee0dae1" : {
-//           "activationsCounter" : {
-//             "accident" : 10
-//           },
-//           "itemId" : "ons2020",
-//           "owner" : "victor.assis.alves@gmail.com",
-//           "type" : "tires",
-//           "vehicleType" : "car"
-//         },
-//         "6f4d85bab4ff861432a565539d9b8334" : {
-//           "activationsCounter" : {
-//             "accident" : 9
-//           },
-//           "itemId" : "ons2019",
-//           "owner" : "victor.assis.alves@gmail.com",
-//           "type" : "tires",
-//           "vehicleType" : "car"
-//         }
-//       }
-//     },
-//     "personal" : {
-//       "activationsCounter" : 171,
-//       "clientId" : 3,
-//       "cpf" : "02222471188",
-//       "firstName" : "Victor",
-//       "lastName" : "Assis",
-//       "lastOrder" : 219,
-//       "messengerId" : 725997604191041,
-//       "mssId" : 2016539558419152,
-//       "onboard" : true,
-//       "userEmail" : "victor.assis.alves@gmail.com",
-//       "wallet" : {
-//         "switch" : 7233129.32
-//       }
-//     },
-//     "purchaseHistory" : {
-//       "-LnNOVvoarA672jPu7hg" : {
-//         "fundsToWallet" : 4198,
-//         "orderId" : 208,
-//         "purchaseDate" : 1566998662,
-//         "purchasedItems" : [ 1513, 386, 485 ],
-//         "totalFunds" : 4447
-//       },
-//       "-LtRv_g9VFN-agoJ1cKr" : {
-//         "fundsToWallet" : 0,
-//         "orderId" : 6588,
-//         "purchaseDate" : 1573517154,
-//         "purchasedItems" : [ 386 ],
-//         "totalFunds" : 249
-//       },
-//       "-LvgIU5YdhvEvwwWHqkT" : {
-//         "fundsToWallet" : 299,
-//         "orderId" : 8006,
-//         "purchaseDate" : 1575922561,
-//         "purchasedItems" : [ 485 ],
-//         "totalFunds" : 299
-//       },
-//       "-Ly_oWgC-s9PH110S9Qm" : {
-//         "fundsToWallet" : 4198,
-//         "orderId" : 219,
-//         "purchaseDate" : 1579035007,
-//         "purchasedItems" : [ 1513, 386, 485 ],
-//         "totalFunds" : 4447
-//       },
-//       "lastOrder" : 219
+// export const customersData = async () => {
+//   try {
+//       const customersDbPath = customersProfilesDbRoot();
+//       const customers = await getDatabaseInfo(customersDbPath);
+//       return customers;
+//   } catch (error) {
+//     throw {
+//       error: error,
+//       message: `Failed to get customers profiles.`
 //     }
-//   }, 
-// }
+//   }
+// };
 
-export const customers = {
+export const customersData = {
   "00a95c9cd05d7b346d6f877afe14fcc4" : {
     "items" : {
       "d3b26f4915b5632fdc5c13d8d7356adb" : {
         "activationsCounter" : {
-          "accident" : 18,
-          "theft" : 18,
-          "thirdParty" : 18
+          "accident" : 20,
+          "theft" : 20,
+          "thirdParty" : 20
         },
         "innerType" : "car",
         "itemId" : "ogn6293",
@@ -153,7 +30,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 18,
+      "activationsCounter" : 20,
       "clientId" : 389,
       "cpf" : "37572580106",
       "firstName" : "Haroldo",
@@ -163,7 +40,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "hsuchoa@gmail.com",
       "wallet" : {
-        "switch" : 1170486.32
+        "switch" : 1166998.68
       }
     },
     "purchaseHistory" : {
@@ -215,6 +92,17 @@ export const customers = {
   },
   "011a27ec4255f1fe4152e292ed67758a" : {
     "items" : {
+      "530303ac56f23baefe9e14e3e7a2b92c" : {
+        "activationsCounter" : {
+          "accident" : 1,
+          "theft" : 1,
+          "thirdParty" : 1
+        },
+        "innerType" : "motorcycle",
+        "itemId" : "lmx0e32",
+        "owner" : "alexismkt@outlook.com",
+        "type" : "vehicle"
+      },
       "a7aecf4397e3d6c9005bcd22e906bf18" : {
         "activationsCounter" : {
           "accident" : 1,
@@ -228,7 +116,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 1,
+      "activationsCounter" : 2,
       "clientId" : 374,
       "cpf" : "06980835718",
       "firstName" : "Alexis",
@@ -355,9 +243,9 @@ export const customers = {
     "items" : {
       "9afdb91433c5fcd361b4cecdee2e4ce8" : {
         "activationsCounter" : {
-          "accident" : 15,
-          "theft" : 15,
-          "thirdParty" : 15
+          "accident" : 16,
+          "theft" : 16,
+          "thirdParty" : 16
         },
         "innerType" : "car",
         "itemId" : "hnk3547",
@@ -366,7 +254,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 15,
+      "activationsCounter" : 16,
       "clientId" : 366,
       "cpf" : "01345801688",
       "firstName" : "Leandro",
@@ -376,7 +264,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "brother_leo@hotmail.com",
       "wallet" : {
-        "switch" : 1300375.89
+        "switch" : 1300362.23
       }
     },
     "purchaseHistory" : {
@@ -505,7 +393,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "bruna.brito@portalformar.com.br",
       "wallet" : {
-        "switch" : 1335197.75
+        "switch" : 1327616.77
       }
     },
     "purchaseHistory" : {
@@ -590,9 +478,9 @@ export const customers = {
     "items" : {
       "c7141db4dffc8419e024d489cd60f77b" : {
         "activationsCounter" : {
-          "accident" : 94,
-          "theft" : 94,
-          "thirdParty" : 94
+          "accident" : 98,
+          "theft" : 98,
+          "thirdParty" : 98
         },
         "innerType" : "car",
         "itemId" : "fbv7186",
@@ -601,7 +489,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 94,
+      "activationsCounter" : 98,
       "clientId" : 283,
       "cpf" : "41715796861",
       "firstName" : "Joao",
@@ -611,7 +499,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "jdmvps@gmail.com",
       "wallet" : {
-        "switch" : 1390736.97
+        "switch" : 1387674.75
       }
     },
     "purchaseHistory" : {
@@ -629,9 +517,9 @@ export const customers = {
     "items" : {
       "16dd9e8866a448fddd402d5d2b0a88dc" : {
         "activationsCounter" : {
-          "accident" : 19,
-          "theft" : 19,
-          "thirdParty" : 19
+          "accident" : 20,
+          "theft" : 20,
+          "thirdParty" : 20
         },
         "innerType" : "car",
         "itemId" : "kvu7g70",
@@ -640,7 +528,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 19,
+      "activationsCounter" : 20,
       "clientId" : 379,
       "cpf" : "12347199757",
       "firstName" : "Bruno",
@@ -650,7 +538,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "bruno.exterior@hotmail.com",
       "wallet" : {
-        "switch" : 1193792.16
+        "switch" : 1193559.84
       }
     },
     "purchaseHistory" : {
@@ -736,7 +624,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "jpmotta@icloud.com",
       "wallet" : {
-        "switch" : 1521148.89
+        "switch" : 1500726.72
       }
     },
     "purchaseHistory" : {
@@ -768,9 +656,9 @@ export const customers = {
     "items" : {
       "1c9a591f785d4392e54d6e8633dd8752" : {
         "activationsCounter" : {
-          "accident" : 21,
-          "theft" : 21,
-          "thirdParty" : 21
+          "accident" : 22,
+          "theft" : 22,
+          "thirdParty" : 22
         },
         "innerType" : "car",
         "itemId" : "jjc4005",
@@ -779,7 +667,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 21,
+      "activationsCounter" : 22,
       "clientId" : 289,
       "cpf" : "95751807715",
       "firstName" : "Carlos Eduardo",
@@ -789,7 +677,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "ewichrowski@gmail.com",
       "wallet" : {
-        "switch" : 1716878.47
+        "switch" : 1711257.6
       }
     },
     "purchaseHistory" : {
@@ -871,9 +759,9 @@ export const customers = {
     "items" : {
       "403ce6136938a02658e524f747e67955" : {
         "activationsCounter" : {
-          "accident" : 154,
-          "theft" : 154,
-          "thirdParty" : 154
+          "accident" : 155,
+          "theft" : 155,
+          "thirdParty" : 155
         },
         "innerType" : "car",
         "itemId" : "pbg4391",
@@ -882,7 +770,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 154,
+      "activationsCounter" : 155,
       "clientId" : 99,
       "cpf" : "41020758104",
       "firstName" : "Maria Jose",
@@ -892,17 +780,33 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "mariajose.dasilva059@gmail.com",
       "wallet" : {
-        "switch" : 431284.5
+        "switch" : 400105.5
       }
     }
   },
   "0fbb49155646d1c30487e6b2d9d17a93" : {
+    "items" : {
+      "dcb1927d680c28971f32d7bd41986e35" : {
+        "activationsCounter" : {
+          "accident" : 1,
+          "theft" : 1,
+          "thirdParty" : 1
+        },
+        "innerType" : "car",
+        "itemId" : "lst4b19",
+        "owner" : "edsontk@outlook.com",
+        "type" : "vehicle"
+      }
+    },
     "personal" : {
+      "activationsCounter" : 1,
       "clientId" : 414,
       "cpf" : "12556294795",
       "firstName" : "Edson",
+      "lastName" : "Queiroz",
       "lastOrder" : 11473,
-      "onboard" : false,
+      "messengerId" : "2621743047938527",
+      "onboard" : true,
       "userEmail" : "edsontk@outlook.com",
       "wallet" : {
         "switch" : 2295000
@@ -991,9 +895,9 @@ export const customers = {
     "items" : {
       "f180da8f0667a06c872b15a46b5f514d" : {
         "activationsCounter" : {
-          "accident" : 93,
-          "theft" : 93,
-          "thirdParty" : 93
+          "accident" : 97,
+          "theft" : 97,
+          "thirdParty" : 97
         },
         "innerType" : "car",
         "itemId" : "hof0758",
@@ -1002,7 +906,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 93,
+      "activationsCounter" : 97,
       "clientId" : 250,
       "cpf" : "10147498678",
       "firstName" : "Yuri",
@@ -1012,7 +916,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "eng.yuricosta@gmail.com",
       "wallet" : {
-        "switch" : 1069404.16
+        "switch" : 1066064.56
       }
     },
     "purchaseHistory" : {
@@ -1082,9 +986,9 @@ export const customers = {
     "items" : {
       "01418ecc15f516e97247daa00dec4733" : {
         "activationsCounter" : {
-          "accident" : 132,
-          "theft" : 132,
-          "thirdParty" : 132
+          "accident" : 137,
+          "theft" : 137,
+          "thirdParty" : 137
         },
         "innerType" : "car",
         "itemId" : "ivc5460",
@@ -1093,7 +997,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 132,
+      "activationsCounter" : 137,
       "clientId" : 117,
       "cpf" : "84785730030",
       "firstName" : "Ícaro",
@@ -1103,7 +1007,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "budicaro@gmail.com",
       "wallet" : {
-        "switch" : 1041893.6
+        "switch" : 1039739.8
       }
     }
   },
@@ -1111,9 +1015,9 @@ export const customers = {
     "items" : {
       "14375613013c05b58375809a6d1019da" : {
         "activationsCounter" : {
-          "accident" : 65,
-          "theft" : 65,
-          "thirdParty" : 65
+          "accident" : 66,
+          "theft" : 66,
+          "thirdParty" : 66
         },
         "innerType" : "car",
         "itemId" : "drp6104",
@@ -1122,7 +1026,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 65,
+      "activationsCounter" : 66,
       "clientId" : 270,
       "cpf" : "07668032606",
       "firstName" : "Flávio",
@@ -1132,7 +1036,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "faf-2@hotmail.com",
       "wallet" : {
-        "switch" : 1184068.6
+        "switch" : 1183841.12
       }
     },
     "purchaseHistory" : {
@@ -1270,9 +1174,9 @@ export const customers = {
     "items" : {
       "be03ca151d07d7409552d8d5605e28c1" : {
         "activationsCounter" : {
-          "accident" : 27,
-          "theft" : 27,
-          "thirdParty" : 27
+          "accident" : 29,
+          "theft" : 29,
+          "thirdParty" : 29
         },
         "innerType" : "car",
         "itemId" : "kpg8434",
@@ -1281,7 +1185,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 27,
+      "activationsCounter" : 29,
       "clientId" : 362,
       "cpf" : "09893855748",
       "firstName" : "Edson",
@@ -1291,7 +1195,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "edson_miguel2006@yahoo.com.br",
       "wallet" : {
-        "switch" : 1194895.68
+        "switch" : 1194769.84
       }
     },
     "purchaseHistory" : {
@@ -1309,9 +1213,9 @@ export const customers = {
     "items" : {
       "43d18b1a046787de9858b040d1b2f0cd" : {
         "activationsCounter" : {
-          "accident" : 25,
-          "theft" : 25,
-          "thirdParty" : 25
+          "accident" : 26,
+          "theft" : 26,
+          "thirdParty" : 26
         },
         "innerType" : "car",
         "itemId" : "fhp2131",
@@ -1320,7 +1224,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 25,
+      "activationsCounter" : 26,
       "clientId" : 314,
       "cpf" : "88011666568",
       "firstName" : "André",
@@ -1330,7 +1234,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "am.schn@gmail.com",
       "wallet" : {
-        "switch" : 1899431.8
+        "switch" : 1895897.2
       }
     },
     "purchaseHistory" : {
@@ -1484,7 +1388,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "itamarsantiago@hotmail.com",
       "wallet" : {
-        "switch" : 440892.32
+        "switch" : 414402.43
       }
     },
     "purchaseHistory" : {
@@ -1525,9 +1429,9 @@ export const customers = {
     "items" : {
       "6074c5199e47e0a1afd1989d659404cb" : {
         "activationsCounter" : {
-          "accident" : 34,
-          "theft" : 34,
-          "thirdParty" : 34
+          "accident" : 36,
+          "theft" : 36,
+          "thirdParty" : 36
         },
         "innerType" : "car",
         "itemId" : "doo5824",
@@ -1536,7 +1440,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 34,
+      "activationsCounter" : 36,
       "clientId" : 359,
       "cpf" : "29750700805",
       "firstName" : "Anderson",
@@ -1546,7 +1450,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "andersonpedrodasilva@gmail.com",
       "wallet" : {
-        "switch" : 1187930.92
+        "switch" : 1187572.76
       }
     },
     "purchaseHistory" : {
@@ -1686,7 +1590,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "ushavelasco@gmail.com",
       "wallet" : {
-        "switch" : 1105258.66
+        "switch" : 1104985.04
       }
     },
     "purchaseHistory" : {
@@ -1704,9 +1608,9 @@ export const customers = {
     "items" : {
       "47fdddc0be5a577dd398e019158ca87e" : {
         "activationsCounter" : {
-          "accident" : 65,
-          "theft" : 65,
-          "thirdParty" : 65
+          "accident" : 67,
+          "theft" : 67,
+          "thirdParty" : 67
         },
         "innerType" : "car",
         "itemId" : "ial8808",
@@ -1715,7 +1619,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 65,
+      "activationsCounter" : 67,
       "clientId" : 236,
       "cpf" : "80518923053",
       "firstName" : "Cassio",
@@ -1725,7 +1629,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "cmontanow@gmail.com",
       "wallet" : {
-        "switch" : 2175898.4
+        "switch" : 2175061
       }
     },
     "purchaseHistory" : {
@@ -1771,7 +1675,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "eng.vitor.carolo@gmail.com",
       "wallet" : {
-        "switch" : 1249591.02
+        "switch" : 1248917.91
       }
     },
     "purchaseHistory" : {
@@ -1794,9 +1698,9 @@ export const customers = {
     "items" : {
       "02c829fe6b9ebcb0dd758c938249fcdb" : {
         "activationsCounter" : {
-          "accident" : 10,
-          "theft" : 10,
-          "thirdParty" : 10
+          "accident" : 12,
+          "theft" : 12,
+          "thirdParty" : 12
         },
         "innerType" : "car",
         "itemId" : "owa0725",
@@ -1805,7 +1709,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 10,
+      "activationsCounter" : 12,
       "onboard" : true,
       "userEmail" : "gleisseaguiar@hotmail.com",
       "wallet" : {
@@ -1817,9 +1721,9 @@ export const customers = {
     "items" : {
       "4dbe9fa61cb7ff978ccb8b1afecd60ff" : {
         "activationsCounter" : {
-          "accident" : 17,
-          "theft" : 17,
-          "thirdParty" : 17
+          "accident" : 22,
+          "theft" : 22,
+          "thirdParty" : 22
         },
         "innerType" : "car",
         "itemId" : "kyf1d02",
@@ -1828,7 +1732,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 17,
+      "activationsCounter" : 22,
       "clientId" : 409,
       "cpf" : "12105645720",
       "firstName" : "Luis Fernando",
@@ -1838,7 +1742,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "sosmuniz@hotmail.com",
       "wallet" : {
-        "switch" : 1306940.54
+        "switch" : 1304848.64
       }
     },
     "purchaseHistory" : {
@@ -1909,9 +1813,9 @@ export const customers = {
     "items" : {
       "9b01e10ecdb79964c5cdea2e92d10b96" : {
         "activationsCounter" : {
-          "accident" : 217,
-          "theft" : 217,
-          "thirdParty" : 217
+          "accident" : 219,
+          "theft" : 219,
+          "thirdParty" : 219
         },
         "innerType" : "car",
         "itemId" : "jig2335",
@@ -1920,7 +1824,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 217,
+      "activationsCounter" : 219,
       "clientId" : 104,
       "cpf" : "61116262134",
       "firstName" : "Leonardo",
@@ -1930,7 +1834,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "leonardor.azevedo@gmail.com",
       "wallet" : {
-        "switch" : 845528
+        "switch" : 837924.36
       }
     }
   },
@@ -1948,9 +1852,9 @@ export const customers = {
     "items" : {
       "523d796978fac93852fa50467549ee71" : {
         "activationsCounter" : {
-          "accident" : 93,
-          "theft" : 93,
-          "thirdParty" : 93
+          "accident" : 95,
+          "theft" : 95,
+          "thirdParty" : 95
         },
         "innerType" : "car",
         "itemId" : "gfi6454",
@@ -1970,7 +1874,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 137,
+      "activationsCounter" : 139,
       "clientId" : 172,
       "cpf" : "81645970906",
       "firstName" : "Mauricio",
@@ -1980,7 +1884,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "kushimamau@hotmail.com",
       "wallet" : {
-        "switch" : 1417636.61
+        "switch" : 1411651.77
       }
     },
     "purchaseHistory" : {
@@ -2005,9 +1909,9 @@ export const customers = {
     "items" : {
       "8b2e3388797ce371e1ec1759f7cfdffd" : {
         "activationsCounter" : {
-          "accident" : 57,
-          "theft" : 57,
-          "thirdParty" : 57
+          "accident" : 59,
+          "theft" : 59,
+          "thirdParty" : 59
         },
         "innerType" : "car",
         "itemId" : "cot8941",
@@ -2016,7 +1920,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 57,
+      "activationsCounter" : 59,
       "clientId" : 255,
       "cpf" : "21846904811",
       "firstName" : "",
@@ -2026,7 +1930,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "mvloro@gmail.com",
       "wallet" : {
-        "switch" : 1206241.74
+        "switch" : 1202862.92
       }
     },
     "purchaseHistory" : {
@@ -2129,9 +2033,9 @@ export const customers = {
     "items" : {
       "527adad9190d7dc576f6a7a8324a75f9" : {
         "activationsCounter" : {
-          "accident" : 5,
-          "theft" : 5,
-          "thirdParty" : 5
+          "accident" : 6,
+          "theft" : 6,
+          "thirdParty" : 6
         },
         "innerType" : "car",
         "itemId" : "die9389",
@@ -2140,7 +2044,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 5,
+      "activationsCounter" : 6,
       "clientId" : 391,
       "cpf" : "45581265810",
       "firstName" : "Matheus",
@@ -2150,7 +2054,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "matheussilva.r20@gmail.com",
       "wallet" : {
-        "switch" : 1196826.84
+        "switch" : 1196308.96
       }
     },
     "purchaseHistory" : {
@@ -2168,9 +2072,9 @@ export const customers = {
     "items" : {
       "65dade2267d22119fa343cb2403d70b7" : {
         "activationsCounter" : {
-          "accident" : 13,
-          "theft" : 13,
-          "thirdParty" : 13
+          "accident" : 15,
+          "theft" : 15,
+          "thirdParty" : 15
         },
         "innerType" : "car",
         "itemId" : "lqb7484",
@@ -2179,7 +2083,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 13,
+      "activationsCounter" : 15,
       "clientId" : 395,
       "cpf" : "76682897715",
       "firstName" : "Leandro",
@@ -2189,7 +2093,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "leandropgml@gmail.com",
       "wallet" : {
-        "switch" : 2055321.8
+        "switch" : 2050175.14
       }
     },
     "purchaseHistory" : {
@@ -2212,9 +2116,9 @@ export const customers = {
     "items" : {
       "d90f320c1c395348cfe5875b025f51be" : {
         "activationsCounter" : {
-          "accident" : 168,
-          "theft" : 168,
-          "thirdParty" : 168
+          "accident" : 169,
+          "theft" : 169,
+          "thirdParty" : 169
         },
         "innerType" : "car",
         "itemId" : "kpq4120",
@@ -2223,7 +2127,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 168,
+      "activationsCounter" : 169,
       "onboard" : true,
       "userEmail" : "giovannalsmotta@gmail.com",
       "wallet" : {
@@ -2235,9 +2139,9 @@ export const customers = {
     "items" : {
       "2dd71f950342e94d2d92ea28c3f0bace" : {
         "activationsCounter" : {
-          "accident" : 54,
-          "theft" : 54,
-          "thirdParty" : 54
+          "accident" : 56,
+          "theft" : 56,
+          "thirdParty" : 56
         },
         "innerType" : "car",
         "itemId" : "jkk1171",
@@ -2246,7 +2150,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 54,
+      "activationsCounter" : 56,
       "clientId" : 291,
       "cpf" : "62521934372",
       "firstName" : "Paulo",
@@ -2256,7 +2160,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "paulogwsa@yahoo.com.br",
       "wallet" : {
-        "switch" : 1057933.36
+        "switch" : 1055702.12
       }
     },
     "purchaseHistory" : {
@@ -2428,9 +2332,9 @@ export const customers = {
     "items" : {
       "02bece9d4e5bd5282d22f1678750c86e" : {
         "activationsCounter" : {
-          "accident" : 119,
-          "theft" : 119,
-          "thirdParty" : 119
+          "accident" : 122,
+          "theft" : 122,
+          "thirdParty" : 122
         },
         "innerType" : "car",
         "itemId" : "jvy5939",
@@ -2439,7 +2343,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 119,
+      "activationsCounter" : 122,
       "clientId" : 190,
       "cpf" : "79067476315",
       "firstName" : "Reis Magno",
@@ -2449,7 +2353,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "reismagnoleal@gmail.com",
       "wallet" : {
-        "switch" : 1334136.92
+        "switch" : 1333056.53
       }
     },
     "purchaseHistory" : {
@@ -2474,9 +2378,9 @@ export const customers = {
     "items" : {
       "8fd0456505b55074676fe7b960e9ece2" : {
         "activationsCounter" : {
-          "accident" : 283,
-          "theft" : 283,
-          "thirdParty" : 283
+          "accident" : 287,
+          "theft" : 287,
+          "thirdParty" : 287
         },
         "innerType" : "car",
         "itemId" : "pbs 0255",
@@ -2485,7 +2389,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 283,
+      "activationsCounter" : 287,
       "clientId" : 122,
       "cpf" : "11332549187",
       "firstName" : "Valdemar Martins",
@@ -2495,7 +2399,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "valde48@globo.com",
       "wallet" : {
-        "switch" : 2957834.7
+        "switch" : 2956459.5
       }
     }
   },
@@ -2510,9 +2414,9 @@ export const customers = {
     "items" : {
       "23fe20b51aba58de8e4d2572223b89e9" : {
         "activationsCounter" : {
-          "accident" : 473,
-          "theft" : 473,
-          "thirdParty" : 473
+          "accident" : 479,
+          "theft" : 479,
+          "thirdParty" : 479
         },
         "innerType" : "car",
         "itemId" : "fkc1071",
@@ -2521,7 +2425,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 473,
+      "activationsCounter" : 479,
       "clientId" : 152,
       "cpf" : "06455182804",
       "firstName" : "Flavio",
@@ -2531,7 +2435,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "flavio@flavioqueiroz.com.br",
       "wallet" : {
-        "switch" : 4242137.58
+        "switch" : 4237268.3
       }
     },
     "purchaseHistory" : {
@@ -2554,9 +2458,9 @@ export const customers = {
     "items" : {
       "1c9a591f785d4392e54d6e8633dd8752" : {
         "activationsCounter" : {
-          "accident" : 27,
-          "theft" : 27,
-          "thirdParty" : 27
+          "accident" : 29,
+          "theft" : 29,
+          "thirdParty" : 29
         },
         "innerType" : "car",
         "itemId" : "jjc4005",
@@ -2565,7 +2469,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 27,
+      "activationsCounter" : 29,
       "onboard" : true,
       "userEmail" : "luisajw@gmail.com",
       "wallet" : {
@@ -2577,9 +2481,9 @@ export const customers = {
     "items" : {
       "6da84089134a7019cfcc2be92e56b346" : {
         "activationsCounter" : {
-          "accident" : 9,
-          "theft" : 9,
-          "thirdParty" : 9
+          "accident" : 11,
+          "theft" : 11,
+          "thirdParty" : 11
         },
         "innerType" : "car",
         "itemId" : "ewk1614",
@@ -2588,7 +2492,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 9,
+      "activationsCounter" : 11,
       "clientId" : 387,
       "cpf" : "25398590898",
       "firstName" : "Leonardo",
@@ -2598,7 +2502,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "leomkx@gmail.com",
       "wallet" : {
-        "switch" : 1193367.8
+        "switch" : 1193222.9
       }
     },
     "purchaseHistory" : {
@@ -2662,9 +2566,9 @@ export const customers = {
     "items" : {
       "ef44f0bb21af05add7c50815f1a1b85c" : {
         "activationsCounter" : {
-          "accident" : 233,
-          "theft" : 233,
-          "thirdParty" : 233
+          "accident" : 234,
+          "theft" : 234,
+          "thirdParty" : 234
         },
         "innerType" : "car",
         "itemId" : "pfq2961",
@@ -2673,7 +2577,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 233,
+      "activationsCounter" : 234,
       "clientId" : 121,
       "cpf" : "06538668607",
       "firstName" : "Graciele",
@@ -2683,7 +2587,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "gracielecristina@gmail.com",
       "wallet" : {
-        "switch" : 1699941.22
+        "switch" : 1692810.65
       }
     }
   },
@@ -2922,9 +2826,9 @@ export const customers = {
     "items" : {
       "f19d92bda6850a99d918d2f0874650e9" : {
         "activationsCounter" : {
-          "accident" : 17,
-          "theft" : 17,
-          "thirdParty" : 17
+          "accident" : 23,
+          "theft" : 23,
+          "thirdParty" : 23
         },
         "innerType" : "car",
         "itemId" : "fpb8286",
@@ -2933,7 +2837,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 17,
+      "activationsCounter" : 23,
       "clientId" : 384,
       "cpf" : "22463435852",
       "firstName" : "Fernando",
@@ -2943,7 +2847,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "fernando_raizaro@hotmail.com",
       "wallet" : {
-        "switch" : 1192173.25
+        "switch" : 1191144.88
       }
     },
     "purchaseHistory" : {
@@ -2968,9 +2872,9 @@ export const customers = {
     "items" : {
       "abb1ea122261ed5978468f7eaabd0f1f" : {
         "activationsCounter" : {
-          "accident" : 284,
-          "theft" : 284,
-          "thirdParty" : 284
+          "accident" : 289,
+          "theft" : 289,
+          "thirdParty" : 289
         },
         "innerType" : "car",
         "itemId" : "ppn2311",
@@ -2979,7 +2883,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 284,
+      "activationsCounter" : 289,
       "clientId" : 189,
       "cpf" : "00298370735",
       "firstName" : "Pedro Paulo",
@@ -2989,7 +2893,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "pedropaulo@tempro.com.br",
       "wallet" : {
-        "switch" : 1634328.84
+        "switch" : 1628333.44
       }
     },
     "purchaseHistory" : {
@@ -3007,9 +2911,9 @@ export const customers = {
     "items" : {
       "634579974e2cd8d04258d505dc5b8b92" : {
         "activationsCounter" : {
-          "accident" : 60,
-          "theft" : 60,
-          "thirdParty" : 60
+          "accident" : 61,
+          "theft" : 61,
+          "thirdParty" : 61
         },
         "innerType" : "car",
         "itemId" : "qkp1179",
@@ -3018,7 +2922,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 60,
+      "activationsCounter" : 61,
       "clientId" : 273,
       "cpf" : "05857019621",
       "firstName" : "Eduardo",
@@ -3028,7 +2932,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "eduardodiniz@gmail.com",
       "wallet" : {
-        "switch" : 1134108.11
+        "switch" : 1133794.37
       }
     },
     "purchaseHistory" : {
@@ -3067,7 +2971,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "pedro-rubio2503@hotmail.com",
       "wallet" : {
-        "switch" : 194842
+        "switch" : 188332
       }
     },
     "purchaseHistory" : {
@@ -3092,9 +2996,9 @@ export const customers = {
     "items" : {
       "2c9adb6f8aaf88fca2eb81e88085a418" : {
         "activationsCounter" : {
-          "accident" : 0,
-          "theft" : 0,
-          "thirdParty" : 0
+          "accident" : 5,
+          "theft" : 5,
+          "thirdParty" : 5
         },
         "innerType" : "car",
         "itemId" : "jke1783",
@@ -3103,15 +3007,17 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 0,
+      "activationsCounter" : 5,
       "clientId" : 417,
       "cpf" : "34092341873",
-      "firstName" : "Paulo henrique",
+      "firstName" : "Paulo",
+      "lastName" : "Will",
       "lastOrder" : 11594,
+      "messengerId" : "2897000336986912",
       "onboard" : true,
       "userEmail" : "paulo.henrique.will@gmail.com",
       "wallet" : {
-        "switch" : 1837320
+        "switch" : 1830768
       }
     },
     "purchaseHistory" : {
@@ -3196,7 +3102,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "vitorhugo-94@hotmail.com",
       "wallet" : {
-        "switch" : 1542387.93
+        "switch" : 1541424.39
       }
     },
     "purchaseHistory" : {
@@ -3470,9 +3376,9 @@ export const customers = {
     "items" : {
       "301a2cfa65b10314e4c2eefa13b0886c" : {
         "activationsCounter" : {
-          "accident" : 59,
-          "theft" : 59,
-          "thirdParty" : 59
+          "accident" : 66,
+          "theft" : 66,
+          "thirdParty" : 66
         },
         "innerType" : "car",
         "itemId" : "bak1614",
@@ -3481,7 +3387,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 59,
+      "activationsCounter" : 66,
       "clientId" : 326,
       "cpf" : "51824116349",
       "firstName" : "Fernando",
@@ -3491,7 +3397,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "fernandopcf@gmail.com",
       "wallet" : {
-        "switch" : 2361072.48
+        "switch" : 2358617.73
       }
     },
     "purchaseHistory" : {
@@ -3537,7 +3443,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "evertonsouza89@gmail.com",
       "wallet" : {
-        "switch" : 1651420.19
+        "switch" : 1635128.95
       }
     },
     "purchaseHistory" : {
@@ -3599,9 +3505,9 @@ export const customers = {
     "items" : {
       "c12e7cb76a170dda4ef6a754951578e0" : {
         "activationsCounter" : {
-          "accident" : 44,
-          "theft" : 44,
-          "thirdParty" : 44
+          "accident" : 49,
+          "theft" : 49,
+          "thirdParty" : 49
         },
         "innerType" : "car",
         "itemId" : "qlw7187",
@@ -3610,7 +3516,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 44,
+      "activationsCounter" : 49,
       "clientId" : 350,
       "cpf" : "97707775287",
       "firstName" : "João",
@@ -3620,7 +3526,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "jddc.dias@gmail.com",
       "wallet" : {
-        "switch" : 2063227.95
+        "switch" : 2057205.15
       }
     },
     "purchaseHistory" : {
@@ -3723,9 +3629,9 @@ export const customers = {
     "items" : {
       "2fecf23512d816b14e5e497ea43e353b" : {
         "activationsCounter" : {
-          "accident" : 153,
-          "theft" : 153,
-          "thirdParty" : 153
+          "accident" : 155,
+          "theft" : 155,
+          "thirdParty" : 155
         },
         "innerType" : "car",
         "itemId" : "dwp7557",
@@ -3734,7 +3640,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 153,
+      "activationsCounter" : 155,
       "clientId" : 226,
       "cpf" : "03355508519",
       "firstName" : "Ricardo",
@@ -3744,7 +3650,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "ricardoptexx@hotmail.com",
       "wallet" : {
-        "switch" : 1770236.36
+        "switch" : 1769928.43
       }
     },
     "purchaseHistory" : {
@@ -3769,9 +3675,9 @@ export const customers = {
     "items" : {
       "595d793839a3f2c9f3fcdffa241b1c00" : {
         "activationsCounter" : {
-          "accident" : 320,
-          "theft" : 320,
-          "thirdParty" : 320
+          "accident" : 323,
+          "theft" : 323,
+          "thirdParty" : 323
         },
         "innerType" : "car",
         "itemId" : "gdg1627",
@@ -3780,7 +3686,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 320,
+      "activationsCounter" : 323,
       "clientId" : 143,
       "cpf" : "36810756892",
       "firstName" : "Guilherme",
@@ -3790,7 +3696,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "guilherme.corrente@terra.com.br",
       "wallet" : {
-        "switch" : 941189
+        "switch" : 940037.03
       }
     },
     "purchaseHistory" : {
@@ -4092,7 +3998,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "fernando.bueno@gmail.com",
       "wallet" : {
-        "switch" : 3358486.83
+        "switch" : 3355692.18
       }
     },
     "purchaseHistory" : {
@@ -4163,6 +4069,29 @@ export const customers = {
       }
     }
   },
+  "72f7bdc0b40622a815e95c10b24f1d66" : {
+    "personal" : {
+      "clientId" : 424,
+      "cpf" : "",
+      "firstName" : "Jaqueline",
+      "lastOrder" : 12568,
+      "onboard" : false,
+      "userEmail" : "financeiro@autolabor.com.br",
+      "wallet" : {
+        "switch" : 1199000
+      }
+    },
+    "purchaseHistory" : {
+      "-LzrXRyje9iYthmuJ4hU" : {
+        "fundsToWallet" : 1199,
+        "orderId" : 12568,
+        "purchaseDate" : 1580406001,
+        "purchasedItems" : [ 1513 ],
+        "totalFunds" : 1199
+      },
+      "lastOrder" : 12568
+    }
+  },
   "7430dd1c65deb12ccd1d247f76b0eb63" : {
     "billing" : {
       "6f4d85bab4ff861432a565539d9b8334" : {
@@ -4205,9 +4134,9 @@ export const customers = {
       },
       "6f4d85bab4ff861432a565539d9b8334" : {
         "activationsCounter" : {
-          "accident" : 25,
-          "theft" : 25,
-          "thirdParty" : 25
+          "accident" : 26,
+          "theft" : 26,
+          "thirdParty" : 26
         },
         "innerType" : "car",
         "itemId" : "ons2019",
@@ -4236,18 +4165,18 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 171,
+      "activationsCounter" : 172,
       "clientId" : 3,
       "cpf" : "02222471188",
       "firstName" : "Victor",
       "lastName" : "Assis",
       "lastOrder" : 219,
-      "messengerId" : 725997604191041,
-      "mssId" : 2016539558419152,
+      "messengerId" : 2016539558419152,
+      "mssId" : 725997604191041,
       "onboard" : true,
       "userEmail" : "victor.assis.alves@gmail.com",
       "wallet" : {
-        "switch" : 7233129.32
+        "switch" : 6891243.56
       }
     },
     "purchaseHistory" : {
@@ -4325,9 +4254,9 @@ export const customers = {
     "items" : {
       "cb2ca3c5d7806b286c249e8d04cf787b" : {
         "activationsCounter" : {
-          "accident" : 21,
-          "theft" : 21,
-          "thirdParty" : 21
+          "accident" : 23,
+          "theft" : 23,
+          "thirdParty" : 23
         },
         "innerType" : "pickup",
         "itemId" : "arj5655",
@@ -4336,7 +4265,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 21,
+      "activationsCounter" : 23,
       "clientId" : 330,
       "cpf" : "",
       "firstName" : "Matheus",
@@ -4346,7 +4275,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "engenheirorizzi@hotmail.com",
       "wallet" : {
-        "switch" : 2226804.72
+        "switch" : 2224096.96
       }
     },
     "purchaseHistory" : {
@@ -4398,9 +4327,9 @@ export const customers = {
     "items" : {
       "1f458c22a4085f33397c092203bd669f" : {
         "activationsCounter" : {
-          "accident" : 108,
-          "theft" : 108,
-          "thirdParty" : 108
+          "accident" : 112,
+          "theft" : 112,
+          "thirdParty" : 112
         },
         "innerType" : "car",
         "itemId" : "fui1089",
@@ -4409,7 +4338,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 108,
+      "activationsCounter" : 112,
       "onboard" : true,
       "userEmail" : "anabueno.mili@gmail.com",
       "wallet" : {
@@ -4494,9 +4423,9 @@ export const customers = {
     "items" : {
       "c6a56d9a0fde5f49aecb9d18124c6751" : {
         "activationsCounter" : {
-          "accident" : 15,
-          "theft" : 15,
-          "thirdParty" : 15
+          "accident" : 16,
+          "theft" : 16,
+          "thirdParty" : 16
         },
         "innerType" : "car",
         "itemId" : "axr1870",
@@ -4505,7 +4434,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 15,
+      "activationsCounter" : 16,
       "onboard" : true,
       "userEmail" : "tsimoesdias@gmail.com",
       "wallet" : {
@@ -4641,9 +4570,9 @@ export const customers = {
     "items" : {
       "0d09f8a57bb4d695a0a863bfe71be6da" : {
         "activationsCounter" : {
-          "accident" : 390,
-          "theft" : 390,
-          "thirdParty" : 390
+          "accident" : 392,
+          "theft" : 392,
+          "thirdParty" : 392
         },
         "innerType" : "car",
         "itemId" : "jki7208",
@@ -4652,7 +4581,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 390,
+      "activationsCounter" : 392,
       "clientId" : 60,
       "cpf" : "63634910100",
       "firstName" : "Fernando",
@@ -4662,7 +4591,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "fernandosf01@gmail.com",
       "wallet" : {
-        "switch" : 301588.8
+        "switch" : 300681.3
       }
     }
   },
@@ -4670,9 +4599,9 @@ export const customers = {
     "items" : {
       "95fb6e4895bae014379f9951e46ca8a0" : {
         "activationsCounter" : {
-          "accident" : 286,
-          "theft" : 286,
-          "thirdParty" : 286
+          "accident" : 287,
+          "theft" : 287,
+          "thirdParty" : 287
         },
         "innerType" : "car",
         "itemId" : "pax6374",
@@ -4681,7 +4610,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 286,
+      "activationsCounter" : 287,
       "clientId" : 45,
       "cpf" : "78258243187",
       "firstName" : "RONALDO",
@@ -4691,7 +4620,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "ronaldochagas_df@hotmail.com",
       "wallet" : {
-        "switch" : 97042
+        "switch" : 96776
       }
     }
   },
@@ -4773,9 +4702,9 @@ export const customers = {
     "items" : {
       "676dc539e96e848eb939f3e6d1b3e7c6" : {
         "activationsCounter" : {
-          "accident" : 64,
-          "theft" : 64,
-          "thirdParty" : 64
+          "accident" : 66,
+          "theft" : 66,
+          "thirdParty" : 66
         },
         "innerType" : "car",
         "itemId" : "kvl8977",
@@ -4784,7 +4713,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 64,
+      "activationsCounter" : 66,
       "clientId" : 258,
       "cpf" : "13988677728",
       "firstName" : "Gustavo",
@@ -4794,7 +4723,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "gustavog3cg@hotmail.com",
       "wallet" : {
-        "switch" : 1539334.35
+        "switch" : 1527156.59
       }
     },
     "purchaseHistory" : {
@@ -4812,9 +4741,9 @@ export const customers = {
     "items" : {
       "0607bda5b1494135f99efebb3ae50a67" : {
         "activationsCounter" : {
-          "accident" : 62,
-          "theft" : 62,
-          "thirdParty" : 62
+          "accident" : 64,
+          "theft" : 64,
+          "thirdParty" : 64
         },
         "innerType" : "car",
         "itemId" : "eqi4128",
@@ -4823,7 +4752,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 62,
+      "activationsCounter" : 64,
       "clientId" : 242,
       "cpf" : "45606333805",
       "firstName" : "Felipe",
@@ -4833,7 +4762,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "felipemoraes.ti@outlook.com",
       "wallet" : {
-        "switch" : 1057914.28
+        "switch" : 1057623.88
       }
     },
     "purchaseHistory" : {
@@ -4851,9 +4780,9 @@ export const customers = {
     "items" : {
       "9b6054139309c4388d5640ffe8efea59" : {
         "activationsCounter" : {
-          "accident" : 1,
-          "theft" : 1,
-          "thirdParty" : 1
+          "accident" : 9,
+          "theft" : 9,
+          "thirdParty" : 9
         },
         "innerType" : "car",
         "itemId" : "dty8864",
@@ -4862,7 +4791,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 1,
+      "activationsCounter" : 9,
       "clientId" : 410,
       "cpf" : "45564890833",
       "firstName" : "Raíres",
@@ -4872,7 +4801,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "rairesd@outlook.com",
       "wallet" : {
-        "switch" : 1257396.2
+        "switch" : 1255049.8
       }
     },
     "purchaseHistory" : {
@@ -4943,9 +4872,9 @@ export const customers = {
     "items" : {
       "be43c83b235459a25c957ed2c38109ff" : {
         "activationsCounter" : {
-          "accident" : 212,
-          "theft" : 212,
-          "thirdParty" : 212
+          "accident" : 215,
+          "theft" : 215,
+          "thirdParty" : 215
         },
         "innerType" : "car",
         "itemId" : "fpq5525",
@@ -4954,7 +4883,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 212,
+      "activationsCounter" : 215,
       "clientId" : 164,
       "cpf" : "07170616807",
       "firstName" : "Renato",
@@ -4964,7 +4893,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "leme.ribeiro21@gmail.com",
       "wallet" : {
-        "switch" : 2347222.48
+        "switch" : 2345932.58
       }
     },
     "purchaseHistory" : {
@@ -4989,9 +4918,9 @@ export const customers = {
     "items" : {
       "bada34b65def3ed5d0a920b006e32a47" : {
         "activationsCounter" : {
-          "accident" : 110,
-          "theft" : 110,
-          "thirdParty" : 110
+          "accident" : 115,
+          "theft" : 115,
+          "thirdParty" : 115
         },
         "innerType" : "motorcycle",
         "itemId" : "kwy8f47",
@@ -5000,7 +4929,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 110,
+      "activationsCounter" : 115,
       "clientId" : 230,
       "cpf" : "08257169773",
       "firstName" : "",
@@ -5010,7 +4939,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "felipemac@gmail.com",
       "wallet" : {
-        "switch" : 1498166.37
+        "switch" : 1497585.88
       }
     },
     "purchaseHistory" : {
@@ -5104,9 +5033,9 @@ export const customers = {
     "items" : {
       "d58a8c47f73cacb7f3ec1337d95f4608" : {
         "activationsCounter" : {
-          "accident" : 12,
-          "theft" : 12,
-          "thirdParty" : 12
+          "accident" : 16,
+          "theft" : 16,
+          "thirdParty" : 16
         },
         "innerType" : "car",
         "itemId" : "omp0048",
@@ -5115,7 +5044,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 12,
+      "activationsCounter" : 16,
       "clientId" : 401,
       "cpf" : "29135709847",
       "firstName" : "Carlos",
@@ -5125,7 +5054,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "carlos.hmgoncalves@gmail.com",
       "wallet" : {
-        "switch" : 3487930.91
+        "switch" : 3449336.84
       }
     },
     "purchaseHistory" : {
@@ -5180,9 +5109,9 @@ export const customers = {
     "items" : {
       "1f7b7ddf6659e5df153d5becfc940114" : {
         "activationsCounter" : {
-          "accident" : 173,
-          "theft" : 173,
-          "thirdParty" : 173
+          "accident" : 176,
+          "theft" : 176,
+          "thirdParty" : 176
         },
         "innerType" : "motorcycle",
         "itemId" : "lsa2b02",
@@ -5191,7 +5120,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 173,
+      "activationsCounter" : 176,
       "clientId" : 198,
       "cpf" : "09964648758",
       "firstName" : "Deivison",
@@ -5201,7 +5130,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "deivison.medeiros@gmail.com",
       "wallet" : {
-        "switch" : 841784.2
+        "switch" : 841125.96
       }
     },
     "purchaseHistory" : {
@@ -5229,9 +5158,9 @@ export const customers = {
     "items" : {
       "02c829fe6b9ebcb0dd758c938249fcdb" : {
         "activationsCounter" : {
-          "accident" : 26,
-          "theft" : 26,
-          "thirdParty" : 26
+          "accident" : 33,
+          "theft" : 33,
+          "thirdParty" : 33
         },
         "innerType" : "car",
         "itemId" : "owa0725",
@@ -5251,7 +5180,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 44,
+      "activationsCounter" : 51,
       "clientId" : 354,
       "cpf" : "59707330406",
       "firstName" : "Valeriano",
@@ -5261,7 +5190,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "valerianoalmeida@hotmail.com",
       "wallet" : {
-        "switch" : 3684387.2
+        "switch" : 3655413.6
       }
     },
     "purchaseHistory" : {
@@ -5404,9 +5333,9 @@ export const customers = {
     "items" : {
       "354cf9170ab428b0282f89eae9d5bd1c" : {
         "activationsCounter" : {
-          "accident" : 1,
-          "theft" : 1,
-          "thirdParty" : 1
+          "accident" : 4,
+          "theft" : 4,
+          "thirdParty" : 4
         },
         "innerType" : "car",
         "itemId" : "cfg0630",
@@ -5415,7 +5344,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 1,
+      "activationsCounter" : 4,
       "clientId" : 412,
       "cpf" : "32315448824",
       "firstName" : "Gustavo",
@@ -5425,7 +5354,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "gustavogushen@gmail.com",
       "wallet" : {
-        "switch" : 1198970.96
+        "switch" : 1198041.68
       }
     },
     "purchaseHistory" : {
@@ -5443,9 +5372,9 @@ export const customers = {
     "items" : {
       "bc1666b12adf56bea503fbac9669bd40" : {
         "activationsCounter" : {
-          "accident" : 4,
-          "theft" : 4,
-          "thirdParty" : 4
+          "accident" : 7,
+          "theft" : 7,
+          "thirdParty" : 7
         },
         "innerType" : "car",
         "itemId" : "kpx4a32",
@@ -5454,7 +5383,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 4,
+      "activationsCounter" : 7,
       "clientId" : 360,
       "cpf" : "76765440763",
       "firstName" : "Cássia",
@@ -5464,7 +5393,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "cassiatavarespv@gmail.com",
       "wallet" : {
-        "switch" : 1678262.4
+        "switch" : 1675212.55
       }
     },
     "purchaseHistory" : {
@@ -5482,9 +5411,9 @@ export const customers = {
     "items" : {
       "f64ee7d20702bcfe4e781f7fb24177fa" : {
         "activationsCounter" : {
-          "accident" : 11,
-          "theft" : 11,
-          "thirdParty" : 11
+          "accident" : 16,
+          "theft" : 16,
+          "thirdParty" : 16
         },
         "innerType" : "car",
         "itemId" : "epn3i00",
@@ -5493,7 +5422,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 11,
+      "activationsCounter" : 16,
       "clientId" : 404,
       "cpf" : "07818648950",
       "firstName" : "Lucas",
@@ -5503,7 +5432,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "geralmuraro@yahoo.com.br",
       "wallet" : {
-        "switch" : 1194834.23
+        "switch" : 1194421.72
       }
     },
     "purchaseHistory" : {
@@ -5549,7 +5478,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "ueversonlucas@gmail.com",
       "wallet" : {
-        "switch" : 1099796.88
+        "switch" : 1098764.04
       }
     },
     "purchaseHistory" : {
@@ -5648,9 +5577,9 @@ export const customers = {
     "items" : {
       "aafae9a64822ed70ab5378a12531e380" : {
         "activationsCounter" : {
-          "accident" : 23,
-          "theft" : 23,
-          "thirdParty" : 23
+          "accident" : 28,
+          "theft" : 28,
+          "thirdParty" : 28
         },
         "innerType" : "car",
         "itemId" : "edv3510",
@@ -5659,7 +5588,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 23,
+      "activationsCounter" : 28,
       "clientId" : 338,
       "cpf" : "28361608885",
       "firstName" : "Maykel",
@@ -5669,7 +5598,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "maykelsiqueira@hotmail.com",
       "wallet" : {
-        "switch" : 1755274.62
+        "switch" : 1754833.06
       }
     },
     "purchaseHistory" : {
@@ -5694,9 +5623,9 @@ export const customers = {
     "items" : {
       "10fc155acead93195ed5ab4a551e543c" : {
         "activationsCounter" : {
-          "accident" : 190,
-          "theft" : 190,
-          "thirdParty" : 190
+          "accident" : 194,
+          "theft" : 194,
+          "thirdParty" : 194
         },
         "innerType" : "car",
         "itemId" : "ffp2556",
@@ -5705,7 +5634,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 190,
+      "activationsCounter" : 194,
       "clientId" : 173,
       "cpf" : "42426485884",
       "firstName" : "Paulo Cesar",
@@ -5715,7 +5644,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "paulo141097@gmail.com",
       "wallet" : {
-        "switch" : 566444.59
+        "switch" : 565746.69
       }
     },
     "purchaseHistory" : {
@@ -5754,7 +5683,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "turianocfs@outlook.com",
       "wallet" : {
-        "switch" : 1890650.4
+        "switch" : 1886865.3
       }
     },
     "purchaseHistory" : {
@@ -5818,9 +5747,9 @@ export const customers = {
     "items" : {
       "0ee207f29be5512d36ac86778bf7d8ff" : {
         "activationsCounter" : {
-          "accident" : 25,
-          "theft" : 25,
-          "thirdParty" : 25
+          "accident" : 26,
+          "theft" : 26,
+          "thirdParty" : 26
         },
         "innerType" : "car",
         "itemId" : "pfz7743",
@@ -5829,7 +5758,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 25,
+      "activationsCounter" : 26,
       "clientId" : 308,
       "cpf" : "00691338590",
       "firstName" : "Everton",
@@ -5954,9 +5883,9 @@ export const customers = {
     "items" : {
       "527bddb7dbe70d67eaff2547ba4a7631" : {
         "activationsCounter" : {
-          "accident" : 52,
-          "theft" : 52,
-          "thirdParty" : 52
+          "accident" : 53,
+          "theft" : 53,
+          "thirdParty" : 53
         },
         "innerType" : "motorcycle",
         "itemId" : "ggb5044",
@@ -5965,7 +5894,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 52,
+      "activationsCounter" : 53,
       "clientId" : 243,
       "cpf" : "37994188818",
       "firstName" : "Renato",
@@ -6000,9 +5929,9 @@ export const customers = {
     "items" : {
       "5c57f8c8b80af18e0c4af880d8493d48" : {
         "activationsCounter" : {
-          "accident" : 33,
-          "theft" : 33,
-          "thirdParty" : 33
+          "accident" : 36,
+          "theft" : 36,
+          "thirdParty" : 36
         },
         "innerType" : "car",
         "itemId" : "ivi7867",
@@ -6011,7 +5940,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 33,
+      "activationsCounter" : 36,
       "clientId" : 311,
       "cpf" : "30567796850",
       "firstName" : "Jonatas",
@@ -6021,7 +5950,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "jonatas_bene@msn.com",
       "wallet" : {
-        "switch" : 3051945.47
+        "switch" : 3050032.52
       }
     },
     "purchaseHistory" : {
@@ -6078,9 +6007,9 @@ export const customers = {
     "items" : {
       "0303c0c83a5954912f166d0b33224067" : {
         "activationsCounter" : {
-          "accident" : 314,
-          "theft" : 314,
-          "thirdParty" : 314
+          "accident" : 318,
+          "theft" : 318,
+          "thirdParty" : 318
         },
         "innerType" : "car",
         "itemId" : "iyx9827",
@@ -6089,7 +6018,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 314,
+      "activationsCounter" : 318,
       "clientId" : 205,
       "cpf" : "99645645034",
       "firstName" : "Tiago",
@@ -6099,7 +6028,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "tiagojv@gmail.com",
       "wallet" : {
-        "switch" : 1300991.03
+        "switch" : 1288196.01
       }
     },
     "purchaseHistory" : {
@@ -6117,9 +6046,9 @@ export const customers = {
     "items" : {
       "711e34872169faa8df6be7dc3f64e042" : {
         "activationsCounter" : {
-          "accident" : 1,
-          "theft" : 1,
-          "thirdParty" : 1
+          "accident" : 9,
+          "theft" : 9,
+          "thirdParty" : 9
         },
         "innerType" : "car",
         "itemId" : "avf4402",
@@ -6128,7 +6057,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 1,
+      "activationsCounter" : 9,
       "clientId" : 413,
       "cpf" : "21907531807",
       "firstName" : "Edely Sachiko",
@@ -6138,7 +6067,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "satikiss@hotmail.com",
       "wallet" : {
-        "switch" : 1799000
+        "switch" : 1797459.2
       }
     },
     "purchaseHistory" : {
@@ -6289,9 +6218,9 @@ export const customers = {
     "items" : {
       "d079cd7d8b412334de55133f999fefc4" : {
         "activationsCounter" : {
-          "accident" : 62,
-          "theft" : 62,
-          "thirdParty" : 62
+          "accident" : 64,
+          "theft" : 64,
+          "thirdParty" : 64
         },
         "innerType" : "car",
         "itemId" : "aur3408",
@@ -6300,7 +6229,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 62,
+      "activationsCounter" : 64,
       "clientId" : 180,
       "cpf" : "02881831931",
       "firstName" : "João Antonio",
@@ -6310,7 +6239,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "pregof@yahoo.com.br",
       "wallet" : {
-        "switch" : 1752387.05
+        "switch" : 1750882.26
       }
     },
     "purchaseHistory" : {
@@ -6324,6 +6253,45 @@ export const customers = {
       "lastOrder" : 4127
     }
   },
+  "a310c6caeb2a73e34b72fc23b9accdc6" : {
+    "items" : {
+      "02f8b2296067a16f4f5b6703930b4d0f" : {
+        "activationsCounter" : {
+          "accident" : 4,
+          "theft" : 4,
+          "thirdParty" : 4
+        },
+        "innerType" : "car",
+        "itemId" : "flm5621",
+        "owner" : "samuel@cineshop.com.br",
+        "type" : "vehicle"
+      }
+    },
+    "personal" : {
+      "activationsCounter" : 4,
+      "clientId" : 421,
+      "cpf" : "26452327879",
+      "firstName" : "Samuel",
+      "lastName" : "Sanches",
+      "lastOrder" : 11763,
+      "messengerId" : "2681378285308173",
+      "onboard" : true,
+      "userEmail" : "samuel@cineshop.com.br",
+      "wallet" : {
+        "switch" : 1197272.12
+      }
+    },
+    "purchaseHistory" : {
+      "-Lzq-D3dKwYXHNnRYzfb" : {
+        "fundsToWallet" : 1199,
+        "orderId" : 11763,
+        "purchaseDate" : 1580380250,
+        "purchasedItems" : [ 1513, 386 ],
+        "totalFunds" : 1448
+      },
+      "lastOrder" : 11763
+    }
+  },
   "a41ea1fac0073bdc70b8b43cc9b470bd" : {
     "itemAuthorizations" : {
       "thirdParty" : {
@@ -6333,9 +6301,9 @@ export const customers = {
     "items" : {
       "a62898e75b38f7da38c3ed9f6603bcd2" : {
         "activationsCounter" : {
-          "accident" : 19,
-          "theft" : 19,
-          "thirdParty" : 19
+          "accident" : 20,
+          "theft" : 20,
+          "thirdParty" : 20
         },
         "innerType" : "car",
         "itemId" : "ejd6f80",
@@ -6344,7 +6312,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 19,
+      "activationsCounter" : 20,
       "onboard" : true,
       "userEmail" : "cintiacamilafagundes@hotmail.com",
       "wallet" : {
@@ -6356,9 +6324,9 @@ export const customers = {
     "items" : {
       "0397d6d8c21a7db484c54b99e3d5118b" : {
         "activationsCounter" : {
-          "accident" : 21,
-          "theft" : 21,
-          "thirdParty" : 21
+          "accident" : 23,
+          "theft" : 23,
+          "thirdParty" : 23
         },
         "innerType" : "car",
         "itemId" : "pfy3592",
@@ -6367,7 +6335,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 21,
+      "activationsCounter" : 23,
       "clientId" : 348,
       "cpf" : "09280757458",
       "firstName" : "Sofia",
@@ -6377,7 +6345,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "sofiaguerraavila@gmail.com",
       "wallet" : {
-        "switch" : 1189179.64
+        "switch" : 1188114.84
       }
     },
     "purchaseHistory" : {
@@ -6476,9 +6444,9 @@ export const customers = {
     "items" : {
       "f99ce99eb2b52d89f7c047e196a66844" : {
         "activationsCounter" : {
-          "accident" : 6,
-          "theft" : 6,
-          "thirdParty" : 6
+          "accident" : 12,
+          "theft" : 12,
+          "thirdParty" : 12
         },
         "innerType" : "car",
         "itemId" : "qfm4054",
@@ -6487,7 +6455,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 6,
+      "activationsCounter" : 12,
       "onboard" : true,
       "userEmail" : "tobias_aguiar01@hotmail.com",
       "wallet" : {
@@ -6499,9 +6467,9 @@ export const customers = {
     "items" : {
       "a13641521cdbecb77a48c5a1a0d87781" : {
         "activationsCounter" : {
-          "accident" : 85,
-          "theft" : 85,
-          "thirdParty" : 85
+          "accident" : 87,
+          "theft" : 87,
+          "thirdParty" : 87
         },
         "innerType" : "car",
         "itemId" : "gfb9227",
@@ -6510,7 +6478,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 85,
+      "activationsCounter" : 87,
       "clientId" : 227,
       "cpf" : "09479017792",
       "firstName" : "",
@@ -6520,7 +6488,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "hlacorreia@gmail.com",
       "wallet" : {
-        "switch" : 1001317.8
+        "switch" : 987023.3
       }
     },
     "purchaseHistory" : {
@@ -6568,9 +6536,9 @@ export const customers = {
     "items" : {
       "f4eac0a68020d6a84c8da7337c486667" : {
         "activationsCounter" : {
-          "accident" : 28,
-          "theft" : 28,
-          "thirdParty" : 28
+          "accident" : 32,
+          "theft" : 32,
+          "thirdParty" : 32
         },
         "innerType" : "motorcycle",
         "itemId" : "ezo3511",
@@ -6579,7 +6547,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 28,
+      "activationsCounter" : 32,
       "clientId" : 377,
       "cpf" : "38308494862",
       "firstName" : "Ronaldo",
@@ -6589,7 +6557,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "ronaldo.csantos@hotmail.com",
       "wallet" : {
-        "switch" : 1374078.31
+        "switch" : 1372547.82
       }
     },
     "purchaseHistory" : {
@@ -6669,9 +6637,9 @@ export const customers = {
     "items" : {
       "b4b0b1114019a0a016d6394a405430c8" : {
         "activationsCounter" : {
-          "accident" : 41,
-          "theft" : 41,
-          "thirdParty" : 41
+          "accident" : 42,
+          "theft" : 42,
+          "thirdParty" : 42
         },
         "innerType" : "car",
         "itemId" : "euy2342",
@@ -6680,7 +6648,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 41,
+      "activationsCounter" : 42,
       "clientId" : 284,
       "cpf" : "15220167839",
       "firstName" : "Emerson",
@@ -6690,7 +6658,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "emerson.contabilista@gmail.com",
       "wallet" : {
-        "switch" : 1183603.96
+        "switch" : 1183240.96
       }
     },
     "purchaseHistory" : {
@@ -6747,9 +6715,9 @@ export const customers = {
     "items" : {
       "097ba6c969fa7c24c226f75d94cef49c" : {
         "activationsCounter" : {
-          "accident" : 26,
-          "theft" : 26,
-          "thirdParty" : 26
+          "accident" : 32,
+          "theft" : 32,
+          "thirdParty" : 32
         },
         "innerType" : "car",
         "itemId" : "orp9410",
@@ -6758,7 +6726,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 26,
+      "activationsCounter" : 32,
       "clientId" : 383,
       "cpf" : "02577878362",
       "firstName" : "Miguel",
@@ -6768,7 +6736,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "miguelnasser@hotmail.com",
       "wallet" : {
-        "switch" : 1173348.53
+        "switch" : 1166486.48
       }
     },
     "purchaseHistory" : {
@@ -6793,9 +6761,9 @@ export const customers = {
     "items" : {
       "d78d072e7f1f2dd451995360723c0459" : {
         "activationsCounter" : {
-          "accident" : 472,
-          "theft" : 472,
-          "thirdParty" : 472
+          "accident" : 477,
+          "theft" : 477,
+          "thirdParty" : 477
         },
         "innerType" : "car",
         "itemId" : "jhd5192",
@@ -6804,7 +6772,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 472,
+      "activationsCounter" : 477,
       "clientId" : 97,
       "cpf" : "83467777104",
       "firstName" : "Franklin",
@@ -6814,7 +6782,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "fmtjdf@gmail.com",
       "wallet" : {
-        "switch" : 896420.96
+        "switch" : 889450.16
       }
     }
   },
@@ -6830,9 +6798,9 @@ export const customers = {
     "items" : {
       "77f86bdc6f864e6d3c12da0ae6b45e1e" : {
         "activationsCounter" : {
-          "accident" : 74,
-          "theft" : 74,
-          "thirdParty" : 74
+          "accident" : 77,
+          "theft" : 77,
+          "thirdParty" : 77
         },
         "innerType" : "car",
         "itemId" : "qre2j83",
@@ -6841,7 +6809,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 74,
+      "activationsCounter" : 77,
       "clientId" : 317,
       "cpf" : "09434599741",
       "firstName" : "Hygoor",
@@ -6851,7 +6819,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "hygoorjorge@gmail.com",
       "wallet" : {
-        "switch" : 1349963.3
+        "switch" : 1348465.14
       }
     },
     "purchaseHistory" : {
@@ -6944,9 +6912,9 @@ export const customers = {
     "items" : {
       "51dd5bfa06abcd7775e721426e490a43" : {
         "activationsCounter" : {
-          "accident" : 124,
-          "theft" : 124,
-          "thirdParty" : 124
+          "accident" : 130,
+          "theft" : 130,
+          "thirdParty" : 130
         },
         "innerType" : "car",
         "itemId" : "qow6f98",
@@ -6955,7 +6923,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 124,
+      "activationsCounter" : 130,
       "clientId" : 256,
       "cpf" : "13766278843",
       "firstName" : "Fernando",
@@ -6965,7 +6933,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "niltonnando@hotmail.com",
       "wallet" : {
-        "switch" : 955029.56
+        "switch" : 946558.58
       }
     },
     "purchaseHistory" : {
@@ -7029,9 +6997,9 @@ export const customers = {
     "items" : {
       "43277d4b8a4885b2af7e07c4af4ff765" : {
         "activationsCounter" : {
-          "accident" : 29,
-          "theft" : 29,
-          "thirdParty" : 29
+          "accident" : 31,
+          "theft" : 31,
+          "thirdParty" : 31
         },
         "innerType" : "car",
         "itemId" : "krg5d41",
@@ -7040,7 +7008,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 29,
+      "activationsCounter" : 31,
       "clientId" : 351,
       "cpf" : "05785468760",
       "firstName" : "Pítia",
@@ -7050,7 +7018,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "pitiavillar@hotmail.com",
       "wallet" : {
-        "switch" : 1519635
+        "switch" : 1519177.53
       }
     },
     "purchaseHistory" : {
@@ -7182,9 +7150,9 @@ export const customers = {
     "items" : {
       "79631b252d2d4b445143ef7e95e17e5a" : {
         "activationsCounter" : {
-          "accident" : 84,
-          "theft" : 84,
-          "thirdParty" : 84
+          "accident" : 89,
+          "theft" : 89,
+          "thirdParty" : 89
         },
         "innerType" : "car",
         "itemId" : "prh0606",
@@ -7193,7 +7161,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 84,
+      "activationsCounter" : 89,
       "clientId" : 295,
       "cpf" : "54816360182",
       "firstName" : "Anna",
@@ -7203,7 +7171,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "junior@jcfarmaceutica.com.br",
       "wallet" : {
-        "switch" : 5719780.94
+        "switch" : 5718394.76
       }
     },
     "purchaseHistory" : {
@@ -7226,9 +7194,9 @@ export const customers = {
     "items" : {
       "e50e51a95b6b084cc2b2a41ab7f74717" : {
         "activationsCounter" : {
-          "accident" : 242,
-          "theft" : 242,
-          "thirdParty" : 242
+          "accident" : 246,
+          "theft" : 246,
+          "thirdParty" : 246
         },
         "innerType" : "car",
         "itemId" : "ivj7434",
@@ -7237,7 +7205,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 242,
+      "activationsCounter" : 246,
       "onboard" : true,
       "userEmail" : "damp_89@hotmail.com",
       "wallet" : {
@@ -7249,9 +7217,9 @@ export const customers = {
     "items" : {
       "8f57c21b3983763cce53eb768abe71ae" : {
         "activationsCounter" : {
-          "accident" : 131,
-          "theft" : 131,
-          "thirdParty" : 131
+          "accident" : 134,
+          "theft" : 134,
+          "thirdParty" : 134
         },
         "innerType" : "car",
         "itemId" : "gfu5667",
@@ -7260,7 +7228,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 131,
+      "activationsCounter" : 134,
       "clientId" : 179,
       "cpf" : "09669341728",
       "firstName" : "Luciana",
@@ -7270,7 +7238,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "lucinut@gmail.com",
       "wallet" : {
-        "switch" : 1065773.18
+        "switch" : 1064281.85
       }
     },
     "purchaseHistory" : {
@@ -7288,9 +7256,9 @@ export const customers = {
     "items" : {
       "11cddcbbeb136cb6e84a0622e2f9e762" : {
         "activationsCounter" : {
-          "accident" : 418,
-          "theft" : 418,
-          "thirdParty" : 418
+          "accident" : 422,
+          "theft" : 422,
+          "thirdParty" : 422
         },
         "innerType" : "car",
         "itemId" : "jke8751",
@@ -7299,7 +7267,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 418,
+      "activationsCounter" : 422,
       "clientId" : 6,
       "cpf" : "089251296120",
       "firstName" : "Ismael",
@@ -7309,7 +7277,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "ismael.soares@gmail.com",
       "wallet" : {
-        "switch" : 341669
+        "switch" : 340959.5
       }
     }
   },
@@ -7356,9 +7324,9 @@ export const customers = {
     "items" : {
       "7a2128eccd9364cb16e771479844eda1" : {
         "activationsCounter" : {
-          "accident" : 52,
-          "theft" : 52,
-          "thirdParty" : 52
+          "accident" : 55,
+          "theft" : 55,
+          "thirdParty" : 55
         },
         "innerType" : "car",
         "itemId" : "pvm5b98",
@@ -7367,7 +7335,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 52,
+      "activationsCounter" : 55,
       "clientId" : 254,
       "cpf" : "02327862590",
       "firstName" : "Rafael",
@@ -7377,7 +7345,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "raffosena@gmail.com",
       "wallet" : {
-        "switch" : 1163029.12
+        "switch" : 1160173.52
       }
     },
     "purchaseHistory" : {
@@ -7389,6 +7357,45 @@ export const customers = {
         "totalFunds" : 1199
       },
       "lastOrder" : 6332
+    }
+  },
+  "c17f8ef7ae6297d63039be2945b07bfd" : {
+    "items" : {
+      "2663c04d8bf7575f8e2a0bdf7649b605" : {
+        "activationsCounter" : {
+          "accident" : 4,
+          "theft" : 4,
+          "thirdParty" : 4
+        },
+        "innerType" : "car",
+        "itemId" : "pcp0693",
+        "owner" : "marvin.mike@hotmail.com",
+        "type" : "vehicle"
+      }
+    },
+    "personal" : {
+      "activationsCounter" : 4,
+      "clientId" : 425,
+      "cpf" : "31901283836",
+      "firstName" : "Marcus",
+      "lastName" : "Vinicius",
+      "lastOrder" : 12774,
+      "messengerId" : "2779888065406134",
+      "onboard" : true,
+      "userEmail" : "marvin.mike@hotmail.com",
+      "wallet" : {
+        "switch" : 1505268.14
+      }
+    },
+    "purchaseHistory" : {
+      "-LzrfmoHiliQA1mP2srj" : {
+        "fundsToWallet" : 1506,
+        "orderId" : 12774,
+        "purchaseDate" : 1580408450,
+        "purchasedItems" : [ 386, 1513 ],
+        "totalFunds" : 1755
+      },
+      "lastOrder" : 12774
     }
   },
   "c1cbe5245b3b3d60bbd98b99ded87d62" : {
@@ -7609,9 +7616,9 @@ export const customers = {
     "items" : {
       "17e5f30ddc6924a9c1d597a21cbcef0d" : {
         "activationsCounter" : {
-          "accident" : 532,
-          "theft" : 532,
-          "thirdParty" : 532
+          "accident" : 540,
+          "theft" : 540,
+          "thirdParty" : 540
         },
         "innerType" : "car",
         "itemId" : "lra6354",
@@ -7620,7 +7627,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 532,
+      "activationsCounter" : 540,
       "clientId" : 86,
       "cpf" : "10506654737",
       "firstName" : "Estefani",
@@ -7630,7 +7637,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "estefanifrancini@hotmail.com",
       "wallet" : {
-        "switch" : 166344.9
+        "switch" : 160137.12
       }
     }
   },
@@ -7645,9 +7652,9 @@ export const customers = {
     "items" : {
       "d7c6d5b0e6bb9752d15c7ca6bf99b8b3" : {
         "activationsCounter" : {
-          "accident" : 34,
-          "theft" : 34,
-          "thirdParty" : 34
+          "accident" : 35,
+          "theft" : 35,
+          "thirdParty" : 35
         },
         "innerType" : "car",
         "itemId" : "arz4646",
@@ -7656,7 +7663,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 34,
+      "activationsCounter" : 35,
       "clientId" : 343,
       "cpf" : "67240291987",
       "firstName" : "Jorge",
@@ -7666,7 +7673,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "jorgebt@contabilidadecontabrasil.com.br",
       "wallet" : {
-        "switch" : 2333825.1
+        "switch" : 2329389.48
       }
     },
     "purchaseHistory" : {
@@ -7689,9 +7696,9 @@ export const customers = {
     "items" : {
       "798682b5f843c94a3925cf64d5312d1b" : {
         "activationsCounter" : {
-          "accident" : 63,
-          "theft" : 63,
-          "thirdParty" : 63
+          "accident" : 65,
+          "theft" : 65,
+          "thirdParty" : 65
         },
         "innerType" : "car",
         "itemId" : "flx1389",
@@ -7700,7 +7707,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 63,
+      "activationsCounter" : 65,
       "onboard" : true,
       "userEmail" : "delboniabreu@gmail.com",
       "wallet" : {
@@ -7755,7 +7762,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "lucianasurette@hotmail.com",
       "wallet" : {
-        "switch" : 1443466.38
+        "switch" : 1443129
       }
     },
     "purchaseHistory" : {
@@ -7812,9 +7819,9 @@ export const customers = {
     "items" : {
       "175859387ad266164a1741e62fc51439" : {
         "activationsCounter" : {
-          "accident" : 53,
-          "theft" : 53,
-          "thirdParty" : 53
+          "accident" : 54,
+          "theft" : 54,
+          "thirdParty" : 54
         },
         "innerType" : "car",
         "itemId" : "krz3605",
@@ -7823,7 +7830,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 53,
+      "activationsCounter" : 54,
       "clientId" : 188,
       "cpf" : "08031897700",
       "firstName" : "Victor",
@@ -7904,9 +7911,9 @@ export const customers = {
     "items" : {
       "71f21884ee4c96326923ae9efe415978" : {
         "activationsCounter" : {
-          "accident" : 3,
-          "theft" : 3,
-          "thirdParty" : 3
+          "accident" : 5,
+          "theft" : 5,
+          "thirdParty" : 5
         },
         "innerType" : "car",
         "itemId" : "lnn3541",
@@ -7915,7 +7922,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 3,
+      "activationsCounter" : 5,
       "clientId" : 345,
       "cpf" : "08134339751",
       "firstName" : "Daniel",
@@ -7925,7 +7932,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "danielalves.da287@gmail.com",
       "wallet" : {
-        "switch" : 1792459.88
+        "switch" : 1790545.52
       }
     },
     "purchaseHistory" : {
@@ -7943,9 +7950,9 @@ export const customers = {
     "items" : {
       "d9bd8daeb43c4c1d666e483d2998ccae" : {
         "activationsCounter" : {
-          "accident" : 302,
-          "theft" : 302,
-          "thirdParty" : 302
+          "accident" : 305,
+          "theft" : 305,
+          "thirdParty" : 305
         },
         "innerType" : "car",
         "itemId" : "jhy9379",
@@ -7954,7 +7961,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 302,
+      "activationsCounter" : 305,
       "clientId" : 91,
       "cpf" : "23468305850",
       "firstName" : "Gloria",
@@ -7964,11 +7971,18 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "gloriagargi@hotmail.com",
       "wallet" : {
-        "switch" : 606807.56
+        "switch" : 604428.68
       }
     }
   },
   "ceec546a84470c4cfde1ce05d6e73aca" : {
+    "billing" : {
+      "ecc1311b132e516d5f533ebfe01630c5" : {
+        "billingDay" : 28,
+        "billingTimes" : 1,
+        "plan" : "smart"
+      }
+    },
     "itemAuthorizations" : {
       "myItems" : {
         "ecc1311b132e516d5f533ebfe01630c5" : {
@@ -7979,9 +7993,9 @@ export const customers = {
     "items" : {
       "ecc1311b132e516d5f533ebfe01630c5" : {
         "activationsCounter" : {
-          "accident" : 103,
-          "theft" : 103,
-          "thirdParty" : 103
+          "accident" : 107,
+          "theft" : 107,
+          "thirdParty" : 107
         },
         "innerType" : "car",
         "itemId" : "lsg2648",
@@ -7990,7 +8004,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 103,
+      "activationsCounter" : 107,
       "clientId" : 214,
       "cpf" : "94565554534",
       "firstName" : "Fabiano",
@@ -8000,7 +8014,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "fabiano_c_cunha@hotmail.com",
       "wallet" : {
-        "switch" : 1935827.69
+        "switch" : 1891670.82
       }
     },
     "purchaseHistory" : {
@@ -8035,9 +8049,9 @@ export const customers = {
       },
       "e5642b34c2408680d41977c4b596ab93" : {
         "activationsCounter" : {
-          "accident" : 23,
-          "theft" : 23,
-          "thirdParty" : 23
+          "accident" : 24,
+          "theft" : 24,
+          "thirdParty" : 24
         },
         "innerType" : "car",
         "itemId" : "gnv7367",
@@ -8046,7 +8060,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 23,
+      "activationsCounter" : 24,
       "onboard" : true,
       "userEmail" : "patrickdfonseca@hotmail.com",
       "wallet" : {
@@ -8158,9 +8172,9 @@ export const customers = {
     "items" : {
       "8f4d12da6ff540a18a87228091dea109" : {
         "activationsCounter" : {
-          "accident" : 206,
-          "theft" : 206,
-          "thirdParty" : 206
+          "accident" : 211,
+          "theft" : 211,
+          "thirdParty" : 211
         },
         "innerType" : "car",
         "itemId" : "luf4648",
@@ -8169,7 +8183,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 206,
+      "activationsCounter" : 211,
       "messengerId" : 2368846883234848,
       "onboard" : true,
       "userEmail" : "eric.medeiros@yahoo.com.br",
@@ -8187,9 +8201,9 @@ export const customers = {
     "items" : {
       "77f86bdc6f864e6d3c12da0ae6b45e1e" : {
         "activationsCounter" : {
-          "accident" : 5,
-          "theft" : 5,
-          "thirdParty" : 5
+          "accident" : 8,
+          "theft" : 8,
+          "thirdParty" : 8
         },
         "innerType" : "car",
         "itemId" : "qre2j83",
@@ -8198,7 +8212,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 5,
+      "activationsCounter" : 8,
       "onboard" : true,
       "userEmail" : "deborinhagomes@yahoo.com.br",
       "wallet" : {
@@ -8210,9 +8224,9 @@ export const customers = {
     "items" : {
       "185aceb516b6fd5d4a53b276b0f771f3" : {
         "activationsCounter" : {
-          "accident" : 135,
-          "theft" : 135,
-          "thirdParty" : 135
+          "accident" : 136,
+          "theft" : 136,
+          "thirdParty" : 136
         },
         "innerType" : "car",
         "itemId" : "ayp8107",
@@ -8221,7 +8235,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 135,
+      "activationsCounter" : 136,
       "clientId" : 201,
       "cpf" : "27609615838",
       "firstName" : "Célio",
@@ -8231,7 +8245,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "celioog@yahoo.com.br",
       "wallet" : {
-        "switch" : 2987687.16
+        "switch" : 2964274.94
       }
     },
     "purchaseHistory" : {
@@ -8249,9 +8263,9 @@ export const customers = {
     "items" : {
       "59f32dd66bab5baa42149affa1960736" : {
         "activationsCounter" : {
-          "accident" : 83,
-          "theft" : 83,
-          "thirdParty" : 83
+          "accident" : 85,
+          "theft" : 85,
+          "thirdParty" : 85
         },
         "innerType" : "car",
         "itemId" : "ewj0064",
@@ -8260,7 +8274,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 83,
+      "activationsCounter" : 85,
       "clientId" : 288,
       "cpf" : "34089478804",
       "firstName" : "Luis",
@@ -8270,7 +8284,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "luishenrique.m@gmail.com",
       "wallet" : {
-        "switch" : 1759593.7
+        "switch" : 1755544.16
       }
     },
     "purchaseHistory" : {
@@ -8295,9 +8309,9 @@ export const customers = {
     "items" : {
       "b50280cce4cee8726a72d4b41da62b5e" : {
         "activationsCounter" : {
-          "accident" : 4,
-          "theft" : 4,
-          "thirdParty" : 4
+          "accident" : 6,
+          "theft" : 6,
+          "thirdParty" : 6
         },
         "innerType" : "car",
         "itemId" : "qja2a82",
@@ -8306,7 +8320,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 4,
+      "activationsCounter" : 6,
       "clientId" : 388,
       "cpf" : "08845888908",
       "firstName" : "Matheus",
@@ -8316,7 +8330,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "m.deandrade02@gmail.com",
       "wallet" : {
-        "switch" : 1197998
+        "switch" : 1195592
       }
     },
     "purchaseHistory" : {
@@ -8334,9 +8348,9 @@ export const customers = {
     "items" : {
       "8e66471b7fec3c25ddea5e2829bbe8d5" : {
         "activationsCounter" : {
-          "accident" : 31,
-          "theft" : 31,
-          "thirdParty" : 31
+          "accident" : 34,
+          "theft" : 34,
+          "thirdParty" : 34
         },
         "innerType" : "car",
         "itemId" : "dyf7578",
@@ -8345,7 +8359,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 31,
+      "activationsCounter" : 34,
       "clientId" : 301,
       "cpf" : "17085341807",
       "firstName" : "Marcus",
@@ -8355,7 +8369,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "marcusmattei@gmail.com",
       "wallet" : {
-        "switch" : 1217544.36
+        "switch" : 1216744.08
       }
     },
     "purchaseHistory" : {
@@ -8420,9 +8434,9 @@ export const customers = {
     "items" : {
       "a77496c1d2d560576c42a6d955465e54" : {
         "activationsCounter" : {
-          "accident" : 75,
-          "theft" : 75,
-          "thirdParty" : 75
+          "accident" : 78,
+          "theft" : 78,
+          "thirdParty" : 78
         },
         "innerType" : "car",
         "itemId" : "fsp4621",
@@ -8431,7 +8445,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 75,
+      "activationsCounter" : 78,
       "clientId" : 322,
       "cpf" : "47600056844",
       "firstName" : "Raphael",
@@ -8441,7 +8455,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "rapha__mendes@hotmail.com",
       "wallet" : {
-        "switch" : 1136828.45
+        "switch" : 1134492.41
       }
     },
     "purchaseHistory" : {
@@ -8487,9 +8501,9 @@ export const customers = {
     "items" : {
       "32fa8ac5a2f02d688aef97cea70f6a96" : {
         "activationsCounter" : {
-          "accident" : 14,
-          "theft" : 14,
-          "thirdParty" : 14
+          "accident" : 23,
+          "theft" : 23,
+          "thirdParty" : 23
         },
         "innerType" : "car",
         "itemId" : "pak2387",
@@ -8498,7 +8512,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 14,
+      "activationsCounter" : 23,
       "clientId" : 406,
       "cpf" : "86687158104",
       "firstName" : "Ricardo",
@@ -8508,7 +8522,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "ataides@hotmail.com",
       "wallet" : {
-        "switch" : 1863534.12
+        "switch" : 1860778.68
       }
     },
     "purchaseHistory" : {
@@ -8565,9 +8579,9 @@ export const customers = {
     "items" : {
       "fa6745eafabaa0836c178352e244c1e4" : {
         "activationsCounter" : {
-          "accident" : 27,
-          "theft" : 27,
-          "thirdParty" : 27
+          "accident" : 29,
+          "theft" : 29,
+          "thirdParty" : 29
         },
         "innerType" : "car",
         "itemId" : "ebm2098",
@@ -8576,7 +8590,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 27,
+      "activationsCounter" : 29,
       "clientId" : 347,
       "cpf" : "40911419861",
       "firstName" : "Eduardo",
@@ -8586,7 +8600,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "dinizedd@icloud.com",
       "wallet" : {
-        "switch" : 1693843.04
+        "switch" : 1683934.96
       }
     },
     "purchaseHistory" : {
@@ -8611,9 +8625,9 @@ export const customers = {
     "items" : {
       "182e9b942b9e5a8e5cd51e3b494a567b" : {
         "activationsCounter" : {
-          "accident" : 18,
-          "theft" : 18,
-          "thirdParty" : 18
+          "accident" : 19,
+          "theft" : 19,
+          "thirdParty" : 19
         },
         "innerType" : "car",
         "itemId" : "kws9876",
@@ -8622,7 +8636,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 18,
+      "activationsCounter" : 19,
       "clientId" : 325,
       "cpf" : "93970889200",
       "firstName" : "Leandro",
@@ -8657,9 +8671,9 @@ export const customers = {
     "items" : {
       "24c69c70b9e8190891e0c6469b42429a" : {
         "activationsCounter" : {
-          "accident" : 75,
-          "theft" : 75,
-          "thirdParty" : 75
+          "accident" : 80,
+          "theft" : 80,
+          "thirdParty" : 80
         },
         "innerType" : "car",
         "itemId" : "fpn9058",
@@ -8668,7 +8682,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 75,
+      "activationsCounter" : 80,
       "clientId" : 329,
       "cpf" : "29313313847",
       "firstName" : "Adauto",
@@ -8678,7 +8692,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "adauto.junior@riolex.com.br",
       "wallet" : {
-        "switch" : 2977100.66
+        "switch" : 2956849.01
       }
     },
     "purchaseHistory" : {
@@ -8703,9 +8717,9 @@ export const customers = {
     "items" : {
       "903ace06b9b12c1ff3b453aaacae3f76" : {
         "activationsCounter" : {
-          "accident" : 93,
-          "theft" : 93,
-          "thirdParty" : 93
+          "accident" : 99,
+          "theft" : 99,
+          "thirdParty" : 99
         },
         "innerType" : "car",
         "itemId" : "bat2j02",
@@ -8714,7 +8728,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 93,
+      "activationsCounter" : 99,
       "clientId" : 367,
       "cpf" : "72599499968",
       "firstName" : "Amir",
@@ -8724,7 +8738,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "pramirdesouza@hotmail.com",
       "wallet" : {
-        "switch" : 1175927.72
+        "switch" : 1173638.4
       }
     },
     "purchaseHistory" : {
@@ -8749,9 +8763,9 @@ export const customers = {
     "items" : {
       "c6a56d9a0fde5f49aecb9d18124c6751" : {
         "activationsCounter" : {
-          "accident" : 53,
-          "theft" : 53,
-          "thirdParty" : 53
+          "accident" : 55,
+          "theft" : 55,
+          "thirdParty" : 55
         },
         "innerType" : "car",
         "itemId" : "axr1870",
@@ -8760,7 +8774,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 53,
+      "activationsCounter" : 55,
       "clientId" : 268,
       "cpf" : "08341270919",
       "firstName" : "Gabriella",
@@ -8770,7 +8784,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "gabiischram@gmail.com",
       "wallet" : {
-        "switch" : 1152986.12
+        "switch" : 1152061.68
       }
     },
     "purchaseHistory" : {
@@ -8917,9 +8931,9 @@ export const customers = {
     "items" : {
       "9f1feac639098e52438d0b5d94f5f52e" : {
         "activationsCounter" : {
-          "accident" : 157,
-          "theft" : 157,
-          "thirdParty" : 157
+          "accident" : 161,
+          "theft" : 161,
+          "thirdParty" : 161
         },
         "innerType" : "car",
         "itemId" : "aun2138",
@@ -8928,7 +8942,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 157,
+      "activationsCounter" : 161,
       "onboard" : true,
       "userEmail" : "jullianedecastro@gmail.com",
       "wallet" : {
@@ -8940,9 +8954,9 @@ export const customers = {
     "items" : {
       "27b9a905cb514da7b6b07993c21b00f6" : {
         "activationsCounter" : {
-          "accident" : 118,
-          "theft" : 118,
-          "thirdParty" : 118
+          "accident" : 123,
+          "theft" : 123,
+          "thirdParty" : 123
         },
         "innerType" : "car",
         "itemId" : "eyc7854",
@@ -8951,7 +8965,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 118,
+      "activationsCounter" : 123,
       "clientId" : 276,
       "cpf" : "33279186862",
       "firstName" : "",
@@ -8961,7 +8975,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "claudiorpabramides@hotmail.com",
       "wallet" : {
-        "switch" : 1743154.28
+        "switch" : 1741544.91
       }
     },
     "purchaseHistory" : {
@@ -8986,9 +9000,9 @@ export const customers = {
     "items" : {
       "fb3ec8b8f59fe879dab9b13d5b825315" : {
         "activationsCounter" : {
-          "accident" : 31,
-          "theft" : 31,
-          "thirdParty" : 31
+          "accident" : 34,
+          "theft" : 34,
+          "thirdParty" : 34
         },
         "innerType" : "car",
         "itemId" : "gdc9701",
@@ -8997,7 +9011,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 31,
+      "activationsCounter" : 34,
       "clientId" : 320,
       "cpf" : "08574252859",
       "firstName" : "Marta Maria",
@@ -9007,7 +9021,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "martamgonzaga@hotmail.com",
       "wallet" : {
-        "switch" : 1220722.2
+        "switch" : 1218487.04
       }
     },
     "purchaseHistory" : {
@@ -9068,9 +9082,9 @@ export const customers = {
     "items" : {
       "b422e4aac1c7b5a4b790211d5e6fceeb" : {
         "activationsCounter" : {
-          "accident" : 800,
-          "theft" : 800,
-          "thirdParty" : 800
+          "accident" : 805,
+          "theft" : 805,
+          "thirdParty" : 805
         },
         "innerType" : "car",
         "itemId" : "pbk3802",
@@ -9079,7 +9093,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 800,
+      "activationsCounter" : 805,
       "clientId" : 88,
       "cpf" : "89814185191",
       "firstName" : "Edmilson",
@@ -9089,7 +9103,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "edy.freitas1000@gmail.com",
       "wallet" : {
-        "switch" : 1162729.8
+        "switch" : 1157956.35
       }
     }
   },
@@ -9103,9 +9117,9 @@ export const customers = {
     "items" : {
       "523d796978fac93852fa50467549ee71" : {
         "activationsCounter" : {
-          "accident" : 39,
-          "theft" : 39,
-          "thirdParty" : 39
+          "accident" : 41,
+          "theft" : 41,
+          "thirdParty" : 41
         },
         "innerType" : "car",
         "itemId" : "gfi6454",
@@ -9125,7 +9139,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 69,
+      "activationsCounter" : 71,
       "onboard" : true,
       "userEmail" : "pat-mika-tal@hotmail.com",
       "wallet" : {
@@ -9274,9 +9288,9 @@ export const customers = {
     "items" : {
       "3b247396b3f6ff5a11466fabd1f2f870" : {
         "activationsCounter" : {
-          "accident" : 125,
-          "theft" : 125,
-          "thirdParty" : 125
+          "accident" : 128,
+          "theft" : 128,
+          "thirdParty" : 128
         },
         "innerType" : "car",
         "itemId" : "qjq8766",
@@ -9285,7 +9299,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 125,
+      "activationsCounter" : 128,
       "clientId" : 156,
       "cpf" : "55708153687",
       "firstName" : "Silvana",
@@ -9295,7 +9309,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "silvanaavilabr@hotmail.com",
       "wallet" : {
-        "switch" : 1347919.89
+        "switch" : 1342159.78
       }
     },
     "purchaseHistory" : {
@@ -9416,7 +9430,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "raphinhamotter@hotmail.com",
       "wallet" : {
-        "switch" : 1091585.59
+        "switch" : 1090897.23
       }
     },
     "purchaseHistory" : {
@@ -9434,9 +9448,9 @@ export const customers = {
     "items" : {
       "fee516f279471000a3b4e849b7a77f43" : {
         "activationsCounter" : {
-          "accident" : 134,
-          "theft" : 134,
-          "thirdParty" : 134
+          "accident" : 139,
+          "theft" : 139,
+          "thirdParty" : 139
         },
         "innerType" : "car",
         "itemId" : "lrm8248",
@@ -9445,7 +9459,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 134,
+      "activationsCounter" : 139,
       "clientId" : 277,
       "cpf" : "11026342716",
       "firstName" : "Jorge",
@@ -9455,7 +9469,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "jrcamanho@hotmail.com",
       "wallet" : {
-        "switch" : 2411411.55
+        "switch" : 2410039.83
       }
     },
     "purchaseHistory" : {
@@ -9563,7 +9577,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "fpadrao@gmail.com",
       "wallet" : {
-        "switch" : 1027641.92
+        "switch" : 1022701.76
       }
     },
     "purchaseHistory" : {
@@ -9586,9 +9600,9 @@ export const customers = {
     "items" : {
       "9aba0d319ee4968c026a95dd5a7d710c" : {
         "activationsCounter" : {
-          "accident" : 53,
-          "theft" : 53,
-          "thirdParty" : 53
+          "accident" : 56,
+          "theft" : 56,
+          "thirdParty" : 56
         },
         "innerType" : "car",
         "itemId" : "gcx5021",
@@ -9597,7 +9611,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 53,
+      "activationsCounter" : 56,
       "onboard" : true,
       "userEmail" : "greyce.kmartins@gmail.com",
       "wallet" : {
@@ -9632,9 +9646,9 @@ export const customers = {
     "items" : {
       "5f45aa0f3c79e97e8bad20b0f145ca26" : {
         "activationsCounter" : {
-          "accident" : 51,
-          "theft" : 51,
-          "thirdParty" : 51
+          "accident" : 53,
+          "theft" : 53,
+          "thirdParty" : 53
         },
         "innerType" : "car",
         "itemId" : "mjr5575",
@@ -9643,7 +9657,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 51,
+      "activationsCounter" : 53,
       "clientId" : 313,
       "cpf" : "08840358919",
       "firstName" : "Rafael",
@@ -9653,7 +9667,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "rafael_tibes@hotmail.com",
       "wallet" : {
-        "switch" : 1189286.12
+        "switch" : 1189092.52
       }
     },
     "purchaseHistory" : {
@@ -9676,9 +9690,9 @@ export const customers = {
     "items" : {
       "d7c6d5b0e6bb9752d15c7ca6bf99b8b3" : {
         "activationsCounter" : {
-          "accident" : 38,
-          "theft" : 38,
-          "thirdParty" : 38
+          "accident" : 42,
+          "theft" : 42,
+          "thirdParty" : 42
         },
         "innerType" : "car",
         "itemId" : "arz4646",
@@ -9687,7 +9701,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 38,
+      "activationsCounter" : 42,
       "onboard" : true,
       "userEmail" : "gada.crijor@gmail.com",
       "wallet" : {
@@ -9699,9 +9713,9 @@ export const customers = {
     "items" : {
       "5dca7b737c0525d778a18eea758f6760" : {
         "activationsCounter" : {
-          "accident" : 26,
-          "theft" : 26,
-          "thirdParty" : 26
+          "accident" : 31,
+          "theft" : 31,
+          "thirdParty" : 31
         },
         "innerType" : "car",
         "itemId" : "faj4008",
@@ -9710,7 +9724,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 26,
+      "activationsCounter" : 31,
       "clientId" : 372,
       "cpf" : "32642888851",
       "firstName" : "Flávio",
@@ -9720,7 +9734,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "f.pepinelli@gmail.com",
       "wallet" : {
-        "switch" : 1181556.64
+        "switch" : 1178183.16
       }
     },
     "purchaseHistory" : {
@@ -9745,9 +9759,9 @@ export const customers = {
     "items" : {
       "ed8b2e6d6f0bfd89293c8e7ecd088ef9" : {
         "activationsCounter" : {
-          "accident" : 128,
-          "theft" : 128,
-          "thirdParty" : 128
+          "accident" : 131,
+          "theft" : 131,
+          "thirdParty" : 131
         },
         "innerType" : "car",
         "itemId" : "jja0058",
@@ -9756,7 +9770,7 @@ export const customers = {
       }
     },
     "personal" : {
-      "activationsCounter" : 128,
+      "activationsCounter" : 131,
       "clientId" : 96,
       "cpf" : "04488204120",
       "firstName" : "Eduardo",
@@ -9766,8 +9780,31 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "soareseduardoaraujo@gmail.com",
       "wallet" : {
-        "switch" : 886914.38
+        "switch" : 866878.91
       }
+    }
+  },
+  "fdc77d29b76787bd1351eeeb0bf09065" : {
+    "personal" : {
+      "clientId" : 423,
+      "cpf" : "10867293667",
+      "firstName" : "Ellerson",
+      "lastOrder" : 11846,
+      "onboard" : false,
+      "userEmail" : "ellerson-ribeiro@hotmail.com",
+      "wallet" : {
+        "switch" : 1199000
+      }
+    },
+    "purchaseHistory" : {
+      "-LzrKOAJUJyEvEiNcmyr" : {
+        "fundsToWallet" : 1199,
+        "orderId" : 11846,
+        "purchaseDate" : 1580402578,
+        "purchasedItems" : [ 386, 1513 ],
+        "totalFunds" : 1448
+      },
+      "lastOrder" : 11846
     }
   },
   "feccda9e72114d98e2d5e4265df99d16" : {
@@ -9795,7 +9832,7 @@ export const customers = {
       "onboard" : true,
       "userEmail" : "campagnolo_jc@hotmail.com",
       "wallet" : {
-        "switch" : 1154662.5
+        "switch" : 1151915.25
       }
     },
     "purchaseHistory" : {
@@ -9838,5 +9875,3 @@ export const customers = {
     }
   }
 }
-  
-  

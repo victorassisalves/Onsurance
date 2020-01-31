@@ -203,6 +203,7 @@ export interface Report_UserFinalReportProfile {
     cpf: any;
     email: string;
     spent: number;
+    wallet: number,
 }
 
 export interface Report_CustomersData {

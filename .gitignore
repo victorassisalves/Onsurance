@@ -2,7 +2,7 @@
 ###########
 node_modules/
 lib/
-report/data/
+report/data
 
 # Compiled source #
 ###################

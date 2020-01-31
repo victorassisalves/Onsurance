@@ -1,13 +1,13 @@
 import { NumericDictionary } from "lodash";
 
-interface TireOnboard {
-    totalValue: number;
-    qtd: number;
-    userEmail: string;
-    tireId: string;
-    plate: string;
-    vehicleType: string;
-};
+// interface TireOnboard {
+//     totalValue: number;
+//     qtd: number;
+//     userEmail: string;
+//     tireId: string;
+//     plate: string;
+//     vehicleType: string;
+// };
 
 export interface TireInUserProfile {
     activationsCounter: {

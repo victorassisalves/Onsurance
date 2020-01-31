@@ -1,4 +1,4 @@
-import { customers } from "./data/reportDataCustomers";
+import { customersData } from "./data/reportDataCustomers";
 
 import { Report_UserProfileInterface, 
     Report_UserFinalReportProfile, 
@@ -6,13 +6,13 @@ import { Report_UserProfileInterface,
     Report_VehicleInUserProfileInterface, 
     Report_BillingInterface,
     Report_VehicleData,
-    Report_vehicleV1Interface,
-    Report_vehicleV2Interface,
+    // Report_vehicleV1Interface,
+    // Report_vehicleV2Interface,
     Report_vehicleV3Interface,
     Report_VehicleAutoLogUse,
     Report_vehicleReport, 
 } from "./reportInterface";
-import { vehicleData } from "./data/reportDataVehicles";
+import { getVehicleData } from "./data/reportDataVehicles";
 import * as crypto from "crypto";
 import { convertTimestamp } from "../model/timeToDateModel";
 import { generalReportFile } from "./createReportFile";
@@ -21,7 +21,7 @@ const getItemId = (itemPlate: string) => {
     return crypto.createHash('md5').update(itemPlate).digest("hex");
 }
 
-let generalReport = {
+const generalReport = {
     spent: 0,
     monthlyUsage: {},
 }
@@ -37,7 +37,7 @@ let generalReport = {
  */
 class BuildOnsuranceUsageReport  {
     usageReportTotal: Array<any>;
-    totalMinutes: number;
+    totalMinutes: number = 0;
     /**
      * @description This functions is responsible for grouping the functions for generating auto usage report
      * @param itemProfile Vehicle (Auto) profile inside user profile
@@ -52,6 +52,7 @@ class BuildOnsuranceUsageReport  {
          */
         try {
             // console.log(`TCL: 7.2.0 - buildOnsuranceUsageReport -> generateAutoReportData -> item Profile.`);
+            const vehicleData = getVehicleData;
             const itemId = getItemId(itemProfile.itemId);
             const vehicleInfo: Report_VehicleData = vehicleData[itemProfile.type][itemProfile.innerType][itemId];
             let useReport;
@@ -91,7 +92,7 @@ class BuildOnsuranceUsageReport  {
 
             let logUseArray = finalArray.reverse().filter(log => {
 
-                if (logUse[log].timeEnd && logUse[log].timeEnd > begin && logUse[log].timeEnd < end){
+                if (logUse[log] !== null && logUse[log].timeEnd && logUse[log].timeEnd > begin && logUse[log].timeEnd < end){
                     return true;
                 } else {
                     return false;
@@ -349,6 +350,11 @@ class BuildOnsuranceUsageReport  {
         }
     }
 
+    /**
+     * @description This function saves the general usage data for the report. Its the sum of all users usages.
+     * @param {string} month String of the period of usage ('01/2020')
+     * @param {spent: number, totalMinutes: number, month: string, day: number, weekDay: number, year: number} usageData Data usage for user in a log use. Represent a single usage.
+     */
     private generateGeneralReport(month, usageData) {
         try {
             if (generalReport.monthlyUsage[month] !== null && generalReport.monthlyUsage[month] !== undefined){ // Já tem o mês de faturamento
@@ -401,9 +407,9 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
         numberOfMonths: 0,
         users: 0,
     }
-    constructor() {
+    constructor () {
         super();
-        this.customersObj = customers;
+        this.customersObj = customersData;
         this.userReportArray = this.userReportArray
     };
 
@@ -411,19 +417,20 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
         try {
             generalReport.spent = 0;
             generalReport.monthlyUsage = {};
-
             const usersArray = Object.keys(this.customersObj);
             
             await this.iterateUsersArray(usersArray);
             console.log(`TCL: END - buildUserProfileReport -> getProfile >-> After iterateUsersArray`);
             const usageMedia = this.usageTimeMedia.hourMedia/this.usageTimeMedia.users;
+            console.log(`TCL: BuildUserProfileReport -> usageTimeMedia`, this.usageTimeMedia);
             console.log(`TCL: usageMedia`, usageMedia);
+            
 
             let report = {
                 generalReport: generalReport,
                 usersReport: this.userReportArray,
             };
-            // await generalReportFile(report);
+            await generalReportFile(report);
             return report;   
         } catch (error) {
             console.error(new Error(`buildUserProfileReport >-> getProfile >-> error: ${JSON.stringify(error)}`));
@@ -447,35 +454,38 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
                 
                 // console.log(`TCL: 3 - buildUserProfileReport -> iterateUsersArray >-> user`, user);
 
+                
+
+                const userProfile: Report_UserProfileInterface = this.customersObj[user];
                 let userInfo: Report_UserFinalReportProfile = {
                     userId: user,
                     billing: '',
                     items: '',
                     cpf: '',
                     email: '',
-                    spent: 0
+                    spent: 0,
+                    wallet: 0,
                 };
-
-                const userProfile: Report_UserProfileInterface = this.customersObj[user];
                 // console.log(`TCL: 4 - buildUserProfileReport -> iterateUsersArray >-> userProfile`);
                 switch (userProfile.personal.userEmail) {
-                    case 'victor.assis.alves@gmail.com':{
-                    // case 'victor.assis@onsurance.me':
-                    // case 'victor@onsurance.me':
-                    // case 'ricardo@onsurance.me':
-                    // case 'adilair@onsurance.me':
-                    // case 'adilasjr@hotmail.com':
-                    // case 'ricardo@tripshop.com.br':
-                    // case 'Gentehumilde@gmail.com':
-                    // case "adilair@gmail.com":
-                    //     break;
+                    case 'victor.assis.alves@gmail.com':
+                    case 'victor.assis@onsurance.me':
+                    case 'victor@onsurance.me':
+                    case 'ricardo@onsurance.me':
+                    case 'adilair@onsurance.me':
+                    case 'adilasjr@hotmail.com':
+                    case 'ricardo@tripshop.com.br':
+                    case 'Gentehumilde@gmail.com':
+                    case "adilair@gmail.com":
+                        break;
                 
-                    // default: {
+                    default: {
 
                         if (userProfile.personal.clientId !== null && userProfile.personal.clientId !== undefined){
 
                             userInfo.cpf = userProfile.personal.cpf;
                             userInfo.email = userProfile.personal.userEmail;
+                            userInfo.wallet = userProfile.personal.wallet.switch;
                             this.usageTimeMedia.users += 1;
 
                             if (userProfile.billing !== null && userProfile.billing !== undefined){
@@ -536,15 +546,17 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
             for await (let vehicles of billingItems) {
                 // console.log(`TCL: vehicles`, vehicles);
                 const billingDay = userBilling[vehicles].billingDay;
-                // console.log(`TCL: billingDay`, billingDay);
+
                 let billingTimes = userBilling[vehicles].billingTimes;
-                // console.log(`TCL: billingTimes`, billingTimes);
+                if (billingTimes > 2) {
+                    billingTimes = 2
+                } 
 
                 const todayDate = new Date().getTime()/1000|0;
                 // console.log(`TCL: todayDate`, todayDate);
-                let today = convertTimestamp(todayDate);
+                const today = convertTimestamp(todayDate);
                 // console.log(`TCL: today`, today);
-                let info = {
+                const info = {
                     [vehicles]: {
 
                     }
@@ -557,7 +569,7 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
                     // Já contabilizou esse mês
                     for (let i = 0; i < billingTimes;  i++) {
                         spent += 39.9;
-                        let startDate = `${month}/${year}`
+                        const startDate = `${month}/${year}`
                         const monthlyUsage = {
                             [startDate]: {
                                 spent: 39.9,
@@ -584,7 +596,17 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
                     // Já contabilizou esse mês
                     for (let i = 0; i < billingTimes;  i++) {
                         spent += 39.9;
-                        let startDate = `${month+1}/${year}`
+                        const startDate = `${month}/${year}`
+
+                        if (parseInt(month) >= 10 && parseInt(month) <= 11) {
+                            month = `${parseInt(month)+1}`;
+                        } else if (parseInt(month) >= 1 && parseInt(month) < 10){
+                            month = `0${parseInt(month)+1}`
+                        } else {
+                            month = '01';
+                            year = (parseInt(year)+1).toString()
+                        }
+
                         const monthlyUsage = {
                             [startDate]: {
                                 spent: 39.9,
@@ -612,7 +634,6 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
                     ...billing,
                     ...info
                 }
-                console.log(`TCL: info`, info);
             }
 
             console.log(`TCL: 5.1 - buildUserProfileReport -> userBillingInfo >-> after loop`);
@@ -632,13 +653,19 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
         }
     };
     
+
+    /**
+     * @description This function separates the items in the user profile to generate the specific report for each.
+     * @param {Report_ItemsInUserProfile} userItems The list of items in user profile. Vehicles, tires, etc
+     * @param {string} userEmail Email of the user
+     */
     private async userItemsInfo(userItems: Report_ItemsInUserProfile, userEmail: string) {
         /**
          * @Todo
-         *      Get user items
+         *      Get user items - DONE
          *      For each user item get item in items user array.
          *          Prepare for tire *
-         *      Iterate item logUse to get usage data
+         *      Iterate item logUse to get usage data - DONE
          *      Mount data in excel format
          */
         try {
@@ -658,10 +685,19 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
                     if (userEmail === autoInfo.owner){
                         const vehicleReport: Report_vehicleReport = await this.generateAutoReportData(userItems[vehicle]) // Returns the usage report for 1 item
                         if (vehicleReport !== null) {
-                            const months = Object.keys(vehicleReport.usageArray).length;
-                            const hours = vehicleReport.totalMinutes/60;
+                            let months = Object.keys(vehicleReport.usageArray).length;
+                            months !== null && months !== undefined ? months : months = 0;
+                            const hours = parseFloat(vehicleReport.totalMinutes.toFixed(3))/60;
+                            console.log(`TCL: BuildUserProfileReport -> vehicleReport.totalMinutes`, vehicleReport.totalMinutes);
                             const media = parseFloat((hours/months/30).toFixed(1));
-                            this.usageTimeMedia.hourMedia += media;
+                            
+                            if (isNaN(media)){
+                                console.error(`TCL: BuildUserProfileReport -> media`, media);
+                                console.error(`TCL: BuildUserProfileReport -> owner`, autoInfo.owner);
+                            } else {
+                                this.usageTimeMedia.hourMedia += media;
+
+                            }
     
                             const itemReport = {
                                 [vehicle]: vehicleReport.usageArray,

@@ -3,7 +3,7 @@ import * as cors from "cors";
 import { sendQuoteToZoho } from "../zoho/zoho.api";
 import { tireQuoteVariables, TireQuoteVariables } from "../environment/quotation.variables";
 import { executeTiresQuote, executeAutoQuote } from "../controller/quote.controller";
-import { quote_autoResponse, quote_ErrorResponse, quote_ErrorDefaultResponse } from "../environment/messenger/messenger.responses";
+import { quote_autoResponse, quote_ErrorResponse, quote_ErrorDefaultResponse, quote_tireResponse } from "../environment/messenger/messenger.responses";
 import { sendQuotationZoho } from "../environment/zoho.flow";
 import { checkRequestVariables } from "../model/errors";
 
@@ -36,12 +36,14 @@ router.post("/tires/messenger", async (request, response) => {
         console.log(request.path)
         const variables: TireQuoteVariables = await tireQuoteVariables(request.body);
         const result = executeTiresQuote(variables);
+        
         console.log(`TCL: result`, result);
         const zoho = new sendQuoteToZoho(variables);
         const res = await zoho.upsertLead();
         console.log(`TCL: zoho`, res);
-        // await zoho.renewAccessToken;
-        return response.send(res);
+        const ass24h = checkRequestVariables("assistência 24 horas", request.body.ass24h, String, false)
+        const messengerResponse = quote_tireResponse(result, ass24h);
+        return response.send(messengerResponse);
     } catch (error) {
         response.send(error)
     };
