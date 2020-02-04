@@ -6,11 +6,17 @@
   "targets": {
     "onsurance-new": {
       "hosting": {
-        "tire": [
-          "tire-quote"
+        "pneus": [
+          "./public/pneus"
         ],
         "auto": [
-          "./public/auto-quote"
+          "./public/auto"
+        ],
+        "cotacao": [
+          "cotacao-onsurance"
+        ],
+        "api": [
+          "api-onsurance"
         ]
       }
     }

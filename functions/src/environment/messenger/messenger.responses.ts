@@ -971,8 +971,8 @@ export const changeVehicleOptions = variables => {
 };
 
 /**
- * @descriptionThis functions returns the chatfuel callback to set item variables
- * @param variables Holds the item profile data
+ * @description This functions returns the chatfuel callback to set item variables
+ * @param {} variables Holds the item profile data
  */
 export const setVehicleInfo = variables => {
     try {
@@ -1222,6 +1222,7 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
         for (let i = 0; i < items.length; i++) {
 
             switch (items[i].type) {
+                case "{{typeVehicle}}": 
                 case "vehicle": {
                     if (items[i].protectionStatus === true) {
                         autoStatusProtection = "ON";
@@ -1279,7 +1280,7 @@ export const showItemsListInGalery = async (items: Array<any>): Promise<Object> 
         return response;
         
     } catch (error) {
-        console.error(new Error(`TCL: error: ${error}`));
+        console.error(new Error(`TCL: error: ${JSON.stringify(error)}`));
         const serverError = {
             "messages": [
                 {
@@ -1545,7 +1546,7 @@ export const TireRes_activationSuccessful = () => {
 
 
 
-export const quote_TireResponse = (variables, ass24h) => {
+export const quote_tireResponse = (variables, ass24h) => {
     let extraText = ""
     if (ass24h === "sim") {
         const total = variables.activationCredit + 249
@@ -1565,7 +1566,6 @@ export const quote_TireResponse = (variables, ass24h) => {
             "anualCostCot": variables.anualCost,
             "creditDurationCot": variables.creditDuration,
             "minuteValueCot": variables.minuteValue,
-            "franchiseCot": variables.franchise,
         },
     };
     

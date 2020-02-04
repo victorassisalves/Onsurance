@@ -24,18 +24,18 @@
     ],
     "source": "functions"
   },
-  "hosting": 
+  "hosting": [
     // {
         // "target": "cotacao.onsurance.me/pneus",
       //   "public": "./public/tire-quote"
     // },
-    // {
-      // "target": "cotacao.onsurance.me/auto",
-    //   "public": "./public/auto-quote", 
-    // },
+    {
+      "target": "cotacao",
+      "public": "public/cotacao"
+    },
     {
       "target": "api",
-      "public": "public",
+      "public": "public/api",
       "rewrites": [
         {
           "source": "/onboard",
@@ -63,7 +63,8 @@
         "**/.*",
         "**/node_modules/**"
       ]
-  },
+    }
+  ],
   "storage": {
     "rules": "storage.rules"
   },

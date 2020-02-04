@@ -1,5 +1,5 @@
+var unirest = require('unirest');
 import axios from 'axios';
-import { TireQuoteVariables } from "../environment/quotation.variables";
 import { admin } from '../config/admin';
 import crypto = require('crypto');
 
@@ -17,15 +17,15 @@ let db = admin.firestore;
 
  export class sendQuoteToZoho {
      privateApi: any;
-     counter = 0;
+     counter: number;
      constructor(privateApi) {
         this.privateApi = privateApi;
+        this.counter = 0;
     };
-
     /**
-     * @description This function update or create a new lead
+     * @description This function update or create a new lead. It triggers all the necessaru functions.
      */
-    async upsertLead() {
+    public async upsertLead() {
         try {
             // get LastAccess token
             const access_token = await this.getAccessToken();
@@ -62,41 +62,36 @@ let db = admin.firestore;
             }
 
             console.log('before axios');
+            console.log('Counter', this.counter);
 
-            axios({
-                method: 'post',
-                url: baseUrl,
-                headers: headers,
-                data: body,
-            }).then(async (response) => {
-                console.log(`TCL: response: ${JSON.stringify(response)}`);
+            // const response = await axios({
+            //     method: 'post',
+            //     url: baseUrl,
+            //     headers: headers,
+            //     data: body,
+            // })
 
-                if (response.status === 200) {
-                    return response.data;
-                } else if (response.status === 401){
+            var req = unirest('POST', baseUrl)
+            .headers(headers)
+            .send(JSON.stringify(body))
+            .end(async function (res) { 
+                if (res.error) {
                     this.counter++
+                    if (this.counter === 4){
+                        this.counter = 0
+                        throw new Error(res.error)
+                    }
                     const newToken = await this.renewAccessToken();
                     console.log(`TCL: sendQuoteToZoho -> upsertLead -> newToken`, newToken);
-                    await this.upsertLead();
-                    if (this.counter === 4){
-                        throw {
-                            status: 401,
-                            error: 'Failed to upsert lead',
-                            response: response
-                        }
-                    }
-                } else {
-                    throw response;
+                    this.upsertLead();
                 }
-            }).catch(error => {
-                console.error(`TCL: sendQuoteToZoho -> error`, error);
-                return error;
+                console.log(res.raw_body);
             });
             
 
         } catch (error) {
             console.error(`TCL: sendQuoteToZoho >-> UpsertLead >-> error: ${JSON.stringify(error)}`);
-            throw error;
+            throw new Error(error);
         }
         
     };
@@ -107,10 +102,11 @@ let db = admin.firestore;
     private async getAccessToken() {
         try {
             
-            let tokenRef = db.collection('zohoApi').doc('y4qmaP2Tb2FfwuEkyQay');
-            const encriptedToken = await tokenRef.get().then(doc => {
+            const tokenRef = db.collection('zohoApi').doc('y4qmaP2Tb2FfwuEkyQay');
+            const encriptedToken = await tokenRef.get().then(async(doc) => {
                     if (!doc.exists) {
                         console.log('No such document!');
+                        return await this.renewAccessToken()
                     } else {
                         return doc.data();
                     }

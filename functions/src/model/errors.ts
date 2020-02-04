@@ -325,14 +325,14 @@ export const checkItemList = (userItemsList: Object) => {
  * @description This function check any variable. If it is undefined or null throws a error, if is not, returns the variable
  * @param {string} varName Is the variable name to return error dubug
  * @param {any} variable Is the variable you want to check for undefined or null
- * @param {String | Number} variableType If variable is String or Number send this paramenter
+ * @param {String | Number | Boolean} variableType If variable is String or Number send this paramenter
  * @param {boolean} required For default every variable is required. If not, pass value false
  * @returns {variable}
  * ```
  * return variable;
  * ```
  */
-export const checkRequestVariables = (varName, variable, variableType?, required = true) => {
+export const checkRequestVariables = (varName: string, variable: any, variableType?, required = true) => {
     switch (variable) {
         case null:
         case undefined:
@@ -422,9 +422,9 @@ export const checkVehicleTireQtd = async (vehicleType, tireQtd) => {
 
 /**
  * @description This function validates if user email is valid
- * @param email User email to validate
+ * @param {string} email User email to validate
  */
-export const validateEmail = (email) => {
+export const validateEmail = (email: string) => {
     if (/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     .test(email)){
         return checkRequestVariables("User Email", email, String);

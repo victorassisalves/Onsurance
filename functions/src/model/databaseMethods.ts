@@ -92,7 +92,7 @@ export const getDatabaseInfo = async (dbPath: any): Promise<any> => {
         const data = await dbPath.once('value');
         return data.val();
     } catch (error) {
-        console.error(new Error(`Error getting database info. on path - ${error}.`));
+        console.error(new Error(`Error getting database info. on path - ${JSON.stringify(error)}.`));
         throw {
             status: 500, // internal server error
             text: `Error getting databse info on path.`,

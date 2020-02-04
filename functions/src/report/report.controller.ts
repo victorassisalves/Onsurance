@@ -237,6 +237,7 @@ class BuildOnsuranceUsageReport  {
 
     /**
      * @deprecated
+     * @
      * @description This functions treats the data in the first version of the log use.
      * @param {Report_vehicleV1Interface} usage Is the log use representing 1 usage
      */
@@ -565,7 +566,7 @@ export class BuildUserProfileReport extends BuildOnsuranceUsageReport {
                 let month = `${today.month}`;
                 let year = `${today.year}`;
 
-                if (billingDay <= 25){
+                if (billingDay <= 24){
                     // Já contabilizou esse mês
                     for (let i = 0; i < billingTimes;  i++) {
                         spent += 39.9;

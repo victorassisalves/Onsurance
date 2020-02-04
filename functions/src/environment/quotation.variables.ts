@@ -35,7 +35,7 @@ export interface TireQuoteVariables {
     vehicleType: String,
     firstName: String,
     lastName: String,
-    userEmail: String,
+    userEmail: string,
     vehiclePlate: String,
     dailyUsage: any,
     phone: String,
@@ -54,8 +54,10 @@ export interface TireQuoteVariables {
  * @param {TireQuoteVariables} request Payload of the request from tire quotation
  */
 export const tireQuoteVariables = async (request: TireQuoteVariables) => {
+
     try {
         const hours = parseInt(request.dailyUsage.slice(0,2));
+        console.log(`TCL: request.dailyUsage`, request.dailyUsage);
         const minutes = parseInt(request.dailyUsage.slice(3,5));
 
         const variables = {
@@ -65,7 +67,7 @@ export const tireQuoteVariables = async (request: TireQuoteVariables) => {
             firstName: checkRequestVariables('firstName', request.firstName, String),
             lastName: checkRequestVariables('lastName', request.lastName, String),
             userEmail: validateEmail(request.userEmail),
-            vehiclePlate: checkRequestVariables('VehicleType', request.vehiclePlate, String),
+            vehiclePlate: checkRequestVariables('Vehicle Plate', request.vehiclePlate, String),
             dailyUsage: {
                 hours: hours,
                 minutes: minutes
@@ -73,7 +75,7 @@ export const tireQuoteVariables = async (request: TireQuoteVariables) => {
             tireBrand: checkRequestVariables("Tire Brand", request.tireBrand, String),
             tireFactory: checkRequestVariables("Tire Factory", request.tireFactory, String),
             insuranceOwner: checkRequestVariables("insurance Owner", request.insuranceOwner, String),
-            phone: checkRequestVariables('VehicleType', request.phone, String),
+            phone: checkRequestVariables('Phone', request.phone, String),
             insuranceValue: checkRequestVariables("insurance Value", request.insuranceValue, Number, false),
             insuranceCompany: checkRequestVariables("insurance Company", request.insuranceCompany, String, false),
             activeInsurance: checkRequestVariables("Active insurance", request.activeInsurance, String, false),

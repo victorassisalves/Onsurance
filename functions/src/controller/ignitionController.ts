@@ -26,10 +26,10 @@ export const ignition = (variables) => {
                 }
             };  
 
-            let chatfuel_block_id = `5c894cf10ecd9f1d82d179b4`
+            let chatfuel_block_id = `5dd588136dff450001d83720`
 
             if (variables.value == false || variables.value == 'false'){
-                chatfuel_block_id = `5c894cfe0ecd9f1d82d17e69`
+                chatfuel_block_id = `5dd588136dff450001d83721`
             }
             const messengerId = userProfile.messengerId
             // Check if user exists. If Not, throw error
@@ -45,7 +45,7 @@ export const ignition = (variables) => {
             // const urlHomolog = `https://api.chatfuel.com/bots/5d1513f28955f00001fadda7/users/${messengerId}/send`
             // const homologToken = 'qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74'
 
-            const urlProdution = `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${messengerId}/send`
+            const urlProdution = `https://api.chatfuel.com/bots/5dd588136dff450001d83274/users/${messengerId}/send`
             const productionToken = "qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74"
             const request = await require("request");
             const options = { 

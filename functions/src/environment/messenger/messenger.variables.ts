@@ -431,7 +431,7 @@ export const sendMessage = variables =>{
     // const urlHomolog = `https://api.chatfuel.com/bots/5b6c74f30ecd9f13f0f036e3/users/${messengerId}/send`
     // const homologToken = 'qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74'
 
-    const urlProdution = `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${variables.messengerId}/send`
+    const urlProdution = `https://api.chatfuel.com/bots/5dd588136dff450001d83274/users/${variables.messengerId}/send`
     const productionToken = "qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74"
     const request = require("request");
 
@@ -440,7 +440,7 @@ export const sendMessage = variables =>{
     qs: { 
         chatfuel_token: productionToken,
         chatfuel_message_tag: variables.messageTag,
-        chatfuel_block_id: '5d07a75fb65696000157825d',
+        chatfuel_block_id: '5dd588136dff450001d83730',
         text: variables.text 
     },
     headers: 

@@ -6,6 +6,7 @@ import { executeTiresQuote, executeAutoQuote } from "../controller/quote.control
 import { quote_autoResponse, quote_ErrorResponse, quote_ErrorDefaultResponse, quote_tireResponse } from "../environment/messenger/messenger.responses";
 import { sendQuotationZoho } from "../environment/zoho.flow";
 import { checkRequestVariables } from "../model/errors";
+import { SendEmail } from "../email/sendEmail";
 
 
 const quote = express();
@@ -34,18 +35,32 @@ router.get("/tires", async (request, response) => {
 router.post("/tires/messenger", async (request, response) => {
     try {
         console.log(request.path)
-        const variables: TireQuoteVariables = await tireQuoteVariables(request.body);
+        let requestVariables = request.body;
+        if (parseInt(requestVariables.dailyUsage) < 10){
+            requestVariables.dailyUsage = `0${request.body.dailyUsage},00`
+        } else {
+            requestVariables.dailyUsage = `${request.body.dailyUsage},00`
+        }
+
+        const variables: TireQuoteVariables = await tireQuoteVariables(requestVariables);
         const result = executeTiresQuote(variables);
-        
-        console.log(`TCL: result`, result);
-        const zoho = new sendQuoteToZoho(variables);
-        const res = await zoho.upsertLead();
-        console.log(`TCL: zoho`, res);
+        const email = new SendEmail();
+        email.sendQuoteAutoResult()
+
+        // const zoho = new sendQuoteToZoho(variables);
+        // const resp = zoho.upsertLead();
+        // console.log(`TCL: Zoho Response: `, resp);
         const ass24h = checkRequestVariables("assistência 24 horas", request.body.ass24h, String, false)
         const messengerResponse = quote_tireResponse(result, ass24h);
         return response.send(messengerResponse);
     } catch (error) {
-        response.send(error)
+        console.error(new Error(`Erro ao executar cotação para messenger: ${JSON.stringify(error)}`));
+        if (error.block) {
+            const messengerResponse = quote_ErrorResponse(error.message, error.block)
+            return response.send(messengerResponse);
+        };
+        
+        return response.send(quote_ErrorDefaultResponse());
     };
 });
 
