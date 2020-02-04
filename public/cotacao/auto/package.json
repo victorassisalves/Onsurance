@@ -1,0 +1,24 @@
+{
+  "name": "onsurancequotation",
+  "version": "1.0.0",
+  "description": "formulário de cotação",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgcardoso/onsurancequotation.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jgcardoso/onsurancequotation/issues"
+  },
+  "homepage": "https://github.com/jgcardoso/onsurancequotation#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.2.0",
+    "gulp-minify": "^3.1.0"
+  }
+}
