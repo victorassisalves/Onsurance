@@ -31,7 +31,7 @@ export const woocommercePurchase = async (request) => {
                     fullProfile: getFullProfile
                 }
             } catch (error) {
-                console.error(new Error(`${error}`));
+                console.error(new Error(`${JSON.stringify(error)}`));
                 reject(error)
             }
         };
@@ -166,7 +166,7 @@ export const woocommercePurchase = async (request) => {
                 };
 
             } catch (error) {
-                console.error(new Error(`Error for ${variables.userEmail}: ${error}`));
+                console.error(new Error(`Error for ${variables.userEmail}: ${JSON.stringify(error)}`));
                 //revert profile in case something goes wrong
                 await backup.userMethods.setDatabaseInfo(backup.userDbPath, backup.fullProfile);
                 reject(error)

@@ -44,13 +44,23 @@ export const executeTiresQuote = (variables: TireQuoteVariables) => {
         const tire = new executeTiresQuotation(variables);
         const minuteValue = tire.getMinuteValue();
         const usageData = tire.calcUsage();
-        return {
-            ...usageData,
-            minuteValue: minuteValue,
-            activationCredit: 99,
+        const api = {
+            publicApi: {
+                ...usageData,
+                minuteValue: minuteValue,
+                activationCredit: 99,
+            },
+            privateApi: {
+                ...usageData,
+                minuteValue: minuteValue,
+                activationCredit: 99,
+                ...variables,
+            }
         }
+        return api;
     } catch (error) {
-        throw error;
+        console.error(`TCL: error -> executeTiresQuote: `, JSON.stringify(error));
+        throw new Error(error);
         
     }
 };

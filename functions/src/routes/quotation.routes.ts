@@ -8,9 +8,15 @@ import { sendQuotationZoho } from "../environment/zoho.flow";
 import { checkRequestVariables } from "../model/errors";
 import { SendEmail } from "../email/sendEmail";
 
+interface Result {
+    privateApi: Object;
+    publicApi: Object
+}
 
 const quote = express();
 const router = express.Router();
+
+const email = new SendEmail();
 quote.use(cors({origin: true}));
 
 router.get("/tires", async (request, response) => {
@@ -26,7 +32,7 @@ router.get("/tires", async (request, response) => {
         // }
         // console.log(`TCL: privateApi`, JSON.stringify(privateApi));
 
-        response.send(result);
+        response.send(result.publicApi);
     } catch (error) {
         response.send(error)
     };
@@ -44,14 +50,14 @@ router.post("/tires/messenger", async (request, response) => {
 
         const variables: TireQuoteVariables = await tireQuoteVariables(requestVariables);
         const result = executeTiresQuote(variables);
-        const email = new SendEmail();
-        email.sendQuoteAutoResult()
+
+        email.sendQuoteTireResult(result.privateApi);
 
         // const zoho = new sendQuoteToZoho(variables);
         // const resp = zoho.upsertLead();
         // console.log(`TCL: Zoho Response: `, resp);
         const ass24h = checkRequestVariables("assistência 24 horas", request.body.ass24h, String, false)
-        const messengerResponse = quote_tireResponse(result, ass24h);
+        const messengerResponse = quote_tireResponse(result.publicApi, ass24h);
         return response.send(messengerResponse);
     } catch (error) {
         console.error(new Error(`Erro ao executar cotação para messenger: ${JSON.stringify(error)}`));
@@ -69,10 +75,6 @@ router.post("/tires/messenger", async (request, response) => {
 // ---------- AUTO ----------
 
 router.post("/auto", async (request, response) => {
-    interface Result {
-        privateApi: Object;
-        publicApi: Object
-    }
     
     const userInput = request.body;
     console.log(`TCL: userInput`, JSON.stringify(userInput));
@@ -106,7 +108,9 @@ router.post("/auto/messenger", async (request, response) => {
 
         await executeAutoQuote(userInput).then(async (result: Result) => {
             const zoho = sendQuotationZoho(result.privateApi);
-            const ass24h = checkRequestVariables("assistência 24 horas", userInput.ass24h, String, false)
+            const ass24h = checkRequestVariables("assistência 24 horas", userInput.ass24h, String, false);
+            email.sendQuoteAutoResult(result.privateApi);
+
             const messengerResponse = quote_autoResponse(result.publicApi, ass24h);
             return response.json(messengerResponse);
         }).catch(error => {
