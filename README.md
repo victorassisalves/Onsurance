@@ -17,9 +17,19 @@
 
 ### How do I get set up? ###
 
-* Soon...
-* Summary of set up
-* Configuration
+- Primeiro clone o projeto do GIT
+- Instale o cli do Firebase: 
+        ```
+            npm install -g firebase-tools
+        ```
+- Instale as dependências do projeto
+        ```
+            npm install
+        ```
+- Faça login no firebase com o comando
+        ```
+            firebase login
+        ```
 * Dependencies
 * Database configuration
 * How to run tests
