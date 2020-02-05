@@ -6,7 +6,7 @@ import { executeTiresQuote, executeAutoQuote } from "../controller/quote.control
 import { quote_autoResponse, quote_ErrorResponse, quote_ErrorDefaultResponse, quote_tireResponse } from "../environment/messenger/messenger.responses";
 import { sendQuotationZoho } from "../environment/zoho.flow";
 import { checkRequestVariables } from "../model/errors";
-import { SendEmail } from "../email/sendEmail";
+import { SendQuoteEmail } from "../email/sendEmail";
 
 interface Result {
     privateApi: Object;
@@ -16,7 +16,7 @@ interface Result {
 const quote = express();
 const router = express.Router();
 
-const email = new SendEmail();
+const email = new SendQuoteEmail();
 quote.use(cors({origin: true}));
 
 router.get("/tires", async (request, response) => {
