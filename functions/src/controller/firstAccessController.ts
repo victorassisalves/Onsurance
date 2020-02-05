@@ -1,7 +1,19 @@
-import { userProfileDbRefRoot, getItemId, itemProfileDbRef } from "../database/database";
-import { databaseMethods } from "../model/databaseMethods";
-import { checkUserProfile, checkItemInUse, checkOnboard, checkClientId, checkUserWallet, checkItemProfile } from "../model/errors";
-
+import { getItemId, itemProfileDbRef } from "../database/database";
+import { userProfileDbRefRoot } from "../database/customer.database";
+import { databaseMethods, getDatabaseInfo } from "../model/databaseMethods";
+import { checkUserProfile, checkItemInUse, checkOnboard, checkClientId, checkUserWallet, checkItemProfile, checkItemList } from "../model/errors";
+import { TestAccessToItem } from "../test/itemAccess.test";
+import { ItemAuthorizations} from "../interfaces/user.interfaces";
+interface ItemAuth {
+    thirdParty: {
+        itemId: boolean
+    },
+    myItems: {
+        itemId: {
+            userId: boolean
+        }
+    }
+}
 
 
 export const doFirstAccess = variables => {
@@ -16,13 +28,13 @@ export const doFirstAccess = variables => {
                 */
 
                 const profile = {
-                    firstName: variables.firstName,
                     lastName: variables.lastName, 
                     messengerId: variables.messengerId
                 };
 
-                await backup.dbMethods.updateDatabaseInfo(backup.userDbPath.child('personal'), profile)
+                await backup.dbMethods.updateDatabaseInfo(backup.userDbPath.child('personal'), profile);
 
+                
                 resolve({
                     status: 200,
                     text: `User ${variables.userEmail} did the first access.`,
@@ -76,7 +88,7 @@ export const doFirstAccess = variables => {
                 console.log("TCL: doBackup -> itemProfile", itemProfile);
                 
                 // ERROR check for non existing ItemProfile
-                await checkItemProfile(itemProfile, variables)
+                await checkItemProfile(itemProfile, variables);
 
                 const backup = {
                     userProfile: userProfile,
@@ -99,4 +111,103 @@ export const doFirstAccess = variables => {
         await doBackup()
     });
     
+};
+
+
+/**
+ * 
+ * @param variables 
+ * @todo Check item access to see if user.
+ */
+export const getfirstAccess = async (variables) => {
+        // DO BACKUP
+            const userDbPath = await userProfileDbRefRoot(variables.userEmail);
+            
+            const userProfileFull = await getDatabaseInfo(userDbPath);
+            // ERROR check for owner account NOT exist
+            checkUserProfile(userProfileFull, variables.userEmail)
+            
+            const userProfile = userProfileFull.personal;
+            // ERROR check for onboard made
+            checkOnboard(userProfile, variables);
+
+            const userItems = userProfileFull.items;
+            // Check if user have items on profile
+            checkItemList(userItems);
+
+            // ERROR check for client ID (Woocommerce)
+            checkClientId(userProfile, variables);
+
+            // ERROR check for wallet and wallet amount
+            checkUserWallet(userProfile, variables);
+
+            const itemAuth: ItemAuthorizations = userProfileFull.itemAuthorizations;            
+
+            const checkAccessToProducts = () => {
+                // First we need to check vehicles PRON
+                const result = {
+                    autoAccess: false,
+                    tireAccess: false,
+                };
+
+                const itemsUser = Object.keys(userItems);
+
+                const autoAccess = []
+                const tireAccess = []
+                
+                itemsUser.forEach(item => {
+                    // Inside tires in items 
+                    switch (item) {
+                        case "tires": {
+                            const tires = Object.keys(userItems.tires);
+                            tires.forEach(tire => {
+                                const testTireAccess = new TestAccessToItem(variables, userItems.tires[tire], itemAuth);
+                                const owner = testTireAccess.checkOwnership()
+                                if (!owner) {
+                                    const thirdParty = testTireAccess.checkTireThirdPartyAccess()
+                                    tireAccess.push(thirdParty);
+                                } else {
+                                    tireAccess.push(owner);
+                                }
+                            });
+                            const access =  tireAccess.some((value) => {
+                                return value === true;
+                            })
+                            return result.tireAccess = access;
+                        };
+                        
+                        default: {
+                            const testAccessAuto = new TestAccessToItem(variables, userItems[item], itemAuth)
+                            const owner = testAccessAuto.checkOwnership();
+                            if (!owner) {
+                                const thirdParty = testAccessAuto.checkAutoThirdPartyAccess()
+                                autoAccess.push(thirdParty);
+                            } else {
+                                autoAccess.push(owner);
+                            }
+                            const access =  autoAccess.some((value) => {
+                                return value === true;
+                            })
+                            return result.autoAccess = access;
+                        }
+                                
+                    }
+                });
+
+                return result;
+            };
+
+            const access = checkAccessToProducts();
+            if (!access.autoAccess && !access.tireAccess){
+                throw {
+                    errorType: "No item access",
+                    callback: 'noAccessToItems',
+                    variables: {}
+                }
+            }
+            return {
+                userProfile: userProfile,
+                userItems: userItems,
+                access: access,
+            }
 };

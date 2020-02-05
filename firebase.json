@@ -1,25 +1,17 @@
 {
   "database": [
     {
-      "target": "onsurance-customers", 
+      "target": "onsurance-customers",
       "rules": "database.rules.json"
     },
     {
-      "target": "onsurance-items", 
+      "target": "onsurance-items",
       "rules": "database.rules.json"
     },
     {
-      "target": "lavo", 
+      "target": "lavo",
       "rules": "database.rules.json"
     }
-    // {
-    //   "target": "onsurance-pro-customers", 
-    //   "rules": "database.rules.json"
-    // },
-    // {
-    //   "target": "onsurance-pro-items", 
-    //   "rules": "database.rules.json"
-    // }
   ],
   "firestore": {
     "rules": "firestore.rules",
@@ -29,37 +21,68 @@
     "predeploy": [
       "npm --prefix \"$RESOURCE_DIR\" run lint",
       "npm --prefix \"$RESOURCE_DIR\" run build"
-    ]
+    ],
+    "source": "functions"
   },
-  "hosting": {
-    "public": "public",
-    "rewrites": [ {
-      "source": "/onsuranceOn", 
-      "function": "lavoOn"
+  "hosting": [
+    // {
+        // "target": "cotacao.onsurance.me/pneus",
+      //   "public": "./public/tire-quote"
+    // },
+    {
+      "target": "cotacao",
+      "public": "public/cotacao"
     },
     {
-      "source": "/onsuranceOff", 
-      "function": "lavoOff"
-    },
-    {
-      "source": "/ignition", 
-      "function": "ignition"
-    },
-    {
-      "source": "/geofence", 
-      "function": "geofence"
-    },
-    {
-      "source": "/quotation", 
-      "function": "quotation"
-    }],
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ]
-  },
+      "target": "api",
+      "public": "public/api",
+      "rewrites": [
+        {
+          "source": "/onboard",
+          "function": "onboard"
+        },
+        {
+          "source": "/quote/**",
+          "function": "quote"
+        },
+        {
+          "source": "/firstAccess",
+          "function": "firstAccess"
+        },
+        {
+          "source": "/ignition",
+          "function": "ignition"
+        },
+        {
+          "source": "/geofence",
+          "function": "geofence"
+        }
+      ],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    }
+  ],
   "storage": {
     "rules": "storage.rules"
+  },
+  "emulators": {
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "database": {
+      "port": 9000
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "pubsub": {
+      "port": 8085
+    }
   }
 }

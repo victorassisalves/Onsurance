@@ -14,8 +14,20 @@ const items = admin.items;
  */
 export const tiresInItemDbPath = (vehicleType: string, itemId: string) => {
     const itemDbId = crypto.createHash('md5').update(itemId).digest("hex");
-    // const itemDbId = crypto.createHmac('sha256', getSecretCustomer.userSecret).update(itemId).digest('hex');
     return items.ref(`/tires/${vehicleType}/${itemDbId}`);
+};
+
+/**
+ * @description This function returns the Log Use of tire db path in items database
+ * @param itemId Is the vehicle plate, or item ID chose by the team
+ * @param vehicleType Is the vehicle type for reference (car, motorcycle... etc)
+ * ``` 
+ * return items.ref(`/tires/${vehicleType}/${itemDbId}/logUse`);
+ * ```
+ */
+export const tireLogUse = (vehicleType: string, itemId: string) => {
+    const itemDbId = crypto.createHash('md5').update(itemId).digest("hex");
+    return items.ref(`/tires/${vehicleType}/${itemDbId}/logUse`);
 };
 
 /**

@@ -15,7 +15,7 @@
   "main": "lib/functions.js",
   "dependencies": {
     "@woocommerce/woocommerce-rest-api": "^1.0.1",
-    "axios": "^0.19.0",
+    "axios": "^0.19.1",
     "cors": "^2.8.5",
     "deep-equal": "^1.0.1",
     "deep-object-diff": "^1.1.0",
@@ -27,7 +27,8 @@
     "lodash": "^4.17.11",
     "nodemailer": "^6.3.1",
     "request": "^2.88.0",
-    "unirest": "^0.6.0"
+    "unirest": "^0.6.0",
+    "zcrmsdk": "0.0.16"
   },
   "devDependencies": {
     "tslint": "^5.18.0",

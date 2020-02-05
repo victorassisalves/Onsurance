@@ -1,4 +1,3 @@
-import { TireCalcMinute } from "../database/tires.module";
 import { invalidVehicleType } from "./errors";
 
 interface Vehicle {
@@ -71,7 +70,7 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
          * ```
          */
         const getFipeByUsage = (usageType: string, fipe: number) => {
-            let vehicleValue = fipe;
+            const vehicleValue = fipe;
 
             switch (usageType) {
                 case "passeio":
@@ -98,9 +97,9 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
             if (thirdPartyCoverage < 30) {
                 return minuteValue
             } else {
-                let multiplier = parseFloat(((thirdPartyCoverage - 30)/10).toFixed(0));
+                const multiplier = parseFloat(((thirdPartyCoverage - 30)/10).toFixed(0));
                 console.log(`TCL: calcThirdPartyCoverage -> multiplier`, multiplier)
-                let newMinuteValue = parseFloat((minuteValue + (multiplier*(minuteValue/18))).toFixed(5));
+                const newMinuteValue = parseFloat((minuteValue + (multiplier*(minuteValue/18))).toFixed(5));
                 console.log(`TCL: calcThirdPartyCoverage -> newMinuteValue`, newMinuteValue)
                 return newMinuteValue
             }
@@ -231,6 +230,7 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
                 console.log("TCL: executeCalculations -> Typo de veículo:", vehicleType);
 
                 switch (vehicleType) {
+                    case "carro": 
                     case "car": {
 
                         const usageVehicleValue = getFipeByUsage(usageType, fipe);
@@ -250,6 +250,7 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
                         resolve(minuteValue);
                     };
 
+                    case "moto": 
                     case "motorcycle": {
 
                         const minuteValueBase = calcMinuteMoto(fipe);
@@ -283,6 +284,7 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
                         resolve(minuteValue);
                     }
 
+                    case "caminhonete":
                     case "pickup": {
                         let minuteValueBase: number
                         if (usageType === "passeio") {
@@ -311,7 +313,7 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
                     default:
                         throw {
                             errorType: "Invalid vehicle type.",
-                            message: "Informe um veículo válido.",
+                            message: `Informe um veículo válido. ${vehicleType}`,
                         };
                 };
 
@@ -344,26 +346,22 @@ export const getVehicleMinuteValue = (userInput: Vehicle): Promise<number> => {
  * };
  * ```
  */
-export const getTireMinuteValue = async (tireTotalValue: number, vehicleType: string): Promise<number> => {
+export const getTireMinuteValue = (tireTotalValue: number, vehicleType: String): number => {
     try {
         switch (vehicleType) {
-            case "carro":{
+            case "car":
+            case "carro":
+            case "moto":
+            case "caminhonete":
+            case "vuc":
                 if (tireTotalValue > 800) {
                     const minuteValueBase = parseFloat((tireTotalValue/800000).toFixed(5));
                     return minuteValueBase;
                 } else {
-                    const minuteValueBase = 0.001
+                    const minuteValueBase = 0.001;
                     return minuteValueBase;
                 }
-            }
-            case "moto": {
-                break;
-            }
-            case "caminhonete":
-            case "vuc":
-                
-                break;
-        
+            
             default:
                 invalidVehicleType(vehicleType);
         };

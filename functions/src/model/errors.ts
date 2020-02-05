@@ -1,23 +1,26 @@
+
+
 /**
  * @description This function checks if user profile is null or undefined
- * @param {Object} userProfile Id the profile we get from database
- * @param {Object} variables Contains the userEmail to send in response 
+ * @param {Object} userProfile Is the profile we get from database
+ * @param {string} userEmail Is the userEmail to send in response 
  */
-export const checkUserProfile = (userProfile, variables) => {
+export const checkUserProfile = (userProfile, userEmail: string) => {
     // Error check for owner account NOT exist
     switch (userProfile) {
         case null:
         case undefined:
             throw {
                 status: 404, // Not Found
-                text: `User Profile for ${variables.userEmail} don't exist.`,
+                text: `User Profile for ${userEmail} don't exist.`,
                 callback: 'noUserProfile',
                 variables: {
-                    userEmail: variables.userEmail
+                    userEmail: userEmail
                 }
             };
         default:
-            break;
+            console.log('User profile exists.')
+            return true;
     };
 };
 
@@ -55,17 +58,31 @@ export const checkItemInUse = (itemInUse, variables) => {
             itemInUse: variables.itemInUse,
         }
     };
+    return;
 };
 
-export const checkOnboard = (userProfile, variables) => {
+
+/**
+ * @description This function check to see if the user onboard was already made
+ * @param {Object} userProfile Is the user profile info we got from db
+ * @param {String} userEmail Is the user email we get from endpoint request
+ */
+export const checkOnboard = (userProfile, userEmail: string) => {
     // ERROR check for user onboard
-    if (!userProfile.onboard) throw {
-        status: 403, // forbidden
-        text: "Not User or no onboard made yet",
-        callback: 'noOnboard',
-        variables: {
-            userEmail: variables.userEmail,
-        }
+    switch (userProfile.onboard) {
+        case null:
+        case undefined:
+        case false:
+            throw {
+                status: 403, // forbidden
+                text: "Not onboard made yet",
+                callback: 'noOnboard',
+                variables: {
+                    userEmail: userEmail,
+                }
+            };
+        default:
+            break;
     };
 };
 
@@ -103,6 +120,7 @@ export const checkOwnerCredit = (ownerCredit) => {
             ownerCredit: parseFloat((ownerCredit / 1000).toFixed(3)),
         }
     };
+    return;
 };
 
 export const checkUserWallet = (userProfile, variables) => {
@@ -115,30 +133,88 @@ export const checkUserWallet = (userProfile, variables) => {
             userEmail: variables.userEmail,
         }
     };
+    return;
 };
 
-export const checkMessengerId = (messengerId, variables) => {
-    // console.log("TCL: checkMessengerId -> variables.messengerId", variables.messengerId)
-    // console.log("TCL: checkMessengerId -> messengerId", messengerId)
+/**
+ * @description Function to check of messenger Id on DB is equal to the one sent on request.
+ * @param {String} messengerId Variable we get from user profile on DB. 
+ * @param {Object} variables Variables from request. Need to have messenger id on request to compare 
+ */
+export const checkMessengerId = async (messengerId: string, variables: any) => {
     // tslint:disable-next-line: triple-equals
-    if (variables.messengerId != messengerId && messengerId !== null) throw {
-        status: 401, // Unauthorized
-        text: `User is using a different messenger account.`,
-        callback: `userUsingDiffMessenger`,
-        variables: {}
-    };
+    if (variables.messengerId != messengerId && messengerId !== null) {
+        throw {
+            status: 401, // Unauthorized
+            text: `User is using a different messenger account.`,
+            callback: `userUsingDiffMessenger`,
+            variables: {}
+        };
+    } else {
+        return;
+    }
+
 };
 
+/**
+ * @description This functions check is Vehicle exists on Item DB Path
+ * @param itemProfile It's the item profile that comes from item db. 
+ * @param variables It's the request variables that come from payload
+ * @todo change this function name to checkVehicleProfile
+ */
 export const checkItemProfile = (itemProfile, variables) => {
+    let itemInUse;
+    if (variables.tireVehicleId) {
+        itemInUse = variables.tireVehicleId
+    } else {
+        itemInUse = variables.itemInUse
+    }
+
     // ERROR check for non existing ItemProfile
     if (itemProfile === null || itemProfile === undefined) throw {
         status: 404, // Not found
-        text: `Error checking item profile for ${variables.userEmail}. Check if user made onboard for item ${variables.itemInUse} or the data is correct.`,
+        text: `Error checking item profile for ${variables.userEmail}. Check if user made onboard for item ${itemInUse} or the data is correct.`,
         callback: 'noItemProfile',
         variables: {
-            itemInUse: variables.itemInUse
+            itemInUse: itemInUse
         }
     };
+    return;
+};
+
+/**
+ * @description This functions check if Tire exists on DB Path
+ * @param tireProfile It's the item profile that comes from item db. 
+ * @param variables It's the request variables that come from payload
+ */
+export const checkTireProfile = (tireProfile, variables) => {
+    // ERROR check for non existing ItemProfile
+    if (tireProfile === null || tireProfile === undefined) throw {
+        status: 404, // Not found
+        text: `Error checking tire profile for ${variables.userEmail}. Check if user made onboard for item ${variables.tireVehicleId} or the data is correct.`,
+        callback: 'noTireInUse',
+        variables: {
+            tireVehicleId: variables.tireVehicleId
+        }
+    };
+    return;
+};
+/**
+ * @description This functions check if Tire exists on DB Path
+ * @param tireProfile It's the item profile that comes from item db. 
+ * @param variables It's the request variables that come from payload
+ */
+export const checkTiresInProfile = async (tires, variables) => {
+    // ERROR check for non existing ItemProfile
+    if (tires === null || tires === undefined) throw {
+        status: 404, // Not found
+        text: `Error checking tire profile for ${variables.userEmail}. Check if user made onboard for item ${variables.tireVehicleId} or the data is correct.`,
+        callback: 'noTiresOnProfile',
+        variables: {
+            itemInUse: variables.tireVehicleId
+        }
+    };
+    return;
 };
 
 export const checkItemProfileAlreadyExists = (itemProfile, variables) => {
@@ -146,7 +222,6 @@ export const checkItemProfileAlreadyExists = (itemProfile, variables) => {
     // ERROR check for non existing ItemProfile
     if (itemProfile === null || itemProfile === undefined) {
         return true
-        
     } else {
         throw {
             status: 409, // Conflict
@@ -170,6 +245,7 @@ export const checkEqualIndicationEmail = (variables) => {
             userEmail: variables.userEmail
         }
     };
+    return;
 };
 
 export const checkForIndicator = (indicatedProfile, variables) => {
@@ -230,42 +306,70 @@ export const checkUserAccessPermission = (variables, itemToAccess) => {
         CHANGE ITEM
 
 */
-// Check if there is a item in user profile
-export const checkItemList = (userItemsList) => {
+
+/**
+ * @description This function checks if user have items in profile. If null or undefined, throw error.
+ * @param {Object} userItemsList List of items in user profile
+ */
+export const checkItemList = (userItemsList: Object) => {
     if (userItemsList === null || userItemsList === undefined || !userItemsList) throw {
         status: 404, // Not Found
         text: `No items in user profile check if Onboard was made.`,
-        callback: 'noOnboard',
+        callback: "noItemsOnProfile",
         variables: {}
     };
+    return;
 };
 
 /**
  * @description This function check any variable. If it is undefined or null throws a error, if is not, returns the variable
  * @param {string} varName Is the variable name to return error dubug
  * @param {any} variable Is the variable you want to check for undefined or null
- * @param {String | Number} variableType If variable is String or Number send this paramenter
+ * @param {String | Number | Boolean} variableType If variable is String or Number send this paramenter
+ * @param {boolean} required For default every variable is required. If not, pass value false
  * @returns {variable}
  * ```
  * return variable;
  * ```
  */
-export const checkRequestVariables = (varName, variable, variableType?) => {
-    console.log(`TCL: variable`, variable);
-
+export const checkRequestVariables = (varName: string, variable: any, variableType?, required = true) => {
     switch (variable) {
         case null:
         case undefined:
-            throw {
-                errorType: "Variable is null or undefined",
-                message: `Variable ${varName} can't be null or undefined. Check the request and try again.`
+            if (required === true){
+                throw {
+                    callback: `variableNull`,
+                    errorType: "Variable is null or undefined",
+                    message: `Variable ${varName} can't be null or undefined. Check the request and try again.`,
+                    variable: variable
+                };
             };
+            return null;
+        case '':
+        case ' ':
+            if (required === true) throw {
+                callback: `variableNull`,
+                errorType: "Variable is empty",
+                variable: variable,
+                message: `Variable ${varName} can't be empty. Check the request and try again.`
+            };
+            return null;
         default:
             if (variableType === String){
                 return variable.toLowerCase()
             } else if (variableType === Number) {
                 return parseFloat(variable);
-            };
+            } else if (variableType === Boolean) {
+                switch (variable) {
+                    case true:
+                    case 'true':
+                        return true;
+                    case false:
+                    case 'false':
+                    default:
+                        return false;
+                };
+            }
             return variable;
     }
 };
@@ -291,7 +395,7 @@ export const checkVehicleTireQtd = async (vehicleType, tireQtd) => {
         switch (vehicleType) {
             // case "caminhonete":
             // case "vuc":
-            case "carro":
+            case "car":
                 if (tireQtd > 4) {
                     throw {
                         errorType: "Invalid tire number.",
@@ -316,3 +420,21 @@ export const checkVehicleTireQtd = async (vehicleType, tireQtd) => {
     };
 };
 
+/**
+ * @description This function validates if user email is valid
+ * @param {string} email User email to validate
+ */
+export const validateEmail = (email: string) => {
+    if (/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    .test(email)){
+        return checkRequestVariables("User Email", email, String);
+  } else {
+    console.error("You have entered an invalid email address!")
+    throw {
+        error: "Not a valid email",
+        Message: "Email inválido, por favor insira um email válido"
+    }
+  }
+    
+
+}
