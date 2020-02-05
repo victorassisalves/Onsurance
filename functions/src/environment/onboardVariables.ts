@@ -92,6 +92,23 @@ interface tireOnboardVariablesInterface {
     nfId: string;
     plate: string;
     vehicleType: string;
+    brand: string;
+    runFlat: boolean;
+    loadIndex: number;
+    speedIndex: string;
+    pressure: number;
+    temperature: string;
+    traction: string;
+    fabrication: number;
+    treadwear: number;
+    width: number;
+    height: number;
+    radius: string;
+    vehicleModel: string;
+    vehicleBrand: string;
+    vehicleValue: number;
+    vehicleYear: number;
+    chassi: string;
 };
 /**
  * 
@@ -107,12 +124,33 @@ export const tireOnboardVariables = async (variables: tireOnboardVariablesInterf
             nfId: checkRequestVariables("nfId", variables.nfId, String),
             plate: checkRequestVariables("plate", variables.plate, String),
             vehicleType: checkRequestVariables("vehicleType", variables.vehicleType, String),
-            tiresData: {info: 'Tire info Object'}
+            vehicleInfo: {
+                vehicleModel: checkRequestVariables("vehicleModel", variables.vehicleModel, String, false),
+                vehicleBrand: checkRequestVariables("vehicleBrand", variables.vehicleBrand, String, false),
+                vehicleValue: checkRequestVariables("vehicleValue", variables.vehicleValue, Number, false),
+                vehicleYear: checkRequestVariables("vehicleYear", variables.vehicleYear, Number, false),
+                chassi: checkRequestVariables("chassi", variables.chassi, String, false),
+            },
+            tiresData: {
+                brand: checkRequestVariables("Brand", variables.brand, String),
+                runFlat:checkRequestVariables("Run Flat", variables.runFlat, Boolean),
+                loadIndex: checkRequestVariables("Load Index", variables.loadIndex, Number),
+                speedIndex: checkRequestVariables("Speed Index", variables.speedIndex, String),
+                pressure: checkRequestVariables("Pressure", variables.pressure, Number),
+                temperature: checkRequestVariables("Temperature", variables.temperature, String),
+                traction: checkRequestVariables("Traction", variables.traction, String),
+                fabrication: checkRequestVariables("Fabrication", variables.fabrication, Number),
+                treadwear: checkRequestVariables("Tread Wear", variables.treadwear, Number),
+                width: checkRequestVariables("Width", variables.width, Number),
+                height: checkRequestVariables("Height", variables.height, Number),
+                radius: checkRequestVariables("Radius", variables.radius, String),
+            }
         };
         await checkVehicleTireQtd(treatedVariables.vehicleType, treatedVariables.tireQtd);
         return treatedVariables;
         
     } catch (error) {
+        console.log(`TCL: error`, error);
         throw error;
     }
 };

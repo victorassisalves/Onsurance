@@ -6,11 +6,17 @@ export const woocommercePurchase = async (request) => {
     return new Promise( async (resolve, reject) => {
         
         // Get woocommerce set of variables.
-        const variables = await getVariables(request);
+        const variables = getVariables(request);
 
         // make backup in case something goes wrong anywhere
         const doBackup = async () => {
             try {
+                if (variables.orderPaid === false) {
+                    throw{
+                        status: 204, // Not completed
+                        text: `Order not completed yet for ${variables.userEmail}.`,
+                    };
+                }
                 // Get Methods for backup in case something goes wrong
                 const dbMethods = await databaseMethods();
                 // Get user profile data for backup on DB
@@ -25,10 +31,11 @@ export const woocommercePurchase = async (request) => {
                     fullProfile: getFullProfile
                 }
             } catch (error) {
-                console.error(new Error(error));
+                console.error(new Error(`${JSON.stringify(error)}`));
                 reject(error)
             }
         };
+
         const backup = await doBackup()
 
         // Check order status. If is completed (true) enter
@@ -159,7 +166,7 @@ export const woocommercePurchase = async (request) => {
                 };
 
             } catch (error) {
-                console.error(new Error(`Error for ${variables.userEmail}: ${error}`));
+                console.error(new Error(`Error for ${variables.userEmail}: ${JSON.stringify(error)}`));
                 //revert profile in case something goes wrong
                 await backup.userMethods.setDatabaseInfo(backup.userDbPath, backup.fullProfile);
                 reject(error)
@@ -167,7 +174,7 @@ export const woocommercePurchase = async (request) => {
 
         } else {
 			console.log("TCL: woocommercePurchase -> ", `Order paid: ${variables.orderPaid}. Return to request.`)
-            resolve({
+            return reject({
                 status: 204, // Not completed
                 text: `Order not completed yet for ${variables.userEmail}.`,
             });

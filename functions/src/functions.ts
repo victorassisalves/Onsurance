@@ -1,8 +1,5 @@
-const functions = require('firebase-functions');
-import {newQuotation} from "./model/quotation"
+import * as functions from 'firebase-functions';
 
-const express = require('express');
-const cors = require('cors');
 
 
 
@@ -12,13 +9,13 @@ exports.woocommerceRequest = functions.https.onRequest(async (request, response)
 	console.log("TCL: -> ", JSON.stringify(request.body))
 
 
-    const getPurchase = await require("./controller/woocommerceController");
+    const getPurchase = await require("./controller/woocommerce.controller");
     getPurchase.woocommercePurchase(request).then(async result => {
         const zoho = await require("./environment/zoho.flow");
         zoho.sendWoocommerceZoho(request.body);
         response.status(result.status).send(result.text)
     }).catch(error => {
-        response.status(error.status).send(error.text)
+        response.send(error.text)
     })
 });
 
@@ -77,26 +74,6 @@ exports.timezoneExperiment = functions.https.onRequest(async (request, response)
      
     
 });
-
-exports.quotation = functions.https.onRequest(async (request, response) => {
-    interface Result {
-        privateApi: Object;
-        publicApi: Object
-    }
-    
-    const userInput = request.body;
-
-    await newQuotation(userInput).then(async (result: Result) => {
-        const zoho = await require("./environment/zoho.flow");
-        zoho.sendQuotationZoho(result.privateApi);
-        response.send(result.publicApi)
-    }).catch(error => {
-        response.send(error)
-    });
-    
-    
-});
-
 
 
 /*
@@ -416,33 +393,6 @@ exports.checkIndicationEmailMsg = functions.https.onRequest((request, response) 
 
 
 
-/* 
-
-
-        Upgrade Version
-
-
-*/
-
-// Change system version to 2.0 - 
-exports.systemUpgrade = functions.https.onRequest(async(request, response) => {
-    try {
-        const update = await require("./environment/systemUpgrade");
-        update.systemUpgrade().then((result) => {
-            response.status(200).send(result)
-        }).catch((error) => {
-            console.log("TCL: error", error)
-            response.status(500).send(`Error on server. Check what happened.`)
-        });
-    } catch (error) {
-        console.log("TCL: error", error)
-        response.status(500).send(`Error on server. Check what happened.`)
-    }
-});
-
-
-
-
 /*
 
         HARDWARE FUNCTIONS
@@ -474,24 +424,12 @@ exports.ignition = functions.https.onRequest(async (request, response) => {
     }
 });
 
-// // Request from geofence status - Hardware
-// exports.geofence = functions.https.onRequest((request, response) => {
-    
-//     console.log("TCL: request.headers", request.headers);
-//     console.log("TCL: request.body", request.body);
-
-//     response.status(200).send("OK");
-// });
-
-
 
 /*
 
         BILLING - OBDs
 
 */
-
-
 
 // Register obd and billing period on DB
 exports.registerObd = functions.https.onRequest(async (request, response) => {
@@ -563,52 +501,85 @@ exports.billingObd = functions.https.onRequest(async (request, response) =>{
 // });
 
 
-exports.report = functions.https.onRequest(async (request, response) => {
-    const executeReport = await require("./controller/reportController");
-    
-    await executeReport.makeReport().then((result) => {
-        console.log("TCL: result", result)
-        response.send(result);
-    }).catch((err) => {
-        console.error(new Error (`Error in make report: ${err}`));
-        response.send("Erro na função");
-    });
-
-    
-});
+// Remember to always return the functions    **********
 
 
+/**
+ * @todo Liga/desliga Messenger
+ * @todo thirdParty messenger
+ *      @todo Get messenger ID and other data to account, specify what product can share.
+ * @todo indication messenger
+ * @todo Validate user access to items
+ */
 
 // -------------- ONSURANCE PNEUS ---------------
 
+// Expose Express API ONBOARD as single Cloud Function for all Onboard Operations:
+export const onboard = functions.https.onRequest(async (request, response) => {
+    const onboard = require("./routes/onboard.routes");
+    return await onboard(request, response);
 
-const onboard = express();
-
-// Automatically allow cross-origin requests
-onboard.use(cors({ origin: true }));
-
-var authMiddleware = function (req, res, next) {
-    console.log('Middleware Log!')
-    next()
-  }
-
-// Add middleware to authenticate requests
-onboard.use(authMiddleware);
-
-// build multiple CRUD interfaces:
-onboard.post('/pneus', async (req, res) => {
-    console.log(`/pneus -> Tire Onboard.`)
-    const tire = await require("./controller/onboardController");
-    try {
-        const result = await tire.tireOnboard(req.body)
-        console.log(`TCL: result`, JSON.stringify(result));
-        res.status(200).send(result);
-        
-    } catch (err) {
-        if (err.status) res.status(err.status).send(err.text);
-        res.send(err)
-    }
 });
 
-// Expose Express API as a single Cloud Function:
-exports.onboard = functions.https.onRequest(onboard);
+
+// -------------- FIRST ACCESS ---------------
+export const firstAccess = functions.https.onRequest(async(request, response) => {
+    const firstAccess = require("./routes/firstAccess.routes");
+    return await firstAccess(request, response);
+});
+
+
+// -------------- GET ITEMS ------------------
+export const items = functions.https.onRequest(async (request, response) => {
+    const items = require("./routes/items.routes");
+    return await items(request, response);
+});
+
+
+// -------------- NEW QUOTE ------------------
+export const quote = functions.https.onRequest(async (request, response) => {
+    const quote = await require("./routes/quotation.routes");
+    return await quote(request, response);
+});
+
+
+// -------------- ONSURANCE TIRES ACTIVATION ---------------
+export const onsuranceTires = functions.https.onRequest(async (request, response) => {
+    const onsurance = require("./routes/onsurance.tires.routes");
+    return await onsurance(request, response);
+});
+
+
+// -------------- ONSURANCE AUTO ACTIVATION ---------------
+export const onsuranceAuto = functions.https.onRequest(async (request, response) => {
+    const onsurance = require("./routes/onsurance.auto.routes");
+    return await onsurance(request, response);
+});
+
+
+// -------------- ONSURANCE INDICATION --------------
+export const indication = functions.https.onRequest(async (req, res) => {
+    const indication = require("./routes/indication.routes");
+    return await indication(req, res);
+});
+
+// -------------- ONSURANCE SHARE ITEMS ------------
+export const share = functions.https.onRequest((req, res) => {
+    const share = require("./routes/share.routes")
+    return share(req, res)
+});
+
+
+// -------------- ZOHO CRM ------------------
+export const zoho = functions.https.onRequest(async (request, response) => {
+    const zoho = await require("./routes/zoho.routes");
+    return await zoho(request, response);
+});
+
+
+// -------------- ZOHO CRM ------------------
+
+export const report = functions.https.onRequest(async (request, response) => {
+    const executeReport = await require("./report/report.routes");
+    return await executeReport(request, response);
+});

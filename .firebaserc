@@ -1,5 +1,24 @@
 {
   "projects": {
-    "Onsurance": "onsurance-new"
+    "Onsurance": "onsurance-new",
+    "default": "onsurance-new"
+  },
+  "targets": {
+    "onsurance-new": {
+      "hosting": {
+        "pneus": [
+          "./public/pneus"
+        ],
+        "auto": [
+          "./public/auto"
+        ],
+        "cotacao": [
+          "cotacao-onsurance"
+        ],
+        "api": [
+          "api-onsurance"
+        ]
+      }
+    }
   }
 }

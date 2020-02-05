@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Cotação Onsurance</title>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="images/favicon.png">
+
+  <!-- <link rel="stylesheet" href="style.css?v=1.0.34"> -->
+  <link rel="stylesheet" href="dist/style.css">
+</head>
+<body>
+
+  <div class="bg-fixed"></div>
+
+  <header class="header-form">
+    <div class="logo">
+      <a href="./">
+        <img src="images/logo.svg" alt="">
+      </a>
+    </div>
+    <div class="header-form__content">
+      <!-- <h1>Formulário de Cotação</h1> -->
+      <p>Melhor que seguro tradicional. É seguro sob demanda! Liga/desliga, você paga somente quando usa e economiza quando seu veículo está em segurança.</p>
+      <p>Descubra agora sua economia em 4 passos:</p>
+    </div>
+  </header>
+
+  <div class="container container-form" id="form">
+    
+    <div class="quote-form">
+      <div class="quote-form__header"></div>
+
+      <div class="quote-form__body">
+
+        <form id="formApp">
+
+          <div class="form-step" v-if="step === 0">
+            <h2 class="form-step__title">Dados do Veículo</h2>
+
+            <div class="form-group">
+              <h4 id="vehicleTypeTop">
+                Tipo de veículo <sup class="text-danger">*</sup>
+              </h4>
+              <div class="row">
+
+                <div class="col-md-3 col-6" >
+                  <div class="boxRadio">
+                    <input type="radio" v-model="vehicleType" value="carro" name="vehicleType" id="vehicleTypeCar">
+                    <label class="vehicleTypeLabel" @click="validVehicleUsage()" for="vehicleTypeCar">
+                      <img src="images/carro.png" alt="">
+                      Carro
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-3 col-6">
+                  <div class="boxRadio">
+                    <input type="radio" v-model="vehicleType" value="moto" name="vehicleType" id="vehicleTypeMoto">
+                    <label class="vehicleTypeLabel" @click="validVehicleUsage()" for="vehicleTypeMoto">
+                      <img src="images/moto.png" alt="">
+                      Moto
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-3 col-6">
+                  <div class="boxRadio">
+                    <input type="radio" v-model="vehicleType" value="caminhonete" name="vehicleType" id="vehicleTypePickup">
+                    <label class="vehicleTypeLabel" @click="validVehicleUsage()" for="vehicleTypePickup">
+                      <img src="images/caminhonete.png" alt="">
+                      Caminhonete
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-3 col-6">
+                  <div class="boxRadio">
+                    <input type="radio" v-model="vehicleType" value="vuc" name="vehicleType" id="vehicleTypeVUC">
+                    <label class="vehicleTypeLabel" @click="validVehicleUsage()" for="vehicleTypeVUC">
+                      <img src="images/vuc.png" alt="">
+                      V.U.C
+                    </label>
+                  </div>
+                </div>
+  
+              </div><!-- .row -->
+              <small id="vehicleTypeHelp" class="form-text text-muted">
+                  Selecione uma opção.
+              </small>
+            </div><!-- ./form-group -->
+
+            <div class="row mb-5" v-if="vehicleType == 'carro'">
+              <div class="col-12">
+                <h5 class="title-section mt-3">Como ele será usado?</h5>
+              </div>
+              <div class="col-12">
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input v-model="usageType" value="passeio" type="radio" id="forCarRide2" name="usageType" class="custom-control-input">
+                  <label class="custom-control-label" for="forCarRide2">para Passeio</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input v-model="usageType" value="taxi" type="radio" id="forTaxi" name="usageType" class="custom-control-input">
+                  <label class="custom-control-label" for="forTaxi">para Taxi</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input v-model="usageType" value="app" type="radio" id="forUber" name="usageType" class="custom-control-input">
+                  <label class="custom-control-label" for="forUber">para Motorisca de aplicativo</label>
+                </div>
+              </div><!-- .col-12 -->
+            </div>
+            
+            <div class="row mb-5" v-if="usageType == 'app' && vehicleType == 'carro'">
+              <div class="col-12">
+                <h5 class="title-section mt-3">Qual aplicativo?</h5>
+              </div>
+              <div class="col-12">
+                
+                <div class="custom-control custom-checkbox custom-control-inline">
+                  <input type="checkbox" v-model="appDriver" value="uber" class="custom-control-input" id="uber">
+                  <label class="custom-control-label" for="uber">Uber</label>
+                </div>
+                <div class="custom-control custom-checkbox custom-control-inline">
+                  <input type="checkbox" v-model="appDriver" value="99" class="custom-control-input" id="99">
+                  <label class="custom-control-label" for="99">99</label>
+                </div>
+                <div class="custom-control custom-checkbox custom-control-inline">
+                  <input type="checkbox" v-model="appDriver" value="cabify" class="custom-control-input" id="cabify">
+                  <label class="custom-control-label" for="cabify">Cabify</label>
+                </div>
+                <div class="custom-control custom-checkbox custom-control-inline">
+                  <input type="checkbox" v-model="appDriver" value="outros" class="custom-control-input" id="outros">
+                  <label class="custom-control-label" for="outros">Outros</label>
+                </div>
+              </div><!-- .col-12 -->
+            </div>
+
+            <div class="row mb-5" v-if="appDriver.includes('outros') && usageType == 'app'">
+              <div class="col-12">
+                <h5 class="title-section mt-3">Coloque o nome do aplicativo</h5>
+              </div>
+              <div class="col-12">
+                <div class="form-input">
+                  <input type="text" class="form-control" id="nameApp" v-model.trim="appDriverOther" @blur="addAppDriver" placeholder="Separe por virgula se tiver mais de um">
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-4" v-if="usageType == 'taxi' && vehicleType == 'carro'">
+              <div class="col-12 text-content">
+                <h3 class="text-center">Condições especiais para Taxi</h3>
+
+                <ul>
+                  <li>Cobertura até 100% FIPE conforme a nota fiscal do seu veículo.</li>
+                  <li>Rastreamento 24h Dedicado.</li>
+                  <li>Botão de pânico para emergências.</li>
+                  <li>Renda garantida de até R$2.500,00 por até 90 dias (diárias).</li>
+                  <li>Pagamento facilitado por boleto parcelado (fale conosco no chat).</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div class="row mb-4" v-else-if="usageType == 'app' && vehicleType == 'carro'">
+              <div class="col-12 text-content">
+                <h3 class="text-center m-0">Condições especiais para Motorista de Aplicativo</h3>
+                <p class="text-center">(uber, 99, cabify e outros)</p>
+
+                <ul>
+                  <li>Rastreamento 24h Dedicado.</li>
+                  <li>Botão de pânico para emergências.</li>
+                  <li>Carro reserva (na mesma categoria do seu) para trabalho com o aplicativo enquanto reparamos o seu veículo.</li>
+                  <li>Pagamento facilitado por boleto parcelado (fale conosco no chat).</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="row mb-5" v-if="vehicleType == 'moto'">
+              <div class="col-12">
+                <h5 class="title-section mt-3">Quantas cilindradas tem sua moto? </h5>
+              </div>
+              <div class="col-12">
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input v-model="motoCc" value="abaixode250cc" type="radio" id="abaixode250cc" name="customRadio" class="custom-control-input">
+                  <label class="custom-control-label" for="abaixode250cc">Abaixo de 250cc</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input v-model="motoCc" value="acimade250cc" type="radio" id="acimade250cc" name="customRadio" class="custom-control-input">
+                  <label class="custom-control-label" for="acimade250cc">Acima de 250cc</label>
+                </div>
+              </div><!-- .col-12 -->
+            </div>
+
+            <div class="row mb-5" v-if="vehicleType == 'caminhonete'">
+              <div class="col-12">
+                <h5 class="title-section mt-3">Como ela será usada?</h5>
+              </div>
+              <div class="col-12">
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input v-model="usageType" value="passeio" type="radio" id="forCarRide" name="customRadio" class="custom-control-input">
+                  <label class="custom-control-label" for="forCarRide">para Passeio</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input v-model="usageType" value="utilitario" type="radio" id="utilitarioCam" name="customRadio" class="custom-control-input">
+                  <label class="custom-control-label" for="utilitarioCam">Utilitário</label>
+                </div>
+              </div><!-- .col-12 -->
+            </div>
+
+            <div class="row mb-4" v-if="vehicleType == 'vuc'">
+              <div class="col-12">
+                <h5 class="title-section mt-3">Deseja incluir o baú?</h5>
+              </div>
+              <div class="col-12">
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input v-model="truckTrunk" value="Sim" type="radio" id="forCarRide" name="customRadio" class="custom-control-input">
+                  <label class="custom-control-label" for="forCarRide">Sim</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input v-model="truckTrunk" value="Não" type="radio" id="utilitarioCam" name="customRadio" class="custom-control-input">
+                  <label class="custom-control-label" for="utilitarioCam">Não</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-5" v-if="truckTrunk == 'Sim'">
+              <div class="col-12">
+                <h5 class="mt-3">Coloque o valor do baú</h5>
+              </div>
+              <div class="col-12">
+                <div class="form-input">
+                  <input type="text" class="form-control" id="truckTrunkValue" v-model.trim="truckTrunkValue" placeholder="2500">
+                  <small id="vehicleBrandHelp" class="form-text text-muted">
+                    Digite o valor, sem casas decimais.
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group veihcleInfoContainer">
+              <div class="row">
+                <div class="col-md-6" id="brandTop">
+                  <div class="form-input">
+                    <label for="vehicleBrand">Marca do veículo:</label>
+                    <input type="text" class="form-control" v-model.trim="brand" id="vehicleBrand" placeholder="Toyota, Hyundai, Mitsubishi...">
+                    <small id="vehicleBrandHelp" class="form-text text-muted">
+                        Digite a marca do seu veículo
+                    </small>
+                  </div>
+                </div>
+                <div class="col-md-6" id="vehicleModelTop">
+                  <div class="form-input">
+                    <label for="vehicleModel">Modelo do veículo:</label>
+                    <input type="text" class="form-control" v-model.trim="model" id="vehicleModel" placeholder="Corolla, i30, Palio...">
+                    <small id="vehicleModelHelp" class="form-text text-muted">
+                        Digite o modelo do seu veículo
+                    </small>
+                  </div>
+                </div>
+                <div class="col-md-6" id="vehicleAgeTop">
+                  <div class="form-input">
+                    <label for="vehicleAge">Ano do modelo:</label>
+                    <input @input="isValueNumber" @keyup="yearVerify" type="number" min="1996" v-bind:max="currentYear" v-model.trim="vehicleAge" class="form-control" id="vehicleAge" placeholder="2016">
+                    <small id="vehicleAgeHelp" class="form-text text-muted">
+                        O ano deve ser entre 1996 e {{currentYear}}
+                    </small>
+                  </div>
+                </div>
+                <div class="col-md-6" id="factoryTop">
+                  <div class="form-input">
+                    <label for="factoryHelp">Fabricação:</label>
+                    <select class="custom-select" id="factory" v-model="factory">
+                      <option disabled >Por favor, selecione uma opção</option>
+                      <option>nacional</option>
+                      <option>importado</option>
+                    </select>
+                    <small id="factoryHelp" class="form-text text-muted">
+                        Selecione a opção de fabricação do seu veículo
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div><!-- ./form-group -->
+
+            <div class="form-group" id="fipeTop">
+              <div class="row">
+                <div class="col">
+                    <div class="form-input">
+                      <label for="FIPEValue">Valor FIPE do Veículo:</label>
+                      <input type="number" class="form-control" v-model.trim="fipe" id="fipe" placeholder="37000">
+                      <small id="FIPEValueHelp" class="form-text text-muted">
+                          Digite o valor FIPE do seu veículo, sem casas decimais.
+                      </small>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <div class="text-content mb-3">
+                  <p class="m-0">Não sabe o valor do seu veículo? <a class="text-primary" href="https://veiculos.fipe.org.br/" target="_blank">Consulte a tabela FIPE clicando aqui</a>.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <h4 class="title-section">Tem ou teve algum seguro?</h4>
+              <div class="row">
+                <div class="col-md-2 col-6">
+                  <div class="boxRadio">
+                    <input type="radio" id="activeInsuranceYes" value="sim" v-model="activeInsurance" name="activeInsurance" class="custom-control-input">
+                    <label class="activeInsuranceLabel" for="activeInsuranceYes">Sim</label>
+                  </div>
+                </div>
+                <div class="col-md-2 col-6">
+                  <div class="boxRadio">
+                    <input type="radio" id="activeInsuranceNo" value="não" v-model="activeInsurance" name="activeInsurance" class="custom-control-input">
+                    <label class="activeInsuranceLabel" for="activeInsuranceNo">Não</label>
+                  </div>
+                </div>
+              </div>
+              <small id="hasInsuranceHelp" class="form-text text-muted">
+                  Caso já teve ou tem algum seguro, clique em Sim. Do contrário, clique em Não.
+              </small>
+            </div><!-- ./form-group -->
+
+            <div class="form-group" v-if="activeInsurance === 'sim'">
+              <div class="row">
+
+                <div class="col-12 mb-3">
+                  <div class="form-input">
+                    <label for="insuranceValue">Quanto paga / pagou pelo seu último seguro?</label>
+                    <input type="number" class="form-control" v-model.trim="insuranceValue" id="insuranceValue">
+                    <small id="insuranceValueHelp" class="form-text text-muted">
+                      Digite o valor que pagou no seu último ou atual seguro.
+                    </small>
+                  </div>
+                </div>
+
+                <div class="col-12 mb-3">
+                  <div class="form-input">
+                    <label for="insuranceCompany">Qual cia seguradora?</label>
+                    <input type="text" class="form-control" v-model.trim="insuranceCompany" id="insuranceCompany">
+                    <small id="insuranceCompanyHelp" class="form-text text-muted">
+                      Ex.: Porto Seguro, HDI, Mapfre...
+                    </small>
+                  </div>
+                </div>
+
+                <div class="col-12 mb-3">
+                  <div class="form-input">
+                    <label for="insuranceExpiration">Quando termina seu contrato?</label>
+                    <input type="date" class="form-control" v-model.trim="insuranceExpiration" id="insuranceExpiration">
+                    <small id="insuranceExpirationHelp" class="form-text text-muted">
+                      Selecionar a data.
+                    </small>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div> <!-- form-step -->
+
+
+
+
+          <!-- Seguro Anterior -->
+          <div class="form-step" v-if="step === 1">
+            <div class="form-step__header">
+              <h2 class="form-step__title">Entender seu uso Onsurance</h2>
+            </div>
+
+            <div class="text-content">
+              <p>O Onsurance é tarifado por minuto. E você liga-desliga seu Onsurance quando quiser e paga só nos momentos em que a proteção está ligada!</p>
+              
+              <h4>Imagine o seguinte cenário:</h4>
+              <p>Você possui garagem em casa, um local protegido, pode deixar seu Onsurance desligado. Economia pelo tempo em que o veículo está parado lá. Da mesma forma na garagem do trabalho, shopping ou outra. Enquanto o veículo está estacionado o Onsurance pode ficar desligado. </p>
+              
+            </div>
+    
+            <h4 class="mt-5 mb-3 title-section">
+              Você só liga o Onsurance quando precisar de verdade. Praticidade e economia na palma da sua mão!
+              <sup class="text-danger">*</sup>
+            </h4>
+            <div class="row mb-4" id="hasGarageHomeTop">
+              <div class="col-md-6 col-12">
+                  <div class="form-input">
+                    <label for="garageHome">Possui garagem em casa?</label>
+                    <div class="row">
+                      <div class="col-md-4 col-6">
+                        <div class="boxRadio">
+                          <input type="radio" id="garageHomeYes" value="sim" v-model="garageHome" name="garageHome" class="custom-control-input">
+                          <label class="hasGarageHome" for="garageHomeYes">Sim</label>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-6">
+                        <div class="boxRadio">
+                          <input type="radio" id="garageHomeNo" value="não" v-model="garageHome" name="garageHome" class="custom-control-input">
+                          <label class="hasGarageHome" for="garageHomeNo">Não</label>
+                        </div>
+                      </div>
+                    </div><!-- .col -->
+                    <small id="garageHomeHelp" class="form-text text-muted">
+                        Se seu carro fica na garagem de casa, selecione a opção Sim. Caso contrário, escolha Não.
+                    </small>
+                  </div>
+              </div>
+              <div class="col-md-6 col-12" id="hasGarageWorkTop">
+                  <div class="form-input">
+                    <label for="garageWork">Possui garagem no trabalho?</label>
+                    <div class="row">
+                      <div class="col-md-4 col-6">
+                        <div class="boxRadio">
+                          <input type="radio" id="garageWorkYes" value="sim" v-model="garageWork" name="garageWork" class="custom-control-input">
+                          <label class="hasGarageWork" for="garageWorkYes">Sim</label>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-6">
+                        <div class="boxRadio">
+                          <input type="radio" id="garageWorkNo" value="não" v-model="garageWork" name="garageWork" class="custom-control-input">
+                          <label class="hasGarageWork" for="garageWorkNo">Não</label>
+                        </div>
+                      </div>
+                    </div>
+                    <small id="garageWorkHelp" class="form-text text-muted">
+                      Se seu carro fica na garagem do trabalho, selecione a opção Sim. Caso contrário, (incluíndo não trabalha) escolha Não.
+                    </small>
+                  </div>
+              </div>
+            </div>
+            
+            <div class="text-content mb-4">
+              <p class="m-0">Levando em consideração os cenários apresentados acima, quantas horas por dia estima que o Onsurance ficaria ligado?</p>
+            </div>
+
+            <div class="row mb-4" id="hoursUsedDailyTop">
+              <div class="col">
+                  <div class="form-input">
+                    <label for="hoursUsedDaily">Horas de uso diário com o Onsurance</label>
+                    <input @keyup="hoursUsedDailyVerify" type="number" min="1" max="24" class="form-control" v-model.trim="hoursUsedDaily" id="hoursUsedDaily">
+                    <small id="passwordHelpBlock" class="form-text text-muted">
+                        Digite quantas horas diárias você estima que deixaria o Onsurance ligado. Pense num uso médio da semana. Considere menos de 1 hora se você não usa o carro todo dia.
+                    </small>
+                  </div>
+              </div>
+            </div>
+
+            <div class="row mb-4 valueUseDaily">
+              <div class="valueUseDaily-col col-md-4">
+                <div>
+                  <h5>Horas / Semana:</h5>
+                  <p>{{hoursUsedDaily * 7}}h</p>
+                </div>
+              </div>
+              <div class="valueUseDaily-col col-md-4">
+                <div>
+                  <h5>Horas / Mês:</h5>
+                  <p>{{hoursUsedDaily * 30}}h</p>
+                </div>
+              </div>
+              <div class="valueUseDaily-col col-md-4">
+                <div>
+                  <h5>Horas / Ano:</h5>
+                  <p>{{hoursUsedDaily * 365}}h</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-content mb-4">
+              <div class="row onboard">
+                <div class="col-md-6 mb-4">
+                  <h4>Onsurance Onboard:</h4>
+                  <p class="mb-0">Todos os clientes do Onsurance-auto precisam ter o dispositivo Onsurance Onboard instalado em seus veículos. Custo de instalação já incluído no serviço. Seu carro conectado com ainda mais segurança!</p>
+                </div>
+                <div class="col-md-6 onboard-image">
+                  <img src="./images/onsurance-onboard.png" alt="">
+                </div>
+              </div>
+            </div>
+            <div class="text-content">
+              <h4>O valor de R$ 39,90 será abatido mensalmente dos seus créditos.</h4>
+              <div class="custom-control custom-checkbox custom-control-inline mt-3 mb-3">
+                <input type="checkbox" v-model="onsuranceOnboard" value="onsuranceOnboard" class="custom-control-input" id="onsuranceOnboard">
+                <label class="custom-control-label" for="onsuranceOnboard">Estou ciente</label>
+              </div>
+              <p class="mb-0">Obs. O dispositivo chegará na sua casa e você receberá as orientações para levar na oficina parceira para instalação. Não se preocupe, seu Onsurance passa a valer imediatamente após a aprovação da sua documentação online.</p>
+            </div>
+
+          </div> <!-- ./form-step -->
+
+          <div class="form-step" v-if="step === 2">
+            <div class="form-step__header">
+              <h2 class="form-step__title">Acessórios</h2>
+            </div>
+
+            <div class="text-content mb-4">
+              <p>Na Onsurance a <strong>Assistência 24h</strong> é uma assinatura anual.</p>
+              <p>Você terá direito a 3 utilizações com 300 km de rodagem (ida/volta) para os serviços:</p>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <ul>
+                    <li>Guincho</li>
+                    <li>Reboque</li>
+                    <li>Chaveiro</li>
+                    <li>Táxi/Uber</li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <ul>
+                    <li>Pane Seca/Mecânica/Elétrica</li>
+                    <li>Troca de pneus</li>
+                    <li>Guarda veículo</li>
+                    <li>Transmissão de mensagens</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col">
+                  <div class="form-input">
+                    <label for="">A assinautra da Assistência 24h custa R$ 249,00/ano.</label>
+                    <div class="row">
+                      <div class="col-md-2 col-6">
+                        <div class="boxRadio">
+                          <input type="radio" id="ass24hYes" value="sim" v-model="ass24h" name="ass24h" class="custom-control-input">
+                          <label class="ass24hLabel" for="ass24hYes">Sim</label>
+                        </div>
+                      </div>
+                      <div class="col-md-2 col-6">
+                        <div class="boxRadio">
+                          <input type="radio" id="ass24hNo" value="não" v-model="ass24h" name="ass24h" class="custom-control-input">
+                          <label class="ass24hLabel" for="ass24hNo">Não</label>
+                        </div>
+                      </div>
+                    </div><!-- .row -->
+                  </div>
+              </div>
+            </div>
+
+            <h4 class="mb-3">Customizar cobertura para terceiros?</h4>
+
+            <div class="text-content mb-4">
+              <p>Nossa cobertura padrão para danos materiais em terceiros é de R$ 30.000,00.</p>
+              <p>Caso você queira um valor maior, pode ajustar na barra abaixo. Lembrando que maiores valores incidirão em custos maiores para o seu Onsurance.</p>
+            </div>
+
+            <div class="row" id="thirdPartyCoverageTop">
+              <div class="col">
+                  <div class="form-input">
+                    <label for="thirdPartyCoverage">Arraste para selecionar um valor</label>
+                    <input type="range" id="thirdPartyCoverage" class="custom-range" min="30" max="150" step="10" v-model="thirdPartyCoverage">
+                    <h4 class="text-center thirdPartyCoverage">R$ {{thirdPartyCoverage}}.000,00</h4>
+                  </div>
+              </div>
+            </div>
+
+          </div> <!-- ./form-step -->
+
+          <div class="form-step" v-if="step === 3">
+            <div class="form-step__header">
+              <h2 class="form-step__title">Sobre você</h2>
+            </div>
+
+            <div class="text-content mb-4">
+              <p class="mb-0">Seu interesse na inovação é o que nos move... Precisamos de algumas informações sobre você para prestar um atendimento melhor.</p>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <div class="form-input">
+                  <label for="firstName">Qual seu nome?</label>
+                  <input type="text" class="form-control" v-model.trim="firstName" id="firstName">
+                  <small id="passwordHelpBlock" class="form-text text-muted">
+                    Digite seu primeiro nome aqui
+                  </small>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div class="form-input">
+                  <label for="lastName">Qual seu sobrenome?</label>
+                  <input type="text" class="form-control" v-model.trim="lastName" id="lastName">
+                  <small id="passwordHelpBlock" class="form-text text-muted">
+                      Digite seu sobrenome aqui
+                  </small>
+                </div>
+              </div>
+              <div class="col-12 mb-3">
+                <div class="form-input">
+                  <label for="email">Qual é o seu e-mail?</label>
+                  <input type="email" class="form-control" v-model.trim="email" id="email" placeholder="Digite o melhor e-mail para receber o resultado da cotação.">
+                  <small id="passwordHelpBlock" class="form-text text-muted">
+                      Digite aqui seu email para que possamos mandar essa cotação pra você quando terminar.
+                  </small>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div class="form-input">
+                  <label for="phone">Celular:</label>
+                  <input type="text" class="form-control" v-model.trim="phone" id="phone">
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div class="form-input">
+                  <label for="zipCode">CEP</label>
+                  <input type="text" class="form-control" v-model.trim="zipCode" id="zipCode">
+                  <small id="passwordHelpBlock" class="form-text text-muted">
+                    Digite o CEP da sua residência.
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div><!-- ./form-step -->
+
+          <div class="form-step section-result" v-if="step === 4">
+            <div class="form-step__header">
+              <h2 class="form-step__title">Resultado da sua cotação!</h2>
+            </div>
+
+            <div class="row row-result" v-if="this.motoCc != 'abaixode250cc'">
+              <div class="col-md-3 col-6 result-col">
+                <div class="result-card">
+                  <h3>
+                    <small>R$</small>
+                    <!-- <span>{{ formatPrice(finalValue.activationCredit)}}</span> -->
+                    <span>{{ formatPrice(finalValue.activationCredit)}}</span>
+                  </h3>
+                  <p>
+                    <strong>Crédito inicial</strong> a ser pago na adesão. <br> (Pode parcelar)
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-3 col-6 result-col">
+                <div class="result-card">
+                  <h3>
+                    <small>R$</small>
+                    <span>{{ formatPrice(finalValue.anualCost)}}</span>
+                  </h3>
+                  <p>
+                    Expectativa de <strong>consumo</strong> anual do créditos
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-3 col-6 result-col">
+                <div class="result-card">
+                    <h3>
+                      <small>Meses</small>
+                      <span>{{finalValue.creditDuration}}</span>
+                    </h3>
+                  <p><strong>Duração</strong> prevista dos seus creditos iniciais onsurance</p>
+                </div>
+              </div>
+              <div class="col-md-3 col-6 result-col">
+                <div class="result-card">
+                    <h3>
+                      <small>R$</small>
+                      <!-- <span>{{formatPrice(finalValue.minuteValue) || 0}}</span> -->
+                      <span>{{finalValue.minuteValue}}</span>
+                    </h3>
+                  <p>Cobrado por <strong>minuto</strong> de uso dos seus créditos</p>
+                </div>
+              </div>
+            </div><!-- ./row-result -->
+
+            <div v-if="motoCc == 'abaixode250cc'" class="alert alert-danger text-center" role="alert">
+              <p>Atenção! Ainda não estamos trabalhando com motos abaixo de 250 cc, para antecipar o lançamento desse produto, 
+                entre na lista de espera e peça aos seus amigos que são da turma da motoca para fazerem uma cotação conosco.</p>
+
+              <p>Já temos <strong>{{finalValue.motoCounter}}</strong> pessoas na lista de espera. </p>
+
+              <p>Quando atingirmos 2.000 inscritos vamos lançar o produto com condições especiais para quem estiver na lista.</p>
+            </div>
+
+            <div class="form-step__header mt-5" v-if="motoCc != 'abaixode250cc'">
+              <h2 class="form-step__title">Crédito pré-pago em que não expira, nunca!</h2>
+            </div>
+
+            <div v-if="motoCc != 'abaixode250cc'" class="text-content alert alert-primary vehicleTypeResult mb-3 d-flex align-items-center" style="margin-top: -10px">
+              <div class="vehicleTypeResult__image">
+                <img v-if="vehicleType == 'carro'" src="images/carro.png" alt="">
+                <img v-if="vehicleType == 'moto'" src="images/moto.png" alt="">
+                <img v-if="vehicleType == 'caminhonete'" src="images/caminhonete.png" alt="">
+                <img v-if="vehicleType == 'vuc'" src="images/vuc.png" alt="">
+              </div>
+              <div>
+                <p>
+                  O Onsurance
+                  <span v-if="vehicleType == 'carro'">do seu carro</span>
+                  <span v-if="vehicleType == 'caminhonete'">da sua caminhonete</span>
+                  <span v-if="vehicleType == 'moto'">da sua moto</span>
+                  <span v-if="vehicleType == 'vuc'">do seu VUC</span>
+                  avaliado em R$ {{formatPrice(fipe)}} <span v-if="truckTrunk == 'Sim'">+ o baú avaliado em R$ {{formatPrice(truckTrunkValue)}}</span> custa R$ {{finalValue.minuteValue}} por minuto... Funciona igual a um celular pré-pago: Considerando seu <strong>uso diário de {{hoursUsedDaily}} horas</strong>, o crédito inicial irá durar <strong>{{finalValue.creditDuration}} meses</strong>. 
+                </p>
+                <p class="mb-0">
+                  Quando acabar, é só  fazer uma recarga mínima de R$ <strong>{{formatPrice(299)}}</strong>
+                </p>
+              </div>
+            </div>
+            
+            <div v-if="motoCc != 'abaixode250cc'" class="text-content alert alert-primary vehicleTypeResult mb-3 d-flex align-items-center">
+              <div class="vehicleTypeResult__image">
+                <img width="100" src="images/umbrella.png" alt="">
+              </div>
+              <p class="mb-0">Cobertura integral (até 100% tabela FIPE) contra roubo, furto e acidentes e até <strong> R$ {{thirdPartyCoverage}}.000,00</strong> para danos materiais a terceiros. Você liga e desliga sua cobertura quando quiser! <br><br>  Sua franquia em caso de colisões é <strong>R$ {{formatPrice(finalValue.franchise)}}</strong>.</p>
+            </div>
+            
+            <div v-if="motoCc != 'abaixode250cc'">            
+              <div v-if="ass24h == 'sim'" class="text-content alert alert-primary vehicleTypeResult mb-5 d-flex align-items-center">
+                <div class="vehicleTypeResult__image">
+                  <img width="100" src="images/24h.png" alt="">
+                </div>
+                <div>
+                  <p>
+                    <strong>Acessório</strong>: Você incluiu a assistência 24h. <br>
+                  </p>
+                  <p class="mb-0">
+                    O valor total da sua compra será <strong> R${{ formatPrice(finalValue.activationCredit + 249)}}</strong> (<em>créditos ativação + R$ 249,00</em>)
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="steps-contract mb-5" style="padding-top: 1px">
+              <div class="form-step__header mt-2">
+                <h2 class="form-step__title">Adesão simplificada em 4 etapas</h2>
+              </div>
+
+              <div class="sc-grid">
+
+                <div class="sc-item">
+                  <div>
+                    <img width="100" src="images/step1.png" alt="">
+                  </div>
+                  <p>1. <strong>Compra</strong> do Crédito Inicial</p>
+                </div>
+                <div class="sc-item">
+                  <div>
+                    <img width="100" src="images/step2.png" alt="">
+                  </div>
+                  <p>2. <strong>Vistoria e Envio</strong> da Documentação</p>
+                </div>
+                <div class="sc-item">
+                  <div>
+                    <img width="100" src="images/step3.png" alt="">
+                  </div>
+                  <p>3. Aprovação em até 24h e <strong>uso imediato</strong></p>
+                </div>
+                <div class="sc-item">
+                  <div>
+                    <img width="100" src="images/step4.png" alt="">
+                  </div>
+                  <p>4. Recebe o <strong> Onsurance OnBoard*</strong> em casa.</p>
+                </div>
+
+              </div>
+              <p class="text-center mt-4">
+                <em>
+                  <small>*O aparelho <strong>Onsurance Onboard</strong> chega em até 45 dias, com as orientações para oficina credenciada de instalação.</small>
+                </em>
+              </p>
+            </div>
+          
+            <hr>
+
+            <div class="reset text-center mt-3">
+              <a href="https://onsurance.me/termos-de-uso" target="_blank" class="btn btn-light">VER O CONTRATO</a>
+              <a href="/" class="btn btn-secondary">REFAZER COTAÇÃO</a>
+              <a href="https://loja.onsurance.me/" v-if="motoCc != 'abaixode250cc'" target="_blank" class="btn btn-success text-uppercase">Contratar agora!</a>
+            </div>
+
+          </div><!-- ./section-result -->
+
+          <div class="row row-actions" v-if="step < maxStep">
+            <div class="col-md-6">
+              <button v-if="step > 0 && step < 4" class="btn btn-secondary btn-block btn-prev" @click.prevent="prevStep()">Anterior</button>
+            </div>
+            <div class="col-md-6">
+              <button v-if="step < 3" class="btn btn-primary btn-block btn-next" @click.prevent="nextStep()" :id="`step-${step}`">Próximo</button>
+              <button v-if="step === maxStep -1" class="btn btn-success btn-block btn-env" @click.prevent="send()" id="resultado">Ver resultado</button>
+            </div>
+
+            <div class="col-12 text-center" v-if="step < maxStep">
+              <small class="text-danger">* Todos os campos são obrigatórios</small>
+            </div>
+          </div>
+  
+          <div class="alerta" v-if="activeAlerta">
+            <p>{{message}}</p>
+          </div>
+        </form>
+
+      </div><!-- .quote-form__body -->
+
+      <div class="quote-form__footer"></div>
+    </div>
+
+  </div>
+ 
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <script src="jquery.mask.min.js"></script>
+  <script src="dist/script-min.js"></script>
+  <script type="text/javascript">var $zoho=$zoho || {};$zoho.salesiq = $zoho.salesiq || {widgetcode:"483111b152e8ad520669a20093b26f2e4a7d3e0c15479e1f97a54b874e1bd59d1a2010ab7b6727677d37b27582c0e9c4", values:{},ready:function(){}};var d=document;s=d.createElement("script");s.type="text/javascript";s.id="zsiqscript";s.defer=true;s.src="https://salesiq.zoho.com/widget";t=d.getElementsByTagName("script")[0];t.parentNode.insertBefore(s,t);d.write("<div id='zsiqwidget'></div>");</script>
+  
+</body>
+</html> 

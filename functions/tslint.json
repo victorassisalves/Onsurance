@@ -26,7 +26,7 @@
     "label-position": true,
 
     // Disallows the (often typo) syntax if (var1 = var2). Replace with if (var2) { var1 = var2 }.
-    "no-conditional-assignment": true,
+    "no-conditional-assignment": false,
 
     // Disallows constructors for primitive types (e.g. new Number('123'), though Number('123') is still allowed).
     "no-construct": true,

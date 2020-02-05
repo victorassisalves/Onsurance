@@ -1,7 +1,7 @@
 import { indicationDbRefRoot } from "../database/database";
 import { databaseMethods } from "../model/databaseMethods";
 import { checkForIndicator, checkBackupError, checkServerError, checkMessengerId } from "../model/errors";
-import { sendMessage } from "../environment/messenger";
+import { sendMessage } from "../environment/messenger/messenger.variables";
 
 
 
@@ -179,3 +179,5 @@ export const saveMessenger = variables => {
         
     });
 };
+
+

@@ -1,6 +1,13 @@
 import * as nodemailer from "nodemailer";
 
+<<<<<<< HEAD
 export class SendQuoteEmail {
+=======
+
+
+
+export class SendEmail {
+>>>>>>> c05eb876782ef29f85d02c26887d4d08d960e16b
   sendQuoteAutoResult (result) {
     try {
       const respostaAuto = {
@@ -622,15 +629,25 @@ export class SendQuoteEmail {
       transporter.sendMail(mailOptions(), function(error, info){
         if (error) {
           console.error(`sendQuoteAutoResult ${error}`);
+<<<<<<< HEAD
           throw new Error(`${error}`);
+=======
+>>>>>>> c05eb876782ef29f85d02c26887d4d08d960e16b
         } else {
           console.log('Email sent sendQuoteAutoResult: ' + info.response);
         }
       });
     } catch (error) {
+<<<<<<< HEAD
       console.error(new Error(`TCL: sendEmail -> sendQuoteAutoResult -> error: ${JSON.stringify(error)}`));
       throw new Error(`${error}`);
     };       
+=======
+      console.error(`TCL: sendEmail -> sendQuoteAutoResult -> error`, error);
+        
+    }
+        
+>>>>>>> c05eb876782ef29f85d02c26887d4d08d960e16b
   }
 
   sendQuoteTireResult (result) {
@@ -1136,15 +1153,23 @@ export class SendQuoteEmail {
       
       transporter.sendMail(mailOptions(), function(error, info){
         if (error) {
+<<<<<<< HEAD
           console.error(new Error(`sendQuoteTireResult ${error}`));
           throw new Error(`${error}`);
+=======
+          console.error(`sendQuoteTireResult ${error}`);
+>>>>>>> c05eb876782ef29f85d02c26887d4d08d960e16b
         } else {
           console.log('Email sent sendQuoteTireResult: ' + info.response);
         }
       });
     } catch (error) {
+<<<<<<< HEAD
       console.error(new Error(`TCL: sendEmail -> sendQuoteTireResult -> error: ${JSON.stringify(error)}`));
       throw new Error(`${error}`);
+=======
+      console.error(`TCL: sendEmail -> sendQuoteTireResult -> error`, error);
+>>>>>>> c05eb876782ef29f85d02c26887d4d08d960e16b
         
     }
       

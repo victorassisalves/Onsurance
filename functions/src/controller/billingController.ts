@@ -66,7 +66,7 @@ export const registerBilling = (variables) => {
                     // const urlHomolog = `https://api.chatfuel.com/bots/5d1513f28955f00001fadda7/users/${messengerId}/send`
                     // const homologToken = 'qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74'
         
-                    const urlProdution = `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${messengerId}/send`
+                    const urlProdution = `https://api.chatfuel.com/bots/5dd588136dff450001d83274/users/${messengerId}/send`
                     const productionToken = "qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74"
                     const request = require("request");
                     const device_type = `Onboard Smart R$39,90`
@@ -76,7 +76,7 @@ export const registerBilling = (variables) => {
                         url: urlProdution,
                         qs: { 
                             chatfuel_token: productionToken,
-                            chatfuel_block_id: '5c4390ef76ccbc7888779d68',
+                            chatfuel_block_id: '5dd588136dff450001d83729',
                             discount_value: `${(discountValue*1000).toFixed(2)}`,
                             "device-type": `${device_type}`,
                             "user-credits": `${newWallet.switch}` },
@@ -84,7 +84,7 @@ export const registerBilling = (variables) => {
                         headers: { 'Content-Type': 'application/json' },
                         body: { 
                             chatfuel_token: productionToken,
-                            chatfuel_block_id: '5c4390ef76ccbc7888779d68',
+                            chatfuel_block_id: '5dd588136dff450001d83729',
                             discount_value: `${discountValue}`,
                             "device-type": `${device_type}`,
                             "user-credit": `${newWallet.switch}`,
@@ -328,7 +328,7 @@ export const executeBilling = () => {
                             // const urlHomolog = `https://api.chatfuel.com/bots/5d1513f28955f00001fadda7/users/${messengerId}/send`
                             // const homologToken = 'qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74'
                 
-                            const urlProdution = `https://api.chatfuel.com/bots/5a3ac37ce4b04083e46d3c0e/users/${userMessengerId}/send`
+                            const urlProdution = `https://api.chatfuel.com/bots/5dd588136dff450001d83274/users/${userMessengerId}/send`
                             const productionToken = "qwYLsCSz8hk4ytd6CPKP4C0oalstMnGdpDjF8YFHPHCieKNc0AfrnjVs91fGuH74"
                             const request = require("request");
                             const device_type = `Onboard Smart R$39,90`
@@ -338,7 +338,7 @@ export const executeBilling = () => {
                                 url: urlProdution,
                                 qs: { 
                                     chatfuel_token: productionToken,
-                                    chatfuel_block_id: '5c4390ef76ccbc7888779d68',
+                                    chatfuel_block_id: '5dd588136dff450001d83729',
                                     discount_value: `${(discountValue*1000).toFixed(2)}`,
                                     "device-type": `${device_type}`,
                                     "user-credits": `${newWallet.switch}` },
@@ -346,7 +346,7 @@ export const executeBilling = () => {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: { 
                                     chatfuel_token: productionToken,
-                                    chatfuel_block_id: '5c4390ef76ccbc7888779d68',
+                                    chatfuel_block_id: '5dd588136dff450001d83729',
                                     discount_value: `${discountValue}`,
                                     "device-type": `${device_type}`,
                                     "user-credit": `${newWallet.switch}`,

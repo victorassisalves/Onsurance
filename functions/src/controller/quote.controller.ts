@@ -1,6 +1,71 @@
+import { getTireMinuteValue } from "../model/calcMin";
+import { TireQuoteVariables } from "../environment/quotation.variables";
+import { motoCounterDbRef } from "../database/database";
+import { getDatabaseInfo, setDatabaseInfo } from "../model/databaseMethods";
+import { checkRequestVariables } from "../model/errors";
 
+export class executeTiresQuotation {
+    minuteValue: number;
+    anualCost: number;
+    creditDuration: number;
+    variables: TireQuoteVariables;
+    constructor(variables: TireQuoteVariables) {
+        this.variables = variables;
+    }
 
-interface quotationMock {
+    getMinuteValue() {
+        this.minuteValue = getTireMinuteValue(this.variables.totalValue, this.variables.vehicleType);
+        return this.minuteValue;
+    }
+
+    /**
+     * 
+     * @param minuteValue Tire minute value of Onsurance
+     */
+    calcUsage () {
+        let minutes: number;
+        minutes = parseFloat(this.variables.dailyUsage.hours) * 60;
+        minutes += parseFloat(this.variables.dailyUsage.minutes);
+        this.anualCost = parseFloat((this.minuteValue * minutes * 365).toFixed(2));
+        this.creditDuration = parseFloat((99/this.anualCost*12).toFixed(2));
+        return {
+            anualCost: this.anualCost,
+            creditDuration: this.creditDuration
+        }
+    };
+};
+
+/**
+ * @description Execute the quote for Onsurance tires 
+ * @param {TireQuoteVariables} variables The treated variables to execute the quotation
+ */
+export const executeTiresQuote = (variables: TireQuoteVariables) => {
+    try {
+        const tire = new executeTiresQuotation(variables);
+        const minuteValue = tire.getMinuteValue();
+        const usageData = tire.calcUsage();
+        const api = {
+            publicApi: {
+                ...usageData,
+                minuteValue: minuteValue,
+                activationCredit: 99,
+            },
+            privateApi: {
+                ...usageData,
+                minuteValue: minuteValue,
+                activationCredit: 99,
+                ...variables,
+            }
+        }
+        return api;
+    } catch (error) {
+        console.error(`TCL: error -> executeTiresQuote: `, JSON.stringify(error));
+        throw new Error(error);
+        
+    }
+};
+
+interface AutoQuoteInterface {
     fipe: string;
     vehicleType: string;
     usageType?: string;
@@ -9,14 +74,16 @@ interface quotationMock {
     thirdPartyCoverage: string;
     firstName: string;
     email: string;
-
+    truckTrunk?: string,
+    truckTrunkValue?: string,
+    motoCc?: string;
 }
 
 /**
  * @description Function that makes quotation
  * @param {quotationMock} userInput Data that comes from user quotation
  */
-export const newQuotation = (userInput: quotationMock) => {
+export const executeAutoQuote = (userInput: AutoQuoteInterface) => {
     return new Promise((resolve, reject) => {
         try {
 
@@ -26,10 +93,13 @@ export const newQuotation = (userInput: quotationMock) => {
             const factory = userInput.factory.toLowerCase();
             const hoursUsedDaily = parseFloat(userInput.hoursUsedDaily!);
             const thirdPartyCoverage = parseFloat(userInput.thirdPartyCoverage);
+            const truckTrunk = checkRequestVariables("Truck Trunk", userInput.truckTrunk, String, false)
             if (thirdPartyCoverage > 150 || thirdPartyCoverage < 30) {
                 throw {
-                    errorType: "Cobertura para terceiros fora do limite.",
-                    message: `${thirdPartyCoverage} está fora do limite permitido. Valores só podem ir de 30 até 150`
+                    status: 406, // Not Acceptable
+                    error: "Cobertura para terceiros fora do limite.",
+                    message: `${thirdPartyCoverage} está fora do limite permitido. Valores só podem ir de 30 até 150`,
+                    block: "wrong3rdCoverage"
                 };
                 
             }
@@ -59,10 +129,13 @@ export const newQuotation = (userInput: quotationMock) => {
                     return parseFloat((minuteValue * 1.2).toFixed(5));
                 default:
                     throw {
-                        errorType: "Invalid factory",
-                        message:`Informe uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`
-                    }
-            }
+                        status: 406, // Not Acceptable
+                        error: "Fabricação inválida",
+                        message:`Escolha uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`,
+                        block: "initialDataEntry",
+                        variables: {},
+                    };
+            };
         };
 
         /**
@@ -90,8 +163,11 @@ export const newQuotation = (userInput: quotationMock) => {
                     return vehicleValue + 10000;
                 default:
                     throw {
-                        errorType: "Tipo de uso inválido para carro.",
-                        message: `"${usageType}" Não é um tipo de uso válido. Escolha uma das seguintes opções: app, taxi, passeio.`
+                        status: 406, // Not Acceptable
+                        error: "Tipo de uso inválido para carro.",
+                        message: `"${usageType}" não é um tipo de uso válido. Escolha uma das seguintes opções: app, taxi, passeio.`,
+                        block: "chooseCarUsage",
+                        variables: {}
                     }
             }
         }
@@ -127,19 +203,18 @@ export const newQuotation = (userInput: quotationMock) => {
          * @param {number} minuteValue Minute value, the cost per minute of use
          */
         const calcThirdPartyCoverage = (thirdPartyCoverage: number, activationCredit: number, minuteValue: number) => {
-            console.log(`TCL: calcThirdPartyCoverage -> thirdPartyCoverage`, thirdPartyCoverage)
             if (thirdPartyCoverage < 30) {
                 return {
                     activationCredit: activationCredit,
                     minuteValue: minuteValue
                 };
             } else {
-                let multiplier = parseFloat(((thirdPartyCoverage - 30)/10).toFixed(0));
-                console.log(`TCL: calcThirdPartyCoverage -> multiplier`, multiplier)
-                let newActivationCredit = parseFloat((activationCredit + (multiplier*28.5)).toFixed(2));
-                console.log(`TCL: calcThirdPartyCoverage -> newActivationCredit`, newActivationCredit)
-                let newMinuteValue = parseFloat((minuteValue + (multiplier*(minuteValue/18))).toFixed(5));
-                console.log(`TCL: calcThirdPartyCoverage -> newMinuteValue`, newMinuteValue)
+                const multiplier = parseFloat(((thirdPartyCoverage - 30)/10).toFixed(0));
+
+                const newActivationCredit = parseFloat((activationCredit + (multiplier*28.5)).toFixed(2));
+
+                const newMinuteValue = parseFloat((minuteValue + (multiplier*(minuteValue/18))).toFixed(5));
+
                 return {
                     activationCredit: newActivationCredit,
                     minuteValue: newMinuteValue
@@ -226,18 +301,13 @@ export const newQuotation = (userInput: quotationMock) => {
                         return parseFloat((vehicleValue * 0.04).toFixed(2));
                     };
                 };
-                case "importado": {
+                default: {
                     if (vehicleValue <= 37500) {
                         return 3000;
                     } else {
                         return parseFloat((vehicleValue * 0.08).toFixed(2));
                     };
                 };
-                default:
-                    throw {
-                        errorType: "Invalid factory",
-                        message:`Informe uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`
-                    }
             }
         };
 
@@ -327,8 +397,11 @@ export const newQuotation = (userInput: quotationMock) => {
                 };
                 default:
                     throw {
-                        errorType: "Invalid factory",
-                        message:`Informe uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`
+                        status: 406, // Not Acceptable
+                        error: "Fabricação inválida",
+                        message:`Escolha uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`,
+                        block: "initialDataEntry",
+                        variables: {},
                     };
             }
         };
@@ -406,7 +479,7 @@ export const newQuotation = (userInput: quotationMock) => {
          * @function getFipeByUsage
          *
          */
-        const getActivationCredit_Vuc_Pickup = (factory: string, vehicleValue: number) => {
+        const getActivationCredit_Vuc_Pickup = (factory: string, vehicleValue: number): number => {
             
             if (factory === "nacional") {
                 if (vehicleValue <= 40000){
@@ -451,9 +524,12 @@ export const newQuotation = (userInput: quotationMock) => {
                 };
                 default:
                     throw {
-                        errorType: "Invalid factory",
-                        message:`Informe uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`
-                    }
+                        status: 406, // Not Acceptable
+                        error: "Fabricação inválida",
+                        message:`Escolha uma fabricação válida. Só pode ser nacional ou importado. ${factory} não é válido.`,
+                        block: "initialDataEntry",
+                        variables: {},
+                    };
             }
         };
 
@@ -485,9 +561,6 @@ export const newQuotation = (userInput: quotationMock) => {
             return resolve(quotationResponse);
         };
 
-
-
-
         /**
          * @description This functions execute all functions above
          * 
@@ -495,26 +568,24 @@ export const newQuotation = (userInput: quotationMock) => {
          * 
          * Then we execute te functions
          */
-        const executeCalculations = async(vehicleType: string) => {
+        const executeCalculations = async (vehicleType: string) => {
             try {
 
-                console.log("TCL: executeCalculations -> Typo de veículo:", vehicleType);
+                console.log("TCL: executeCalculations -> Tipo de veículo:", vehicleType);
 
                 switch (vehicleType) {
+                    case "car":
                     case "carro": {
 
                         const usageVehicleValue = getFipeByUsage(usageType, fipe);
-                        console.log("TCL: executeCalculations -> usageVehicleValue", usageVehicleValue)
                         
                         const minuteValueBase = calcMinuteCar(usageVehicleValue);
                         const minuteValueFactory = minuteByFactory(factory, minuteValueBase);
-                        console.log("TCL: executeCalculations -> Car minute value by factory", minuteValueFactory);
                         
                         const baseActivationCredit = getCarActivationCredit(factory, usageVehicleValue);
-                        console.log("TCL: executeCalculations -> baseActivationCredit", baseActivationCredit);
 
                         const franchise = getCarFranchise(factory, usageVehicleValue);
-                        console.log("TCL: executeCalculations -> franchise", franchise);
+
                         const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory)
                         const activationCredit = thirdPartyCoverageInfo.activationCredit;
                         const minuteValue = thirdPartyCoverageInfo.minuteValue;
@@ -525,7 +596,6 @@ export const newQuotation = (userInput: quotationMock) => {
                          * @param anualCost that represents the total cost estimated for 365 days of usage
                          */
                         const yearInfo = yearCalculations(activationCredit, hoursUsedDaily, minuteValue);
-                        console.log("TCL: executeCalculations -> yearInfo", yearInfo);
 
                         const quotationData = {
                             calcVehicleValue: usageVehicleValue,
@@ -539,19 +609,16 @@ export const newQuotation = (userInput: quotationMock) => {
                         return quotationResponse(userInput, quotationData);
                     };
 
+                    case "motorcylcle":
                     case "moto": {
 
+                        const motoCc = checkRequestVariables(`Moto CC`, userInput.motoCc, String);
                         const minuteValueBase = calcMinuteMoto(fipe);
                         const minuteValueFactory = minuteByFactory(factory, minuteValueBase)
-                        console.log("TCL: executeCalculations -> Moto minute Value by factory", minuteValueFactory);
-
                         const baseActivationCredit = getMotoActivationCredit(factory, fipe);
-                        console.log("TCL: executeCalculations -> Moto baseActivationCredit", baseActivationCredit);
-                        
                         const franchise = getMotoFranchise(factory, fipe);
-                        console.log("TCL: executeCalculations -> franchise", franchise);
+                        const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory);
 
-                        const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory)
                         const activationCredit = thirdPartyCoverageInfo.activationCredit;
                         const minuteValue = thirdPartyCoverageInfo.minuteValue;
 
@@ -561,7 +628,6 @@ export const newQuotation = (userInput: quotationMock) => {
                          * @param anualCost that represents the total cost estimated for 365 days of usage
                          */
                         const yearInfo = yearCalculations(activationCredit, hoursUsedDaily, minuteValue);
-                        console.log(`TCL: executeCalculations -> yearInfo`, yearInfo);
                         
                         const quotationData = {
                             calcVehicleValue: fipe,
@@ -571,22 +637,50 @@ export const newQuotation = (userInput: quotationMock) => {
                             creditDuration: yearInfo.duration,
                             anualCost: yearInfo.anualCost
                         }
+
+                        if (motoCc === "abaixode250cc") {
+                            console.log(`TCL: motoCc`, motoCc);
+                            const motoCounterDbPath = await motoCounterDbRef()
+                            
+                            const motoCounter: number = await getDatabaseInfo(motoCounterDbPath);
+
+                            const newMotoCounter:number = motoCounter + 1;
+
+
+                            await setDatabaseInfo(motoCounterDbPath, newMotoCounter);
+
+                            const quotationResponse = {
+                                publicApi: {
+                                    motoCc: motoCc,
+                                    info: 'Moto under 250 cc',
+                                    motoCounter: newMotoCounter
+                                },
+                                privateApi: {
+                                    ...userInput,
+                                    ...quotationData,
+                                    motoCc: motoCc,
+                                    motoCounter: newMotoCounter - 1500
+                                }
+                            };
+                
+                            return resolve(quotationResponse);
+
+                        };
 
                         return quotationResponse(userInput, quotationData);
                     };
 
                     case "vuc": {
-
-
-                        const minuteValueBase = calcMinuteVuc(fipe);
+                        let vucValue = fipe;
+                        if (truckTrunk === "sim") {
+                            vucValue += parseFloat(userInput.truckTrunkValue);
+                        };
+                        const minuteValueBase = calcMinuteVuc(vucValue);
                         const minuteValueFactory = minuteByFactory(factory, minuteValueBase);
-                        console.log("TCL: executeCalculations -> VUC minuteValueFactory", minuteValueFactory);
                         
-                        const baseActivationCredit = getActivationCredit_Vuc_Pickup(factory, fipe);
-                        console.log("TCL: executeCalculations -> baseActivationCredit", baseActivationCredit);
+                        const baseActivationCredit = getActivationCredit_Vuc_Pickup(factory, vucValue);
 
-                        const franchise = getFranchise_Vuc_Pickup(factory, fipe);
-                        console.log("TCL: executeCalculations -> franchise", franchise);
+                        const franchise = getFranchise_Vuc_Pickup(factory, vucValue);
 
                         const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory)
                         const activationCredit = thirdPartyCoverageInfo.activationCredit;
@@ -598,45 +692,44 @@ export const newQuotation = (userInput: quotationMock) => {
                          * @param anualCost that represents the total cost estimated for 365 days of usage
                          */
                         const yearInfo = yearCalculations(activationCredit, hoursUsedDaily, minuteValue);
-                        console.log("TCL: executeCalculations -> yearInfo", yearInfo);
 
                         const quotationData = {
-                            calcVehicleValue: fipe,
+                            calcVehicleValue: vucValue,
                             minuteValue: minuteValue,
                             activationCredit: activationCredit,
                             franchise: franchise,
                             creditDuration: yearInfo.duration,
                             anualCost: yearInfo.anualCost
-                        }
+                        };
 
                         return quotationResponse(userInput, quotationData);
                     }
 
+                    case "pickup":
                     case "caminhonete": {
                     
                         let minuteValueBase = 0.00968
                         if (userInput.usageType === "passeio") {
                             minuteValueBase = calcMinutePickup(fipe);
                         } else if (userInput.usageType === "utilitario") {
-                            minuteValueBase = calcMinuteVuc(fipe);;;
+                            minuteValueBase = calcMinuteVuc(fipe);
                         } else {
                             throw {
-                                errorType: "Tipo de uso inválido para caminhonete.",
-                                message: `${userInput.usageType} não é válido. Só pode ser passeio ou utilitário.`,
-                            };
-                            
+                                status: 406, // Not Acceptable
+                                error: "Tipo de uso inválido para caminhonete.",
+                                message: `${usageType} não é um tipo de uso válido. Escolha uma das seguintes opções: passeio ou utilitario.`,
+                                block: "choosePickupUsage",
+                                variables: {}
+                            }; 
                         };
 
                         const minuteValueFactory = minuteByFactory(factory, minuteValueBase);
-                        console.log("TCL: executeCalculations -> Caminhonete minuteValueFactory", minuteValueFactory);
                         
                         const baseActivationCredit = getActivationCredit_Vuc_Pickup(factory, fipe);
-                        console.log("TCL: executeCalculations -> baseActivationCredit", baseActivationCredit);
 
                         const franchise = getFranchise_Vuc_Pickup(factory, fipe);
-                        console.log("TCL: executeCalculations -> franchise", franchise);
 
-                        const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory)
+                        const thirdPartyCoverageInfo = calcThirdPartyCoverage(thirdPartyCoverage,baseActivationCredit,minuteValueFactory);
                         const activationCredit = thirdPartyCoverageInfo.activationCredit;
                         const minuteValue = thirdPartyCoverageInfo.minuteValue;
 
@@ -646,7 +739,6 @@ export const newQuotation = (userInput: quotationMock) => {
                          * @param anualCost that represents the total cost estimated for 365 days of usage
                          */
                         const yearInfo = yearCalculations(activationCredit, hoursUsedDaily, minuteValue);
-                        console.log("TCL: executeCalculations -> yearInfo", yearInfo);
 
                         const quotationData = {
                             calcVehicleValue: fipe,
@@ -659,10 +751,14 @@ export const newQuotation = (userInput: quotationMock) => {
 
                         return quotationResponse(userInput, quotationData);
                     }
+
                     default:
                         throw {
-                            errorType: "Tipo de veículo inválido.",
-                            message: `${userInput.vehicleType} não é válido. Informe um veículo válido. Carro, moto, vuc ou caminhonete`,
+                            status: 406, // Not Acceptable
+                            error: "Tipo de veículo inválido.",
+                            message: `${userInput.vehicleType} não é válido. Escolha um tipo de veículo válido. Carro, moto, vuc ou caminhonete`,
+                            block: 'chooseVehicle',
+                            variables: {}
                         };
                 };
 

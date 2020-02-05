@@ -16,9 +16,9 @@ export const protectionMethods = async (protectionData, variables) => {
 
     // diff gets the change in protection. To only make changes in what have changed
     const protectionChange = diff(itemProfile.protectionStatus, variables.policies)
-    console.log("TCL: get diff from OBJ", protectionChange)
+    // console.log("TCL: get diff from OBJ", protectionChange)
     const diffProtectionArray = Object.keys(protectionChange)
-    // console.log("TCL: doBackup -> diffProtectionArray", diffProtectionArray)
+    // // console.log("TCL: doBackup -> diffProtectionArray", diffProtectionArray)
     
     const turnOn = [];
     const turnOff = [];
@@ -36,13 +36,13 @@ export const protectionMethods = async (protectionData, variables) => {
     
     // Check if there is a police to turn ON
     const protectionOn = turnOn.join(', ')
-    // console.log("TCL: protectionMethods -> turnOn", turnOn)
-    // console.log("TCL: protectionMethods -> _.isEmpty(turnOn)", _.isEmpty(turnOn))
+    // // console.log("TCL: protectionMethods -> turnOn", turnOn)
+    // // console.log("TCL: protectionMethods -> _.isEmpty(turnOn)", _.isEmpty(turnOn))
     
     // Check if there is a police to turn OFF
     const protectionOff = turnOff.join(', ')
-    // console.log("TCL: protectionMethods -> turnOff", turnOff)
-    // console.log("TCL: protectionMethods -> _.isEmpty(turnOff)", _.isEmpty(turnOff))
+    // // console.log("TCL: protectionMethods -> turnOff", turnOff)
+    // // console.log("TCL: protectionMethods -> _.isEmpty(turnOff)", _.isEmpty(turnOff))
 
 
     const initiateNewProtection = async () => {
@@ -63,8 +63,8 @@ export const protectionMethods = async (protectionData, variables) => {
             activationsCounterUser[element] += 1;
             return activationsCounterItem; 
         }); 
-        console.log("TCL: initiateNewProtection -> activationsCounterItem", activationsCounterItem)
-        console.log("TCL: initiateNewProtection -> activationsCounterUser", activationsCounterUser)
+        // console.log("TCL: initiateNewProtection -> activationsCounterItem", activationsCounterItem)
+        // // console.log("TCL: initiateNewProtection -> activationsCounterUser", activationsCounterUser)
 
         await itemDbMethods.pushDatabaseInfo(itemDbPath.child(`logUse`), logUse);
         await itemDbMethods.updateDatabaseInfo(itemDbPath.child('profile/protectionData'), {
@@ -134,7 +134,7 @@ export const protectionMethods = async (protectionData, variables) => {
     };
     
     const closeProtection = async () => {
-        console.log("TCL: Protection is ON");
+        // console.log("TCL: Protection is ON");
         const timezoneDiff = variables.timezone * 1000 * 3600
         // Pega o tempo do desligamento
         const timeEnd = (Date.now() + timezoneDiff)/1000|0;                              // TimeEnd - Timestamp do desligamento da protecão
@@ -155,29 +155,29 @@ export const protectionMethods = async (protectionData, variables) => {
          const protectionStatus = Object.keys(itemProfile.protectionStatus)
          const billingProtectionOn = []
          await protectionStatus.forEach( element => {
-            console.log(`TCL: closeProtection -> itemProfile.protectionStatus[${element}]`, itemProfile.protectionStatus[`${element}`])
+            // console.log(`TCL: closeProtection -> itemProfile.protectionStatus[${element}]`, itemProfile.protectionStatus[`${element}`])
             const boolValue = itemProfile.protectionStatus[`${element}`] === true ? true : false;
             if (boolValue === true) {
                 billingProtectionOn.push(element) 
             }
             return element
         })
-        console.log("TCL: closeProtection -> billingProtectionOn", billingProtectionOn)
-        // console.log("TCL: closeProtection -> billingProtectionOn", billingProtectionOn.length)
+        // console.log("TCL: closeProtection -> billingProtectionOn", billingProtectionOn)
+        // // console.log("TCL: closeProtection -> billingProtectionOn", billingProtectionOn.length)
 
 
         // Calculate minute value based on active polices on protection
         const protectionMinuteValue = policesProtection(itemProfile.minuteValue, billingProtectionOn.length)
         let consumedSwitch = 0;
-        console.log("TCL: closeProtection -> protectionMinuteValue", protectionMinuteValue)
+        // console.log("TCL: closeProtection -> protectionMinuteValue", protectionMinuteValue)
         if (seconds >= 30){
             consumedSwitch = parseFloat(((Math.ceil(useTime/60))*protectionMinuteValue).toFixed(3))
-            console.log("TCL: closeProtection -> Considered minutes - ceil", Math.ceil(useTime/60))
+            // console.log("TCL: closeProtection -> Considered minutes - ceil", Math.ceil(useTime/60))
         } else if (seconds < 30) {
             consumedSwitch = parseFloat(((Math.floor(useTime/60))*protectionMinuteValue).toFixed(3))
-            console.log("TCL: closeProtection -> Considered Minutes - floor", Math.floor(useTime/60))
+            // console.log("TCL: closeProtection -> Considered Minutes - floor", Math.floor(useTime/60))
         }
-        console.log("TCL: consumedSwitch", consumedSwitch)
+        // console.log("TCL: consumedSwitch", consumedSwitch)
 
         let newSwitch = 0;
         let oldSwitch = parseFloat(userProfile.wallet.switch.toFixed(2))
@@ -185,15 +185,15 @@ export const protectionMethods = async (protectionData, variables) => {
         if (!protectionData.itemOwner) {
             oldSwitch = parseFloat(protectionData.ownerCredit)
             newSwitch = parseFloat((parseFloat(protectionData.ownerCredit) - consumedSwitch).toFixed(2))
-            console.log("TCL: newSwitch", newSwitch)
+            // console.log("TCL: newSwitch", newSwitch)
             const ownerDbPath = protectionData.ownerDbPath
             await userDbMethods.updateDatabaseInfo(ownerDbPath.child("personal/wallet/"),{
                 switch: newSwitch
             });
-            // console.log(`TCL: Owner wallet updated.`);
+            // // console.log(`TCL: Owner wallet updated.`);
         } else {
             newSwitch = parseFloat((parseFloat(userProfile.wallet.switch) - consumedSwitch).toFixed(2))
-            console.log("TCL: newSwitch", newSwitch)
+            // console.log("TCL: newSwitch", newSwitch)
             await userDbMethods.updateDatabaseInfo(userDbPath.child('personal'),{
                 wallet: {
                     switch: newSwitch
