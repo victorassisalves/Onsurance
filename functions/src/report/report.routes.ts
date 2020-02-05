@@ -2,7 +2,6 @@
 import * as express from "express";
 import * as cors from "cors";
 import { BuildUserProfileReport } from "../report/report.controller";
-import { SendEmail } from "../email/sendEmail";
 
 
 const report = express();
